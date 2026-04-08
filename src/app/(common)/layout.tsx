@@ -1,27 +1,15 @@
-import { AppSidebar } from "@/components/app-sidebar";
-import { SiteHeader } from "@/components/site-header";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { ReactNode } from "react";
-const CommonLayout = ({ children }: { children: ReactNode }) => {
-  return (
-    <>
-      {" "}
-      <SidebarProvider
-        style={
-          {
-            "--sidebar-width": "calc(var(--spacing) * 60)",
-            "--header-height": "calc(var(--spacing) * 15)",
-          } as React.CSSProperties
-        }
-      >
-        <AppSidebar variant="inset" />
-        <SidebarInset>
-          <SiteHeader />
-          {children}
-        </SidebarInset>
-      </SidebarProvider>
-    </>
-  );
-};
+import { Footer } from '@/components/shared/Footer'
+import { Navbar } from '@/components/shared/Navbar'
+import React from 'react'
 
-export default CommonLayout;
+const Layout = ({children}: { children: React.ReactNode }) => {
+  return (
+    <div className='min-h-screen flex flex-col justify-between'>
+        <Navbar/>
+        <main className='flex-1'>{children}</main>
+        <Footer/>
+    </div>
+  )
+}
+
+export default Layout

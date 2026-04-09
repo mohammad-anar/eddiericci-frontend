@@ -82,7 +82,7 @@ export function Navbar() {
                             : 'text-gray-300 hover:text-white'
                         }`}
                       >
-                        <Button className='w-full bg-gray-800 hover:!bg-green-500'>
+                        <Button className='w-full bg-gray-800 hover:bg-green-500'>
                           {link.label}
                         </Button>
                       </a>
@@ -100,7 +100,7 @@ export function Navbar() {
 
                   {/* Mobile Action Buttons */}
                   <div className="flex flex-col gap-3 pt-4 border-t border-gray-700 px-6">
-                    <Button variant="outline" className="w-full bg-transparent border-gray-600 hover:!bg-green-500 justify-center text-gray-300 hover:text-white">
+                    <Button variant="outline" className="w-full bg-transparent border-gray-600 hover:bg-green-500 justify-center text-gray-300 hover:text-white">
                       Login
                     </Button>
                     <Button className="w-full bg-green-400 hover:bg-green-500 text-black font-semibold">

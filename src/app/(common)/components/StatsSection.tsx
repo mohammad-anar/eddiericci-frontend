@@ -2,7 +2,7 @@ import React from "react";
 
 const StatsSection = () => {
   return (
-    <section className="relative bg-black py-10">
+    <section className="relative bg-black py-10 px-5 lg:px-0">
       <div className="container relative mx-auto !p-[2px] ">
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-8 border-2 border-transparent rounded-xl relative z-10 bg-black h-full py-12">
           {[

@@ -1,6 +1,9 @@
 import { Card } from "@/components/ui/card";
 import Image from "next/image";
 import image1 from "@/assets/home/keyFeatureImage1.png";
+import image2 from "@/assets/home/key_feature_grid_1.png";
+import image3 from "@/assets/home/key_feature_grid_2.png";
+import image4 from "@/assets/home/key_feature_grid_3.png";
 
 const KeyFeatureSection = () => {
   return (
@@ -18,7 +21,7 @@ const KeyFeatureSection = () => {
 
         {/* Feature 1 - Performance Analytics */}
         <div className="relative">
-          <div className="relative h-64 sm:h-80 lg:h-[500px] bg-[#1a1a1a] rounded-lg border-transparent overflow-hidden">
+          <div className="relative h-[600px] sm:h-[400px] lg:h-[500px] bg-[#1a1a1a] rounded-lg border-transparent overflow-hidden">
             <Image
               src={image1}
               alt="Performance analytics"
@@ -26,8 +29,8 @@ const KeyFeatureSection = () => {
               className="object-cover"
             />
           </div>
-          <div className="absolute bottom-0 left-0 w-full flex items-center justify-center flex-col bg-black/50 p-8 backdrop-blur-sm">
-            <h4 className="text-3xl mb-5 font-bold text-white ">
+          <div className="absolute bottom-0 left-0 w-full flex items-center justify-center flex-col bg-black/50 p-8 backdrop-blur-xs">
+            <h4 className="text-3xl mb-5 font-bold text-white text-center">
               Performance Analytics
             </h4>
             <p className="text-sm text-gray-400 text-center max-w-4xl">
@@ -41,31 +44,68 @@ const KeyFeatureSection = () => {
 
         {/* Features Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[
-            {
-              title: "Star Search",
-              description:
-                "Discover emerging talents through advanced filtering and AI-powered recommendations.",
-            },
-            {
-              title: "Elite School",
-              description:
-                "Access premium training programs and coaching from world-class professionals.",
-            },
-            {
-              title: "Unified Profile",
-              description:
-                "Showcase your skills with a comprehensive player profile that scouts watch.",
-            },
-          ].map((feature, i) => (
-            <Card
-              key={i}
-              className="bg-[#1a1a1a] border border-[#333333] p-6 space-y-4 hover:border-[#00ff00] transition"
-            >
-              <h4 className="text-lg font-bold text-white">{feature.title}</h4>
-              <p className="text-sm text-gray-400">{feature.description}</p>
-            </Card>
-          ))}
+          {/* Feature 1 - Performance Analytics */}
+          <div className="relative">
+            <div className="relative h-[400px] sm:h-[400px] lg:h-[500px] bg-[#1a1a1a] rounded-lg border-transparent overflow-hidden">
+              <Image
+                src={image2}
+                alt="Smart Search"
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="absolute bottom-0 left-0 w-full flex items-center justify-center flex-col bg-black/50 p-8 backdrop-blur-xs">
+              <h4 className="text-3xl mb-5 font-bold text-white  ">
+                Smart Search
+              </h4>
+              <p className="text-sm text-gray-400 text-center max-w-4xl">
+                Find top talent or the perfect club with K10’s Smart Search
+                filter by skills, stats, and achievements for instant, accurate
+                results.
+              </p>
+            </div>
+          </div>
+          {/* Feature 1 - Performance Analytics */}
+          <div className="relative">
+            <div className="relative h-[400px] sm:h-[400px] lg:h-[500px] bg-[#1a1a1a] rounded-lg border-transparent overflow-hidden">
+              <Image
+                src={image3}
+                alt="Role-Based Access"
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="absolute bottom-0 left-0 w-full flex items-center justify-center flex-col bg-black/50 p-8 backdrop-blur-xs">
+              <h4 className="text-3xl mb-5 font-bold text-white ">
+                Role-Based Access
+              </h4>
+              <p className="text-sm text-gray-400 text-center max-w-4xl">
+                K10 tailors experiences for every role players track
+                performance, coaches gain insights, scouts discover talent, and
+                clubs access recruitment analytics.
+              </p>
+            </div>
+          </div>
+          {/* Feature 1 - Performance Analytics */}
+          <div className="relative">
+            <div className="relative h-[400px] sm:h-[400px] lg:h-[500px] bg-[#1a1a1a] rounded-lg border-transparent overflow-hidden">
+              <Image
+                src={image4}
+                alt="Verified Profiles"
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="absolute bottom-0 left-0 w-full flex items-center justify-center flex-col bg-black/50 p-8 backdrop-blur-xs">
+              <h4 className="text-3xl mb-5 font-bold text-white ">
+                Verified Profiles
+              </h4>
+              <p className="text-sm text-gray-400 text-center max-w-4xl">
+                Every K10 profile is verified for credibility real stats, match
+                records, and achievements that build trust and authenticity.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </section>

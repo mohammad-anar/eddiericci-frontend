@@ -9,6 +9,7 @@ const HomePage = () => {
       <HeroSection/>
       <StatsSection/>
       <KeyFeatureSection/>
+      <StatsSection/>
     </>
   );
 };

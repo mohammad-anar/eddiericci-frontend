@@ -1,10 +1,10 @@
 import React from 'react'
 import { Button } from '../ui/button'
 
-const GradientButton = ({text}:{text:string}) => {
+const ButtonGradient = ({text, className}:{text:string, className?: string}) => {
   return (
-    <Button className="bg-gradient-to-b from-[#00CD4F] to-[#003D18] text-white mt-10 p-6 text-lg">{text}</Button>
+    <Button className={`bg-gradient-to-b from-green-gradient-from to-green-gradient-to text-white  ${className || ''}`}>{text}</Button>
   )
 }
 
-export default GradientButton
+export default ButtonGradient

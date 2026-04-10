@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import bg_image from "@/assets/home/hero_bg.png"
+import ButtonPrimary from "@/components/shared/ButtonPrimary";
 
 
 const HeroSection = () => {
@@ -20,19 +21,13 @@ const HeroSection = () => {
           <div className="absolute inset-0 bg-black/20"></div>
         </div>
 
-        {/* Holographic Tech Elements */}
-        {/* <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-10 left-10 w-32 h-32 border border-[#00ff00]/30 rounded-lg transform -rotate-12 animate-pulse"></div>
-          <div className="absolute top-20 right-20 w-24 h-24 border border-[#00ff00]/20 rounded-full"></div>
-          <div className="absolute bottom-32 left-1/4 w-40 h-40 border border-[#00ff00]/20 rounded-lg transform rotate-45"></div>
-          <div className="absolute bottom-20 right-10 w-28 h-28 border border-[#00ff00]/30 rounded-lg"></div>
-        </div> */}
+       
 
         {/* Content */}
         <div className="relative z-10 flex flex-col items-center justify-center h-full pt-32 px-4 sm:px-6 lg:px-8">
           <div className=" -mt-20 lg:-mt-40 text-center max-w-5xl mx-auto space-y-6">
             <h1 className="text-4xl sm:text-5xl lg:text-6xl leading-normal font-bold font-heading text-white tracking-tight">
-              THE TOP FOOTBALL TALENTS  <br/><span className="text-3xl sm:text-4xl lg:text-6xl font-bold text-[#00ff00] animate-pulse">
+              THE TOP FOOTBALL TALENTS  <br/><span className="text-3xl sm:text-4xl lg:text-6xl font-bold text-primary animate-pulse">
               ARE HERE
             </span>
             </h1>
@@ -43,9 +38,7 @@ const HeroSection = () => {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-              <Button className="bg-[#00ff00] text-black hover:bg-[#00dd00] rounded-lg px-8 py-6 text-base font-semibold">
-                Join Now
-              </Button>
+              <ButtonPrimary text="Join Now" className="px-8 py-6 text-base font-semibold border-2 border-primary" />
               <Button className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-black rounded-lg px-8 py-6 text-base font-semibold transition">
                 Watch Demo
               </Button>

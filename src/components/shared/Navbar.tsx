@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { ChevronDown, Globe, Menu } from 'lucide-react'
 import Image from 'next/image'
+import ButtonPrimary from './ButtonPrimary'
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
@@ -53,9 +54,7 @@ export function Navbar() {
             <Button variant="ghost" className="hidden lg:block text-gray-300 hover:text-white hover:bg-transparent">
               Login
             </Button>
-            <Button className="hidden lg:block bg-green-400 hover:bg-green-500 text-black font-semibold px-6">
-              Join Now
-            </Button>
+            <ButtonPrimary text="Join Now"  />
 
             {/* Mobile Menu Button */}
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -103,9 +102,7 @@ export function Navbar() {
                     <Button variant="outline" className="w-full bg-transparent border-gray-600 hover:bg-green-500 justify-center text-gray-300 hover:text-white">
                       Login
                     </Button>
-                    <Button className="w-full bg-green-400 hover:bg-green-500 text-black font-semibold">
-                      Join Now
-                    </Button>
+                    <ButtonPrimary text="Join Now" className="w-full" />
                   </div>
                 </div>
               </SheetContent>

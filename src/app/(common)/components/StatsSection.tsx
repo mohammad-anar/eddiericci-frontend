@@ -12,7 +12,7 @@ const StatsSection = () => {
             { number: "12K+", label: "Scouts" },
           ].map((stat, i) => (
             <div key={i} className="text-center">
-              <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#00ff00]">
+              <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-primary">
                 {stat.number}
               </div>
               <div className="text-xs sm:text-sm text-gray-400 mt-2">

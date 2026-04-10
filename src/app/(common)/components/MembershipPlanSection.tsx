@@ -7,7 +7,7 @@ const MembershipPlanSection = () => {
       <div className="container space-y-12">
         <div className="text-center space-y-4">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-heading text-white">
-            Membership <span className="text-[#00ff00]">Plans</span>
+            Membership <span className="text-primary">Plans</span>
           </h2>
           <p className="text-gray-400 max-w-2xl mx-auto">
             Choose the perfect plan for your needs.
@@ -72,7 +72,7 @@ const MembershipPlanSection = () => {
           ].map((plan, i) => (
             <Card
               key={i}
-              className="bg-[#1a1a1a] border border-[#333333] p-6 space-y-6 flex flex-col hover:border-[#00ff00] transition h-fit"
+              className="bg-[#1a1a1a] border border-[#333333] p-6 space-y-6 flex flex-col hover:border-primary transition h-fit"
             >
               <div>
                 <h4 className="text-xl lg:text-2xl text-center font-bold text-white">{plan.name}</h4>
@@ -86,12 +86,12 @@ const MembershipPlanSection = () => {
                     key={j}
                     className="text-sm text-gray-400 flex items-start"
                   >
-                    <span className="text-[#00ff00] mr-2">✓</span>
+                    <span className="text-primary mr-2">✓</span>
                     {feature}
                   </li>
                 ))}
               </ul>
-              <Button variant={"outline"} className="w-full bg-[#00ff00] text-black rounded-full bg-transparent text-white cursor-pointer hover:bg-[#00dd00]">
+              <Button variant={"outline"} className="w-full bg-primary text-black rounded-full bg-transparent text-white cursor-pointer hover:bg-[#00dd00]">
                 Choose Plan
               </Button>
             </Card>

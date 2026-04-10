@@ -12,12 +12,12 @@ export function Footer() {
           {/* Left Section - Logo & Description */}
           <div className="col-span-1">
             <div className="flex items-start gap-3 mb-6">
-              {/* <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
+              {/* <div className="w-12 h-12 bg-gradient-to-br from-primary to-green-600 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
                 K10
               </div>
               <div>
                 <h3 className="text-white font-bold text-sm">K10 FOOTBALL</h3>
-                <p className="text-green-400 text-xs">ANALYSIS CV</p>
+                <p className="text-primary text-xs">ANALYSIS CV</p>
               </div> */}
               <Image src="/logo.png" className='-ml-5' alt="K10 Football Logo" width={300} height={200} />
             </div>
@@ -28,16 +28,16 @@ export function Footer() {
 
             {/* Social Icons */}
             <div className="flex gap-4">
-              <a href="#" className="text-gray-300 hover:text-green-400 transition">
+              <a href="#" className="text-gray-300 hover:text-primary transition">
                 <Twitter className="w-5 h-5" />
               </a>
-              <a href="#" className="text-gray-300 hover:text-green-400 transition">
+              <a href="#" className="text-gray-300 hover:text-primary transition">
                 <Instagram className="w-5 h-5" />
               </a>
-              <a href="#" className="text-gray-300 hover:text-green-400 transition">
+              <a href="#" className="text-gray-300 hover:text-primary transition">
                 <Linkedin className="w-5 h-5" />
               </a>
-              <a href="#" className="text-gray-300 hover:text-green-400 transition">
+              <a href="#" className="text-gray-300 hover:text-primary transition">
                 <Youtube className="w-5 h-5" />
               </a>
             </div>
@@ -48,27 +48,27 @@ export function Footer() {
             <h4 className="text-white font-semibold text-sm mb-6">Platform</h4>
             <ul className="space-y-3">
               <li>
-                <a href="#" className="text-gray-300 hover:text-green-400 text-sm transition">
+                <a href="#" className="text-gray-300 hover:text-primary text-sm transition">
                   For Players
                 </a>
               </li>
               <li>
-                <a href="#" className="text-gray-300 hover:text-green-400 text-sm transition">
+                <a href="#" className="text-gray-300 hover:text-primary text-sm transition">
                   For Coaches
                 </a>
               </li>
               <li>
-                <a href="#" className="text-gray-300 hover:text-green-400 text-sm transition">
+                <a href="#" className="text-gray-300 hover:text-primary text-sm transition">
                   For Academies
                 </a>
               </li>
               <li>
-                <a href="#" className="text-gray-300 hover:text-green-400 text-sm transition">
+                <a href="#" className="text-gray-300 hover:text-primary text-sm transition">
                   For Agent
                 </a>
               </li>
               <li>
-                <a href="#" className="text-gray-300 hover:text-green-400 text-sm transition">
+                <a href="#" className="text-gray-300 hover:text-primary text-sm transition">
                   For Clubs
                 </a>
               </li>
@@ -80,22 +80,22 @@ export function Footer() {
             <h4 className="text-white font-semibold text-sm mb-6">Resources</h4>
             <ul className="space-y-3">
               <li>
-                <a href="#" className="text-gray-300 hover:text-green-400 text-sm transition">
+                <a href="#" className="text-gray-300 hover:text-primary text-sm transition">
                   Help Center
                 </a>
               </li>
               <li>
-                <a href="#" className="text-gray-300 hover:text-green-400 text-sm transition">
+                <a href="#" className="text-gray-300 hover:text-primary text-sm transition">
                   Blog
                 </a>
               </li>
               <li>
-                <a href="#" className="text-gray-300 hover:text-green-400 text-sm transition">
+                <a href="#" className="text-gray-300 hover:text-primary text-sm transition">
                   Success Stories
                 </a>
               </li>
               <li>
-                <a href="#" className="text-gray-300 hover:text-green-400 text-sm transition">
+                <a href="#" className="text-gray-300 hover:text-primary text-sm transition">
                   API Docs
                 </a>
               </li>
@@ -107,22 +107,22 @@ export function Footer() {
             <h4 className="text-white font-semibold text-sm mb-6">Company</h4>
             <ul className="space-y-3">
               <li>
-                <a href="#" className="text-gray-300 hover:text-green-400 text-sm transition">
+                <a href="#" className="text-gray-300 hover:text-primary text-sm transition">
                   About
                 </a>
               </li>
               <li>
-                <a href="#" className="text-gray-300 hover:text-green-400 text-sm transition">
+                <a href="#" className="text-gray-300 hover:text-primary text-sm transition">
                   Careers
                 </a>
               </li>
               <li>
-                <a href="#" className="text-gray-300 hover:text-green-400 text-sm transition">
+                <a href="#" className="text-gray-300 hover:text-primary text-sm transition">
                   Privacy
                 </a>
               </li>
               <li>
-                <a href="#" className="text-gray-300 hover:text-green-400 text-sm transition">
+                <a href="#" className="text-gray-300 hover:text-primary text-sm transition">
                   Terms
                 </a>
               </li>

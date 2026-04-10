@@ -12,7 +12,7 @@ const ChooseYourRoleSection = () => {
       <div className="container mx-auto space-y-12">
         <div className="text-center space-y-4">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white font-heading">
-            Choose <span className="text-[#00ff00]">Your Role</span>
+            Choose <span className="text-primary">Your Role</span>
           </h2>
           <p className="text-gray-400 max-w-3xl mx-auto text-sm sm:text-base">
             Select whether you&apos;re a Player, Coach, Agent, Academy, or Club

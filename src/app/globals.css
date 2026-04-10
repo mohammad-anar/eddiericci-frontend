@@ -5,6 +5,7 @@
 
 :root {
   --background: oklch(1 0 0);
+  --greenprimary: oklch(#008434);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
@@ -76,9 +77,11 @@
 
 @theme inline {
   --font-sans: var(--font-inter);
+  
   --font-heading: var(--font-audiowide);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-greenprimary: var(--greenprimary);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
   --color-popover: var(--popover);

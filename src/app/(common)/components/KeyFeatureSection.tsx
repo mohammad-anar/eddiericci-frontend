@@ -10,7 +10,7 @@ const KeyFeatureSection = () => {
     <section className="bg-black py-12 sm:py-20 lg:py-28 px-4 sm:px-6 lg:px-8">
       <div className="container mx-auto space-y-16">
         <div className="text-center space-y-4">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl  font-heading font-bold text-white">
             Key <span className="text-[#00ff00]">Features</span>
           </h2>
           <p className="text-gray-400 max-w-2xl mx-auto">

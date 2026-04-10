@@ -2,7 +2,7 @@ import { Card } from "@/components/ui/card"
 
 const HowK10Works = () => {
   return (
-    <section className="bg-black py-12 sm:py-20 lg:py-28 px-4 sm:px-6 lg:px-8 border-t border-[#333333]">
+    <section className="bg-black py-12 sm:py-20 lg:py-28 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto space-y-12">
           <div className="text-center space-y-4">
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white font-heading">How <span className="text-[#00ff00]">K10</span> Works</h2>

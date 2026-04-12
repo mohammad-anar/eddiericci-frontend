@@ -1,8 +1,15 @@
 import React from 'react'
+import MembershipPlanSection from '../components/MembershipPlanSection'
+import ImageCarousel from '../components/ImageCarousel'
+import StartJourneySection from '../components/StartJourneySection'
 
 const PlansPage = () => {
   return (
-    <div>PlansPage</div>
+    <div>
+      <MembershipPlanSection/>
+      <ImageCarousel/>
+      <StartJourneySection/>
+    </div>
   )
 }
 

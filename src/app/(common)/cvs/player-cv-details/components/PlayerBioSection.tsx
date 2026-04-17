@@ -14,7 +14,7 @@ import positionMap from "@/assets/cvs/id/positionmap.png";
 import trofeeIcon from "@/assets/cvs/id/trofeeIcon.png";
 import { useState } from "react";
 
-const CVSDynamicPage = () => {
+const PlayerBioSection = () => {
   const [isPositionMap, setIsPositionMap] = useState(true);
   return (
     <>
@@ -26,7 +26,7 @@ const CVSDynamicPage = () => {
         </div>
         <div className="grid grid-cols-12 gap-6">
           {/* LEFT COLUMN */}
-          <div className="col-span-3 space-y-6 bg-slate-300/10">
+          <div className="col-span-3 h-fit space-y-6 bg-slate-300/10">
             {/* Personal Information */}
             <div className=" p-6">
               <h2 className="text-lg text-center font-heading font-normal mb-4">
@@ -473,4 +473,4 @@ const CVSDynamicPage = () => {
   );
 };
 
-export default CVSDynamicPage;
+export default PlayerBioSection;

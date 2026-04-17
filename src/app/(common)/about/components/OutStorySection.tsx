@@ -6,7 +6,7 @@ const OutStorySection = () => {
      
         <div className="container bg-slate-300/10 py-10 rounded-xl">
           {/* Heading */}
-          <h2 className="text-4xl font-bold mb-8 text-center">
+          <h2 className="text-4xl font-bold mb-8 font-heading text-center">
             Our <span style={{ color: "#00FF62" }}>Story</span>
           </h2>
 

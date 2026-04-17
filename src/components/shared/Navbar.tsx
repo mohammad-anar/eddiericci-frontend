@@ -6,16 +6,17 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { ChevronDown, Globe, Menu } from 'lucide-react'
 import Image from 'next/image'
 import ButtonPrimary from './ButtonPrimary'
+import Link from 'next/link'
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
 
   const navLinks = [
-    { label: 'Home', href: '#', isActive: true },
-    { label: 'Services', href: '#', isActive: false },
-    { label: 'CVs', href: '#', isActive: false },
-    { label: 'K10 Plans', href: '#', isActive: false },
-    { label: 'About', href: '#', isActive: false },
+    { label: 'Home', href: '/', isActive: true },
+    { label: 'Services', href: '/services', isActive: false },
+    { label: 'CVs', href: '/cvs', isActive: false },
+    { label: 'K10 Plans', href: 'k10plans', isActive: false },
+    { label: 'About', href: '/about', isActive: false },
   ]
 
   return (
@@ -23,9 +24,9 @@ export function Navbar() {
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center gap-3">
+          <Link href={"/"} className="flex items-center gap-3">
             <Image src="/logo.png" alt="K10 Football Logo" width={200} height={200} />
-          </div>
+          </Link>
 
           {/* Center Navigation - Hidden on mobile */}
           <div className="hidden lg:flex items-center gap-8">

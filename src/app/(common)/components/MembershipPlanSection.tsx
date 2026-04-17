@@ -72,7 +72,7 @@ const MembershipPlanSection = () => {
           ].map((plan, i) => (
             <Card
               key={i}
-              className="bg-[#1a1a1a] border border-[#333333] p-6 space-y-6 flex flex-col hover:border-primary transition h-fit"
+              className="bg-cardBg border border-border p-6 space-y-6 flex flex-col hover:border-primary transition h-fit"
             >
               <div>
                 <h4 className="text-xl lg:text-2xl text-center font-bold text-white">{plan.name}</h4>

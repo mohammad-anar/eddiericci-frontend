@@ -30,7 +30,7 @@ const ServiceSection = () => {
           ].map((stat, index) => (
             <div
               key={index}
-              className="rounded-lg p-8 border bg-slate-300/10 "
+              className="rounded-lg p-8 border bg-cardBg "
               
             >
               <div className="text-3xl font-bold mb-2" style={{ color: '#00FF62' }}>

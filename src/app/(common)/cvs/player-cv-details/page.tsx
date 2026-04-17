@@ -8,6 +8,9 @@ import ImageCarousel from "../../components/ImageCarousel";
 import StartJourneySection from "../../components/StartJourneySection";
 import { MetricsAnalysis } from "./components/MatricsAnalycies";
 import SportsAnalytics from "./components/SportsAnalycies";
+import PlayerProfile from "./components/PlayerProfile";
+import DocSection from "./components/DocSection";
+import MyImagesSection from "./components/MyImageSection";
 
 const PlayerCvDetailsPage = () => {
   return (
@@ -19,6 +22,9 @@ const PlayerCvDetailsPage = () => {
       <AttributesAnalysis/>
       <MetricsAnalysis/>
       <SportsAnalytics/>
+      <PlayerProfile/>
+      <DocSection/>
+      <MyImagesSection/>
       <ImageCarousel/>
       <StartJourneySection/>
     </>

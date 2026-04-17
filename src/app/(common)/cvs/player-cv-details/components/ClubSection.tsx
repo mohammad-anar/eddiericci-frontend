@@ -2,12 +2,12 @@ import React from 'react'
 
 const ClubSection = () => {
   return (
-     <div className="container py-10 bg-slate-300/10 rounded-xl mt-10">
+     <div className="container py-10 bg-cardBg rounded-xl mt-10">
           <h1 className="text-4xl font-light text-center mb-8 text-foreground font-heading">Clubs</h1>
           <div className="border border-border bg-black/30 rounded-2xl p-8">
             <div className="grid grid-cols-3 gap-6">
               {/* Manchester City */}
-              <div className="border border-border cursor-pointer hover:bg-slate-300/10 duration-300 bg-black/20 rounded-lg p-6 flex items-center gap-4 hover:bg-black/30 transition">
+              <div className="border border-border cursor-pointer hover:bg-cardBg duration-300 bg-black/20 rounded-lg p-6 flex items-center gap-4 hover:bg-black/30 transition">
                 <div className="shrink-0">
                   <div className="w-12 h-12 rounded-full bg-blue-600 border-2 border-blue-400 flex items-center justify-center text-white font-bold text-lg">
                     MC
@@ -20,7 +20,7 @@ const ClubSection = () => {
               </div>
 
               {/* Liverpool FC */}
-              <div className="border border-border cursor-pointer hover:bg-slate-300/10 duration-300 bg-black/20 rounded-lg p-6 flex items-center gap-4 hover:bg-black/30 transition">
+              <div className="border border-border cursor-pointer hover:bg-cardBg duration-300 bg-black/20 rounded-lg p-6 flex items-center gap-4 hover:bg-black/30 transition">
                 <div className="shrink-0">
                   <div className="w-12 h-12 rounded-full bg-red-700 border-2 border-red-500 flex items-center justify-center text-white font-bold text-lg">
                     LFC
@@ -33,7 +33,7 @@ const ClubSection = () => {
               </div>
 
               {/* Chelsea FC */}
-              <div className="border border-border cursor-pointer hover:bg-slate-300/10 duration-300 bg-black/20 rounded-lg p-6 flex items-center gap-4 hover:bg-black/30 transition">
+              <div className="border border-border cursor-pointer hover:bg-cardBg duration-300 bg-black/20 rounded-lg p-6 flex items-center gap-4 hover:bg-black/30 transition">
                 <div className="shrink-0">
                   <div className="w-12 h-12 rounded-full bg-blue-700 border-2 border-blue-500 flex items-center justify-center text-white font-bold text-lg">
                     CFC

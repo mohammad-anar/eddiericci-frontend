@@ -26,7 +26,7 @@ const PlayerBioSection = () => {
         </div>
         <div className="grid grid-cols-12 gap-6">
           {/* LEFT COLUMN */}
-          <div className="col-span-3 h-fit space-y-6 bg-slate-300/10">
+          <div className="col-span-3 h-fit space-y-6 bg-cardBg">
             {/* Personal Information */}
             <div className=" p-6">
               <h2 className="text-lg text-center font-heading font-normal mb-4">
@@ -232,7 +232,7 @@ const PlayerBioSection = () => {
           </div>
 
           {/* RIGHT COLUMN */}
-          <div className="col-span-3 space-y-6 bg-slate-300/10">
+          <div className="col-span-3 space-y-6 bg-cardBg">
             {/* Strength */}
             <div className="p-6">
               <h2 className="text-lg text-center font-heading font-normal mb-4">

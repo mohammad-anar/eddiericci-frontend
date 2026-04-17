@@ -84,7 +84,7 @@ export function SkillsAttributes() {
         SKILLS ATTRIBUTES
       </h1>
 
-      <div className="border border-border bg-slate-300/10 rounded-2xl p-8">
+      <div className="border border-border bg-cardBg rounded-2xl p-8">
         <div className="grid grid-cols-4 gap-8">
           {skillCategories.map((category) => (
             <div key={category.category} className={`space-y-4 pl-6`}>

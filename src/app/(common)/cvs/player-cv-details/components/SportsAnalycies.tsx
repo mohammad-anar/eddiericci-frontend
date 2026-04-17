@@ -162,7 +162,7 @@ export default function SportsAnalycies() {
           {matchesData.map((match, idx) => (
             <Card
               key={idx}
-              className="border border-gray-600 bg-black p-6 text-white rounded-lg"
+              className="border border-border bg-black p-6 text-white rounded-lg"
             >
               {/* Header Row */}
               <div className="mb-4 flex items-center justify-between ">
@@ -190,7 +190,7 @@ export default function SportsAnalycies() {
                     <div className="font-semibold">{match.team1}</div>
                   </div>
                 </div>
-                <div className="mx-4 text-center bg-slate-300/10 p-3 px-5 rounded-lg -mt-8">
+                <div className="mx-4 text-center bg-cardBg p-3 px-5 rounded-lg -mt-8">
                   <div className="text-xl font-bold">{match.score}</div>
                 </div>
                 <div className="flex items-center gap-3  justify-end">
@@ -213,7 +213,7 @@ export default function SportsAnalycies() {
               </div>
 
               {/* Stats Grid */}
-              <div className="mb-4 grid grid-cols-4 gap-4 border-t border-b border-gray-600 py-4">
+              <div className="mb-4 grid grid-cols-4 gap-4 border-t border-b border-border py-4">
                 <div className="text-center">
                   <div className="text-lg font-bold text-white">
                     {match.goals}
@@ -301,7 +301,7 @@ export default function SportsAnalycies() {
           </Card>
 
           {/* Form Guide */}
-          <Card className="border border-gray-600 bg-black p-6 text-white rounded-lg">
+          <Card className="border border-border bg-black p-6 text-white rounded-lg">
             <div className="mb-4 text-sm font-semibold text-gray-300">
               Form Guide
             </div>
@@ -332,7 +332,7 @@ export default function SportsAnalycies() {
           </Card>
 
           {/* Key Stats */}
-          <Card className="border border-gray-600 bg-black p-6 text-white rounded-lg">
+          <Card className="border border-border bg-black p-6 text-white rounded-lg">
             <div className="mb-4 text-sm font-semibold text-gray-300">
               Key Stats
             </div>

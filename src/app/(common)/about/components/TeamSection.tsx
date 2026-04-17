@@ -38,7 +38,7 @@ const TeamSection = () => {
         {/* Team Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {teamMembers.map((member) => (
-            <div key={member.name} className="flex bg-slate-300/10 p-6 rounded-xl flex-col items-center">
+            <div key={member.name} className="flex bg-cardBg p-6 rounded-xl flex-col items-center">
               {/* Circular Image Container */}
               <div className="relative w-40 h-40 mb-6 rounded-full border-2 border-primary overflow-hidden">
                 <Image

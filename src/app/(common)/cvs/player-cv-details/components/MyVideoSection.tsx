@@ -1,106 +1,101 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { useState } from 'react'
+import { Card } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
-import { Eye, Heart, Upload } from "lucide-react";
-import Image from "next/image";
+} from '@/components/ui/dialog'
+import { Textarea } from '@/components/ui/textarea'
+import { Eye, Heart, Upload } from 'lucide-react'
 
-interface ImageCard {
-  id: string;
-  title: string;
-  date: string;
-  views: number;
-  likes: number;
-  image: string;
+interface VideoCard {
+  id: string
+  title: string
+  date: string
+  views: number
+  likes: number
+  video: string
 }
 
-const SAMPLE_IMAGES: ImageCard[] = [
+const SAMPLE_VIDEOS: VideoCard[] = [
   {
-    id: "1",
-    title: "vs Arsenal U19",
-    date: "Mar 15, 2024",
+    id: '1',
+    title: 'vs Arsenal U19',
+    date: 'Mar 15, 2024',
     views: 234,
     likes: 97,
-    image:
-      "https://images.pexels.com/photos/35405504/pexels-photo-35405504.jpeg",
+    video: 'https://www.pexels.com/download/video/15436956',
   },
   {
-    id: "2",
-    title: "vs Chelsea U19",
-    date: "Mar 10, 2024",
+    id: '2',
+    title: 'Training Highlights',
+    date: 'Mar 10, 2024',
     views: 189,
     likes: 45,
-    image:
-      "https://images.pexels.com/photos/32205625/pexels-photo-32205625.jpeg",
+    video: 'https://www.pexels.com/download/video/32614272',
   },
   {
-    id: "3",
-    title: "vs Liverpool U19",
-    date: "Mar 5, 2024",
-    views: 312,
-    likes: 227,
-    image:
-      "https://images.pexels.com/photos/35405504/pexels-photo-35405504.jpeg",
+    id: '3',
+    title: 'Training Highlights',
+    date: 'Mar 10, 2024',
+    views: 189,
+    likes: 45,
+    video: 'https://www.pexels.com/download/video/32614272',
   },
   {
-    id: "4",
-    title: "Training Highlights",
-    date: "Feb 28, 2024",
-    views: 156,
-    likes: 62,
-    image:
-      "https://images.pexels.com/photos/32205625/pexels-photo-32205625.jpeg",
+    id: '4',
+    title: 'Training Highlights',
+    date: 'Mar 10, 2024',
+    views: 189,
+    likes: 45,
+    video: 'https://www.pexels.com/download/video/32614272',
   },
-];
+]
 
-export default function MyImagesSection() {
-  const [images, setImages] = useState<ImageCard[]>(SAMPLE_IMAGES);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+export default function MyVideosSection() {
+  const [videos, setVideos] = useState<VideoCard[]>(SAMPLE_VIDEOS)
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const [formData, setFormData] = useState({
-    title: "",
-    date: "",
-    description: "",
-    image: null as File | null,
-  });
+    title: '',
+    date: '',
+    description: '',
+    video: null as File | null,
+  })
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
+  }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.[0]) {
-      setFormData((prev) => ({ ...prev, image: e.target.files![0] }));
+      setFormData((prev) => ({ ...prev, video: e.target.files![0] }))
     }
-  };
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (formData.title && formData.date && formData.image) {
-      const newImage: ImageCard = {
-        id: String(images.length + 1),
+    e.preventDefault()
+    if (formData.title && formData.date && formData.video) {
+      const newVideo: VideoCard = {
+        id: String(videos.length + 1),
         title: formData.title,
         date: formData.date,
         views: 0,
         likes: 0,
-        image: URL.createObjectURL(formData.image),
-      };
-      setImages((prev) => [newImage, ...prev]);
-      setFormData({ title: "", date: "", description: "", image: null });
-      setIsModalOpen(false);
+        video: URL.createObjectURL(formData.video),
+      }
+      setVideos((prev) => [newVideo, ...prev])
+      setFormData({ title: '', date: '', description: '', video: null })
+      setIsModalOpen(false)
     }
-  };
+  }
 
   return (
     <div className="mt-20">
@@ -108,7 +103,7 @@ export default function MyImagesSection() {
         {/* Header */}
         <div className="flex items-center justify-between mb-12">
           <div>
-            <h1 className="text-4xl text-white mb-2 font-heading">My Images</h1>
+            <h1 className="text-4xl text-white mb-2 font-heading">My Videos</h1>
             <p className="text-gray-400">Match highlights & training</p>
           </div>
           <Button
@@ -117,37 +112,37 @@ export default function MyImagesSection() {
             variant="outline"
           >
             <Upload className="w-4 h-4 mr-2" />
-            Upload Image
+            Upload Video
           </Button>
         </div>
 
-        {/* Image Grid */}
+        {/* Video Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {images.map((img) => (
+          {videos.map((vid) => (
             <Card
-              key={img.id}
+              key={vid.id}
               className="bg-gray-900 border-gray-800 overflow-hidden hover:border-gray-700 transition-colors"
             >
-              <div className="aspect-video overflow-hidden bg-gray-800">
-                <Image
-                  src={img.image}
-                  alt={img.title}
-                  width={500}
-                  height={500}
-                  className="w-full h-full object-cover hover:scale-105 transition-transform"
+              <div className="aspect-video bg-black">
+                <video
+                  src={vid.video}
+                  className="w-full h-full object-cover"
+                  controls
                 />
               </div>
-              <div className="p-4">
-                <h3 className="text-white font-semibold mb-1">{img.title}</h3>
-                <p className="text-gray-400 text-sm mb-4">{img.date}</p>
+
+              <div className="p-4 flex flex-col justify-end h-full">
+                <h3 className="text-white font-semibold mb-1">{vid.title}</h3>
+                <p className="text-gray-400 text-sm mb-4">{vid.date}</p>
+
                 <div className="flex items-center gap-4 text-gray-400 text-sm">
                   <div className="flex items-center gap-1">
                     <Eye className="w-4 h-4" />
-                    <span>{img.views}</span>
+                    <span>{vid.views}</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <Heart className="w-4 h-4" />
-                    <span>{img.likes}</span>
+                    <span>{vid.likes}</span>
                   </div>
                 </div>
               </div>
@@ -161,47 +156,51 @@ export default function MyImagesSection() {
         <DialogContent className="bg-gray-900 border-gray-800">
           <DialogHeader>
             <DialogTitle className="text-white text-xl">
-              Upload Image
+              Upload Video
             </DialogTitle>
           </DialogHeader>
+
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Video Upload */}
             <div>
               <label className="block text-white text-sm font-medium mb-2">
-                Image File
+                Video File
               </label>
+
               <div className="border-2 border-dashed border-gray-700 rounded-lg p-6 text-center">
                 <input
                   type="file"
-                  accept="image/*"
+                  accept="video/*"
                   onChange={handleFileChange}
                   className="hidden"
-                  id="image-input"
+                  id="video-input"
                 />
-                <label htmlFor="image-input" className="cursor-pointer">
+
+                <label htmlFor="video-input" className="cursor-pointer">
                   <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
                   <p className="text-gray-400 text-sm">
-                    {formData.image
-                      ? formData.image.name
-                      : "Click to upload or drag and drop"}
+                    {formData.video
+                      ? formData.video.name
+                      : 'Click to upload or drag video'}
                   </p>
                 </label>
               </div>
             </div>
 
+            {/* Title */}
             <div>
               <label className="block text-white text-sm font-medium mb-2">
                 Title
               </label>
               <Input
-                type="text"
                 name="title"
                 value={formData.title}
                 onChange={handleInputChange}
-                placeholder="e.g., vs Arsenal U19"
-                className="bg-gray-800 border-gray-700 text-white placeholder-gray-500"
+                className="bg-gray-800 border-gray-700 text-white"
               />
             </div>
 
+            {/* Date */}
             <div>
               <label className="block text-white text-sm font-medium mb-2">
                 Date
@@ -215,6 +214,7 @@ export default function MyImagesSection() {
               />
             </div>
 
+            {/* Description */}
             <div>
               <label className="block text-white text-sm font-medium mb-2">
                 Description
@@ -223,11 +223,11 @@ export default function MyImagesSection() {
                 name="description"
                 value={formData.description}
                 onChange={handleInputChange}
-                placeholder="Add a description for this image..."
-                className="bg-gray-800 border-gray-700 text-white placeholder-gray-500 h-24"
+                className="bg-gray-800 border-gray-700 text-white h-24"
               />
             </div>
 
+            {/* Actions */}
             <div className="flex gap-3 pt-4">
               <Button
                 type="button"
@@ -237,6 +237,7 @@ export default function MyImagesSection() {
               >
                 Cancel
               </Button>
+
               <Button
                 type="submit"
                 className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
@@ -248,5 +249,5 @@ export default function MyImagesSection() {
         </DialogContent>
       </Dialog>
     </div>
-  );
+  )
 }

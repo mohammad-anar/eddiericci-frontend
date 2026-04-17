@@ -11,22 +11,26 @@ import SportsAnalytics from "./components/SportsAnalycies";
 import PlayerProfile from "./components/PlayerProfile";
 import DocSection from "./components/DocSection";
 import MyImagesSection from "./components/MyImageSection";
+import MyVideosSection from "./components/MyVideoSection";
+import AdditionalNotesSection from "./components/AdditionalNotesSection";
 
 const PlayerCvDetailsPage = () => {
   return (
     <>
       <PlayerBioSection />
       <ClubSection />
-      <SkillsAttributes/>
-      <PerformanceAnalytics/>
-      <AttributesAnalysis/>
-      <MetricsAnalysis/>
-      <SportsAnalytics/>
-      <PlayerProfile/>
-      <DocSection/>
-      <MyImagesSection/>
-      <ImageCarousel/>
-      <StartJourneySection/>
+      <SkillsAttributes />
+      <PerformanceAnalytics />
+      <AttributesAnalysis />
+      <MetricsAnalysis />
+      <SportsAnalytics />
+      <PlayerProfile />
+      <DocSection />
+      <MyImagesSection />
+      <MyVideosSection />
+      <AdditionalNotesSection/>
+      <ImageCarousel />
+      <StartJourneySection />
     </>
   );
 };

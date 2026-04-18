@@ -1,9 +1,12 @@
-import React from 'react'
+import React from "react";
+import CoachBioSection from "./components/CoachBioSection";
 
 const CoachCVPage = () => {
   return (
-    <div>CoachCVPage</div>
-  )
-}
+    <div>
+      <CoachBioSection />
+    </div>
+  );
+};
 
-export default CoachCVPage
+export default CoachCVPage;

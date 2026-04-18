@@ -1,11 +1,10 @@
 "use client";
 
-import { Card } from "@/components/ui/card";
+import flag from "@/assets/cvs-page//id/flag.png";
+import playerImage from "@/assets/cvs-page/id/player-short-image.png";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import Image from "next/image";
-import playerImage from "@/assets/cvs-page/id/player-short-image.png";
-import flag from "@/assets/cvs-page//id/flag.png";
 
 interface Attribute {
   name: string;

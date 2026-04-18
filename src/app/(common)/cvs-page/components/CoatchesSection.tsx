@@ -182,16 +182,6 @@ const coaches: Coach[] = [
 export default function Coaches() {
   const router = useRouter();
 
-  const getCardStyle = (cardType: string) => {
-    switch (cardType) {
-      case "gold":
-        return "bg-gradient-to-b from-amber-200 to-amber-100 border-4 border-amber-600";
-      case "pink":
-        return "bg-gradient-to-b from-pink-100 to-pink-50 border-4 border-pink-400";
-      default:
-        return "bg-gradient-to-b from-gray-100 to-gray-50 border-4 border-gray-400";
-    }
-  };
 
   return (
     <div className="container mt=20 bg-black p-8">
@@ -202,7 +192,7 @@ export default function Coaches() {
         Coaches
       </h1>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
         {coaches.map((coach) => (
           <div onClick={() => router.push("/cvs-page/coach-cv-details")} key={coach.id} className="flex justify-center">
             <div className="relative min-h-50 cursor-pointer hover:scale-110 duration-300">

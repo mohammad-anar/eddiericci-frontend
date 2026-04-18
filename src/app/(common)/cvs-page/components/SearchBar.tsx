@@ -21,7 +21,7 @@ const SearchBar = () => {
       <div className="container mx-auto px-6">
         <div className="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-border">
           {/* Search Bar */}
-          <div className="flex gap-3 mb-6">
+          <div className="flex flex-wrap gap-3 mb-6">
             <input
               type="text"
               placeholder="Search players, coaches..."
@@ -46,7 +46,7 @@ const SearchBar = () => {
           </div>
 
           {/* Filter Dropdowns */}
-          <div className="flex gap-3">
+          <div className="flex gap-3 flex-wrap">
             {/* Genre Dropdown */}
             <select
               value={selectedGenre}

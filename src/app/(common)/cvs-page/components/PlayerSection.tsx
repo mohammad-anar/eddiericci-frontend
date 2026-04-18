@@ -128,6 +128,56 @@ const players: Player[] = [
     stats: { pac: 93, dri: 89, sho: 88, def: 45, pas: 82, phy: 75 },
     cardType: "pink",
   },
+  {
+    id: 6,
+    name: "HAALAND",
+    rating: 90,
+    position: "ST",
+    country: "🇳🇴",
+    image: "https://images.pexels.com/photos/35405504/pexels-photo-35405504.jpeg",
+    stats: { pac: 89, dri: 80, sho: 94, def: 45, pas: 65, phy: 92 },
+    cardType: "gold",
+  },
+  {
+    id: 7,
+    name: "PEDRI",
+    rating: 86,
+    position: "CM",
+    country: "🇪🇸",
+    image: "https://images.pexels.com/photos/29661157/pexels-photo-29661157.jpeg",
+    stats: { pac: 80, dri: 92, sho: 75, def: 70, pas: 89, phy: 72 },
+    cardType: "pink",
+  },
+  {
+    id: 8,
+    name: "VINICIUS",
+    rating: 89,
+    position: "LW",
+    country: "🇧🇷",
+    image: "https://images.pexels.com/photos/32205625/pexels-photo-32205625.jpeg",
+    stats: { pac: 95, dri: 91, sho: 84, def: 45, pas: 80, phy: 75 },
+    cardType: "gold",
+  },
+  {
+    id: 9,
+    name: "BELLINGHAM",
+    rating: 88,
+    position: "CM",
+    country: "🇬🇧",
+    image: "https://images.pexels.com/photos/35405504/pexels-photo-35405504.jpeg",
+    stats: { pac: 83, dri: 87, sho: 86, def: 78, pas: 85, phy: 85 },
+    cardType: "white",
+  },
+  {
+    id: 10,
+    name: "SALAH",
+    rating: 90,
+    position: "RW",
+    country: "🇪🇬",
+    image: "https://images.pexels.com/photos/29661157/pexels-photo-29661157.jpeg",
+    stats: { pac: 93, dri: 89, sho: 88, def: 45, pas: 82, phy: 75 },
+    cardType: "pink",
+  },
 ];
 
 export default function Players() {
@@ -141,7 +191,7 @@ export default function Players() {
         PLAYERS
       </h1>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
         {players.map((player) => (
           <div onClick={() => router.push("/cvs-page/player-cv-details")} key={player.id} className="flex justify-center">
             <div className="relative min-h-50 hover:scale-110 duration-300">
@@ -167,7 +217,7 @@ export default function Players() {
                 <div className=" relative w-[90%] h-[90%] ">
                   {/* player image */}
                   <Image
-                    className="w-full h-48 ml-4 object-cover"
+                    className="w-40 h-48 ml-10 object-cover"
                     src={playerImage}
                     alt="player Image"
                   />

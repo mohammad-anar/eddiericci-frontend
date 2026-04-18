@@ -14,8 +14,8 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import image from "@/assets/cvs/player_position.png"
-import image_bar from "@/assets/cvs/bar.png"
+import image from "@/assets/cvs-page/player_position.png"
+import image_bar from "@/assets/cvs-page/bar.png"
 
 const playersByNationality = [
   { name: "Brazil", Players: 68 },

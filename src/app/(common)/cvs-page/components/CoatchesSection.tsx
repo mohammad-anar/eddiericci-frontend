@@ -1,10 +1,10 @@
 "use client";
-import club1 from "@/assets/cvs/club1.png";
-import playerImage from "@/assets/cvs/coachImage2.png";
-import flag1 from "@/assets/cvs/flag1.png";
-import goldCard from "@/assets/cvs/goldCard.png";
-import pinkCard from "@/assets/cvs/pinkCard.png";
-import whiteCard from "@/assets/cvs/whiteCard.png";
+import club1 from "@/assets/cvs-page/club1.png";
+import playerImage from "@/assets/cvs-page/coach-image2.png";
+import flag1 from "@/assets/cvs-page/flag1.png";
+import goldCard from "@/assets/cvs-page/gold-card.png";
+import pinkCard from "@/assets/cvs-page/pink-card.png";
+import whiteCard from "@/assets/cvs-page/white-card.png";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 

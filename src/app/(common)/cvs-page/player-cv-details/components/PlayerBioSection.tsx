@@ -1,17 +1,17 @@
 "use client";
 import { ChevronDown } from "lucide-react";
 import Image from "next/image";
-import playerImage from "@/assets/cvs/id/playerImage.png";
-import flagImage from "@/assets/cvs/id/flag.png";
-import badge1 from "@/assets/cvs/id/badgeImage1.png";
-import badge2 from "@/assets/cvs/id/badgeImage2.png";
-import badge3 from "@/assets/cvs/id/badgeImage3.png";
+import playerImage from "@/assets/cvs-page/id/player-image.png";
+import flagImage from "@/assets/cvs-page/id/flag.png";
+import badge1 from "@/assets/cvs-page/id/badge-image1.png";
+import badge2 from "@/assets/cvs-page/id/badge-image2.png";
+import badge3 from "@/assets/cvs-page/id/badge-image3.png";
 import { Button } from "@/components/ui/button";
 import { IconShare } from "@tabler/icons-react";
-import leftLeg from "@/assets/cvs/id/leftLegImage.png";
-import right from "@/assets/cvs/id/rightLegtImage.png";
-import positionMap from "@/assets/cvs/id/positionmap.png";
-import trofeeIcon from "@/assets/cvs/id/trofeeIcon.png";
+import leftLeg from "@/assets/cvs-page/id/left-leg-image.png";
+import right from "@/assets/cvs-page/id/right-legt-image.png";
+import positionMap from "@/assets/cvs-page/id/positionmap.png";
+import trofeeIcon from "@/assets/cvs-page/id/trofeeIcon.png";
 import { useState } from "react";
 
 const PlayerBioSection = () => {

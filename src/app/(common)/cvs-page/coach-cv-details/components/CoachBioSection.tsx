@@ -1,21 +1,17 @@
 "use client";
+import clubImage from "@/assets/cvs-page/club1.png";
 import badge1 from "@/assets/cvs-page/id/coach-badge1.png";
 import badge2 from "@/assets/cvs-page/id/coach-badge2.png";
 import badge3 from "@/assets/cvs-page/id/coach-badge3.png";
+import flagImage from "@/assets/cvs-page/id/coach-bio-flag.png";
+import playerImage from "@/assets/cvs-page/id/coach-style-image.png";
 import flagFr from "@/assets/cvs-page/id/flag-fr.png";
 import flagIt from "@/assets/cvs-page/id/flag-itally.png";
-import flagImage from "@/assets/cvs-page/id/coach-bio-flag.png";
-import leftLeg from "@/assets/cvs-page/id/left-leg-image.png";
-import playerImage from "@/assets/cvs-page/id/coach-style-image.png";
-import clubImage from "@/assets/cvs-page/club1.png";
-import positionMap from "@/assets/cvs-page/id/positionmap.png";
-import right from "@/assets/cvs-page/id/right-legt-image.png";
 import trophyIcon from "@/assets/cvs-page/id/trofeeIcon.png";
+import { Card } from "@/components/ui/card";
+import { IconTrophy } from "@tabler/icons-react";
 import { ChevronDown } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
-import { IconTrophy } from "@tabler/icons-react";
-import { Card } from "@/components/ui/card";
 
 const CoachBioSection = () => {
   const qualifications = [

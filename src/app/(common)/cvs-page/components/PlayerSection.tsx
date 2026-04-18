@@ -143,7 +143,7 @@ export default function Players() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
         {players.map((player) => (
-          <div onClick={() => router.push("/cvs/player-cv-details")} key={player.id} className="flex justify-center">
+          <div onClick={() => router.push("/cvs-page/player-cv-details")} key={player.id} className="flex justify-center">
             <div className="relative min-h-50 hover:scale-110 duration-300">
               <Image
                 className=" h-full w-full z-10"

@@ -7,15 +7,17 @@ import flagIt from "@/assets/cvs-page/id/flag-itally.png";
 import flagImage from "@/assets/cvs-page/id/coach-bio-flag.png";
 import leftLeg from "@/assets/cvs-page/id/left-leg-image.png";
 import playerImage from "@/assets/cvs-page/id/coach-style-image.png";
+import clubImage from "@/assets/cvs-page/club1.png";
 import positionMap from "@/assets/cvs-page/id/positionmap.png";
 import right from "@/assets/cvs-page/id/right-legt-image.png";
-import trofeeIcon from "@/assets/cvs-page/id/trofeeIcon.png";
+import trophyIcon from "@/assets/cvs-page/id/trofeeIcon.png";
 import { ChevronDown } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
+import { IconTrophy } from "@tabler/icons-react";
+import { Card } from "@/components/ui/card";
 
 const CoachBioSection = () => {
-  const [isPositionMap, setIsPositionMap] = useState(true);
   const qualifications = [
     {
       icon: (
@@ -80,7 +82,49 @@ const CoachBioSection = () => {
       text: "Five years of experience assistant coach at the college level",
     },
   ];
-  
+
+  const tournaments = [
+    {
+      name: "K10 FOOTBALL CHAMPIONSHIP",
+      count: 3,
+    },
+    {
+      name: "K10 FOOTBALL CUP",
+      count: 7,
+    },
+    {
+      name: "K10 FOOTBALL LEAGUE",
+      count: 12,
+    },
+    {
+      name: "K10 FOOTBALL YOUTH CUP",
+      count: 5,
+    },
+    {
+      name: "GBN CFN B",
+      count: 2,
+    },
+    {
+      name: "GBN CFN B",
+      count: 2,
+    },
+    {
+      name: "GBN CFN B",
+      count: 4,
+    },
+  ];
+
+  const TrophyIcon = () => (
+    <svg
+      className="w-6 h-6 text-green-500"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+    >
+      <path d="M6 2h12v3h2v2c0 2-1 3-2 3h-1v7c0 2-1 3-3 3h-4c-2 0-3-1-3-3v-7h-1c-1 0-2-1-2-3V7h2V2z" />
+      <path d="M9 17v2h6v-2" />
+      <path d="M10 19v2h4v-2" />
+    </svg>
+  );
   return (
     <>
       <div className="container">
@@ -148,20 +192,23 @@ const CoachBioSection = () => {
               <h2 className="text-lg text-center font-heading font-normal mb-4">
                 Key Accomplishments
               </h2>
-                <div className="max-w-2xl">
-                  <div className="space-y-6">
-                    {qualifications.map((item, index) => (
-                      <div key={index} className="flex gap-4 border rounded-xl p-3">
-                        <div className="shrink-0 pt-1">{item.icon}</div>
-                        <div className="flex-1">
-                          <p className="text-white text-[12px] leading-relaxed">
-                            {item.text}
-                          </p>
-                        </div>
+              <div className="max-w-2xl">
+                <div className="space-y-6">
+                  {qualifications.map((item, index) => (
+                    <div
+                      key={index}
+                      className="flex gap-4 border rounded-xl p-3"
+                    >
+                      <div className="shrink-0 pt-1">{item.icon}</div>
+                      <div className="flex-1">
+                        <p className="text-white text-[12px] leading-relaxed">
+                          {item.text}
+                        </p>
                       </div>
-                    ))}
-                  </div>
+                    </div>
+                  ))}
                 </div>
+              </div>
             </div>
 
             {/* Languages */}
@@ -172,37 +219,49 @@ const CoachBioSection = () => {
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between items-center border-b pb-2">
                   <span>Portuguese</span>
-                  <span className="text-primary text-xs border p-2 rounded bg-green-600/20 border-green-500">NATIVE</span>
+                  <span className="text-primary text-xs border p-2 rounded bg-green-600/20 border-green-500">
+                    NATIVE
+                  </span>
                 </div>
                 <div className="flex justify-between items-center border-b pb-2">
                   <span>English</span>
-                  <span className="text-blue text-xs border p-2 rounded bg-blue-600/20 border-blue-500">FLUENT</span>
+                  <span className="text-blue text-xs border p-2 rounded bg-blue-600/20 border-blue-500">
+                    FLUENT
+                  </span>
                 </div>
                 <div className="flex justify-between items-center border-b pb-2">
                   <span>Spanish</span>
-                  <span className="text-orange text-xs border p-2 rounded bg-orange-600/20 border-orange-500">INTERMEDIATE</span>
+                  <span className="text-orange text-xs border p-2 rounded bg-orange-600/20 border-orange-500">
+                    INTERMEDIATE
+                  </span>
                 </div>
               </div>
             </div>
-
-            {/* Position Map */}
+            {/* MAJOR TROPHIES */}
             <div className="p-6">
-              <div className="flex gap-2 mb-4">
-                <button
-                  onClick={() => setIsPositionMap(true)}
-                  className={`${isPositionMap ? "px-3 py-1 bg-primary text-black text-xs text-center font-heading font-normal rounded" : "px-3 py-1 border border-border text-xs rounded hover:bg-gray-900"}`}
-                >
-                  Position Map
-                </button>
-
-                <button
-                  onClick={() => setIsPositionMap(false)}
-                  className={`${!isPositionMap ? "px-3 py-1 bg-primary text-black text-xs text-center font-heading font-normal rounded" : "px-3 py-1 border border-border text-xs rounded hover:bg-gray-900"}`}
-                >
-                  Futsal Map
-                </button>
+              <h2 className="text-lg text-center font-heading font-normal mb-4">
+                MAJOR TROPHIES
+              </h2>
+              <div className="">
+                <div className="space-y-4">
+                  {tournaments.map((tournament, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between py-3 px-4 border-b border-slate-800"
+                    >
+                      <p className="text-white text-[12px] font-medium tracking-wide">
+                        {tournament.name}
+                      </p>
+                      <div className="flex items-center gap-3">
+                        <span className="text-white text-sm font-semibold">
+                          {tournament.count}
+                        </span>
+                        <IconTrophy />
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <Image src={positionMap} alt="position map" />
             </div>
           </div>
 
@@ -273,156 +332,28 @@ const CoachBioSection = () => {
           </div>
 
           {/* RIGHT COLUMN */}
-          <div className="col-span-3 space-y-6 bg-cardBg">
-            {/* Strength */}
+          <div className="col-span-3 space-y-6 bg-cardBg h-fit">
+            {/* Current Season Stats */}
             <div className="p-6">
               <h2 className="text-lg text-center font-heading font-normal mb-4">
-                Strength
+                Current Season Stats
               </h2>
-              <div className="space-y-2 text-sm">
-                <div>
-                  <div className="flex justify-between mb-1">
-                    <span>Pace</span>
-                    <span className="text-primary">82</span>
-                  </div>
-                  <div className="h-2 bg-gray-700 rounded overflow-hidden">
-                    <div
-                      className="h-full bg-primary"
-                      style={{ width: "82%" }}
-                    ></div>
-                  </div>
+              <div className="text-sm space-y-4">
+                {/*  */}
+                <div className="border flex flex-col min-w-37.5 items-center justify-center p-3 rounded-xl w-fit mx-auto">
+                  <h2 className="text-2xl font-medium text-primary mb-2">32</h2>
+                  <h3 className="text-[12px]">MATCHES COACHED</h3>
                 </div>
-                <div>
-                  <div className="flex justify-between mb-1">
-                    <span>Shooting</span>
-                    <span className="text-primary">84</span>
-                  </div>
-                  <div className="h-2 bg-gray-700 rounded overflow-hidden">
-                    <div
-                      className="h-full bg-primary"
-                      style={{ width: "84%" }}
-                    ></div>
-                  </div>
+                {/*  */}
+                <div className="border flex flex-col min-w-37.5 items-center justify-center p-3 rounded-xl w-fit mx-auto">
+                  <h2 className="text-2xl font-medium text-primary mb-2">21</h2>
+                  <h3 className="text-[12px]">Win</h3>
                 </div>
-                <div>
-                  <div className="flex justify-between mb-1">
-                    <span>Passing</span>
-                    <span className="text-primary">89</span>
-                  </div>
-                  <div className="h-2 bg-gray-700 rounded overflow-hidden">
-                    <div
-                      className="h-full bg-primary"
-                      style={{ width: "89%" }}
-                    ></div>
-                  </div>
+                {/*  */}
+                <div className="border flex flex-col min-w-37.5 items-center justify-center p-3 rounded-xl w-fit mx-auto">
+                  <h2 className="text-2xl font-medium text-primary mb-2">9</h2>
+                  <h3 className="text-[12px]">CLEAN SHEETS</h3>
                 </div>
-                <div>
-                  <div className="flex justify-between mb-1">
-                    <span>Dribbling</span>
-                    <span className="text-primary">85</span>
-                  </div>
-                  <div className="h-2 bg-gray-700 rounded overflow-hidden">
-                    <div
-                      className="h-full bg-primary"
-                      style={{ width: "85%" }}
-                    ></div>
-                  </div>
-                </div>
-                <div>
-                  <div className="flex justify-between mb-1">
-                    <span>Defending</span>
-                    <span className="text-primary">78</span>
-                  </div>
-                  <div className="h-2 bg-gray-700 rounded overflow-hidden">
-                    <div
-                      className="h-full bg-primary"
-                      style={{ width: "78%" }}
-                    ></div>
-                  </div>
-                </div>
-                <div>
-                  <div className="flex justify-between mb-1">
-                    <span>Physical</span>
-                    <span className="text-primary">70</span>
-                  </div>
-                  <div className="h-2 bg-gray-700 rounded overflow-hidden">
-                    <div
-                      className="h-full bg-primary"
-                      style={{ width: "70%" }}
-                    ></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Performance Metrics */}
-            <div className="p-6">
-              <h2 className="text-lg text-center font-heading font-normal mb-4">
-                Performance Metrics
-              </h2>
-              <div className="space-y-2 text-sm">
-                <div>
-                  <div className="flex justify-between mb-1">
-                    <span>Pass Accuracy</span>
-                    <span className="text-primary">92%</span>
-                  </div>
-                  <div className="h-2 bg-gray-700 rounded overflow-hidden">
-                    <div
-                      className="h-full bg-primary"
-                      style={{ width: "92%" }}
-                    ></div>
-                  </div>
-                </div>
-                <div>
-                  <div className="flex justify-between mb-1">
-                    <span>Shoot Accuracy</span>
-                    <span className="text-primary">78%</span>
-                  </div>
-                  <div className="h-2 bg-gray-700 rounded overflow-hidden">
-                    <div
-                      className="h-full bg-primary"
-                      style={{ width: "78%" }}
-                    ></div>
-                  </div>
-                </div>
-                <div>
-                  <div className="flex justify-between mb-1">
-                    <span>Dribble Success</span>
-                    <span className="text-primary">85%</span>
-                  </div>
-                  <div className="h-2 bg-gray-700 rounded overflow-hidden">
-                    <div
-                      className="h-full bg-primary"
-                      style={{ width: "85%" }}
-                    ></div>
-                  </div>
-                </div>
-                <div>
-                  <div className="flex justify-between mb-1">
-                    <span>Tackle Success</span>
-                    <span className="text-primary">72%</span>
-                  </div>
-                  <div className="h-2 bg-gray-700 rounded overflow-hidden">
-                    <div
-                      className="h-full bg-primary"
-                      style={{ width: "72%" }}
-                    ></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Market Value */}
-            <div className="p-6">
-              <h2 className="text-lg text-center font-heading font-normal mb-4">
-                Market Value
-              </h2>
-              <div className="mb-4">
-                <div className="text-3xl font-bold text-primary mb-1">$45M</div>
-                <p className="text-xs text-gray-400">Current Market Value</p>
-                <p className="text-xs text-primary mt-2">
-                  📈 5 Mln last season
-                </p>
               </div>
             </div>
 
@@ -437,74 +368,101 @@ const CoachBioSection = () => {
                 </span>
               </div>
               <div className="space-y-3 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Contract Until</span>
-                  <span>June, 2026</span>
+                <div className="flex justify-between border-b pb-2">
+                  <span className="text-gray-400">
+                    Football Agent Contract:
+                  </span>
+                  <span>No</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Agent</span>
-                  <span>John Morrison</span>
+                <div className="flex justify-between border-b pb-2">
+                  <span className="text-gray-400">Transfer fees</span>
+                  <span>$ 250000.00</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Agency</span>
-                  <span>Elite Sports Mgmt</span>
+                <div className="flex justify-between border-b pb-2">
+                  <span className="text-gray-400">Salary</span>
+                  <span>$ 25000.00</span>
                 </div>
               </div>
             </div>
 
-            {/* Career Highlights */}
+            {/* CUP PLAYED */}
             <div className="p-6">
               <h2 className="text-lg text-center font-heading font-normal mb-4">
-                Career Highlights
+                CUP PLAYED
               </h2>
               <div className="space-y-2 text-xs text-gray-300">
                 <div className="flex gap-2">
-                  <Image src={trofeeIcon} alt="trofeeImage" />
-                  <span>2019 - BRAZILIAN CHAMPIONSHIP - FLAMENGO</span>
+                  <Image src={trophyIcon} alt="trophyImage" />
+                  <span>2021 - K10 FOOTBALL LEAGUE - K10 FOOTBALL FC</span>
                 </div>
                 <div className="flex gap-2">
-                  <Image src={trofeeIcon} alt="trofeeImage" />
-                  <span>2010 - CAMPEONATA - PAULISTA - CORINTHIANS</span>
+                  <Image src={trophyIcon} alt="trophyImage" />
+                  <span>2019 - K10 FOOTBALL CUP - K10 FOOTBALL FC</span>
                 </div>
                 <div className="flex gap-2">
-                  <Image src={trofeeIcon} alt="trofeeImage" />
-                  <span>2015 - BRAZILIAN CHAMPIONSHIP - FLAMENGO FC</span>
+                  <Image src={trophyIcon} alt="trophyImage" />
+                  <span>2018 - K10 FOOTBALL CUP - K10 FOOTBALL FC</span>
                 </div>
                 <div className="flex gap-2">
-                  <Image src={trofeeIcon} alt="trofeeImage" />
-                  <span>2014 PAULISTA CUP - SAO PAULO FC</span>
+                  <Image src={trophyIcon} alt="trophyImage" />
+                  <span>2017 - K10 FOOTBALL CUP - K10 FOOTBALL FC</span>
                 </div>
                 <div className="flex gap-2">
-                  <Image src={trofeeIcon} alt="trofeeImage" />
-                  <span>2017/2020 - CAMPEONATO CARIOCA - VASCO FC</span>
+                  <Image src={trophyIcon} alt="trophyImage" />
+                  <span>2016 - K10 FOOTBALL CUP - K10 FOOTBALL FC</span>
                 </div>
               </div>
             </div>
 
-            {/* Current Season Stats */}
+            {/* Key Skills */}
             <div className="p-6">
               <h2 className="text-lg text-center font-heading font-normal mb-6">
-                Current Season Stats
+                Key Skills
               </h2>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-primary">28</div>
-                  <div className="text-xs text-gray-400 mt-1">MATCHES</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-primary">8</div>
-                  <div className="text-xs text-gray-400 mt-1">GOALS</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-primary">16</div>
-                  <div className="text-xs text-gray-400 mt-1">ASSISTS</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-primary">8.4</div>
-                  <div className="text-xs text-gray-400 mt-1">
-                    AVERAGE RATING
+              <div className="space-y-4">
+                <h3 className="text-center border-b pb-3 ">
+                  Youth Development
+                </h3>
+                <h3 className="text-center border-b pb-3 ">Leadership</h3>
+                <h3 className="text-center border-b pb-3 ">Adaptability</h3>
+                <h3 className="text-center border-b pb-3 ">
+                  Constructive Feedback
+                </h3>
+              </div>
+            </div>
+            {/* Clubs */}
+            <div className="p-6">
+              <h2 className="text-lg text-center font-heading font-normal mb-6">
+                Clubs
+              </h2>
+              <div className="space-y-4">
+                <Card className="p-5">
+                  <div className="flex items-center gap-3">
+                    <Image src={clubImage} className="w-12" alt="clubs image" />
+                    <div>
+                      <h3 className="font-bold">Manchester City</h3>
+                      <p className="text-[12px] text-gray-400">2020-present</p>
+                    </div>
                   </div>
-                </div>
+                </Card>
+                <Card className="p-5">
+                  <div className="flex items-center gap-3">
+                    <Image src={clubImage} className="w-12" alt="clubs image" />
+                    <div>
+                      <h3 className="font-bold">Manchester City</h3>
+                      <p className="text-[12px] text-gray-400">2020-present</p>
+                    </div>
+                  </div>
+                </Card>
+                <Card className="p-5">
+                  <div className="flex items-center gap-3">
+                    <Image src={clubImage} className="w-12" alt="clubs image" />
+                    <div>
+                      <h3 className="font-bold">Manchester City</h3>
+                      <p className="text-[12px] text-gray-400">2020-present</p>
+                    </div>
+                  </div>
+                </Card>
               </div>
             </div>
           </div>

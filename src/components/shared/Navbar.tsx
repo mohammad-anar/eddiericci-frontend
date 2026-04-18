@@ -7,16 +7,18 @@ import { ChevronDown, Globe, Menu } from 'lucide-react'
 import Image from 'next/image'
 import ButtonPrimary from './ButtonPrimary'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
+  const pathName = usePathname();
 
   const navLinks = [
-    { label: 'Home', href: '/', isActive: true },
-    { label: 'Services', href: '/services', isActive: false },
-    { label: 'CVs', href: '/cvs', isActive: false },
-    { label: 'K10 Plans', href: 'k10plans', isActive: false },
-    { label: 'About', href: '/about', isActive: false },
+    { label: 'Home', href: '/' },
+    { label: 'Services', href: '/services'},
+    { label: 'CVs', href: '/cvs'},
+    { label: 'K10 Plans', href: 'k10plans'},
+    { label: 'About', href: '/about'},
   ]
 
   return (
@@ -31,17 +33,13 @@ export function Navbar() {
           {/* Center Navigation - Hidden on mobile */}
           <div className="hidden lg:flex items-center gap-8">
             {navLinks.map((link) => (
-              <a
+              <Link
                 key={link.label}
                 href={link.href}
-                className={`text-sm transition ${
-                  link.isActive
-                    ? 'text-green-400 font-medium border-b-2 border-green-400 pb-1'
-                    : 'text-gray-300 hover:text-white'
-                }`}
+                className={`text-sm transition hover:text-green-400 hover:font-medium hover:border-b-2 hover:border-green-400 pb-1 ${link.href === pathName? "text-green-400 font-medium border-b-2 border-green-400 pb-1": ""}`}
               >
                 {link.label}
-              </a>
+              </Link>
             ))}
           </div>
 
@@ -52,7 +50,7 @@ export function Navbar() {
               <span className="text-sm">EN</span>
               <ChevronDown className="w-3 h-3" />
             </button>
-            <Button variant="ghost" className="hidden lg:block text-gray-300 hover:text-white hover:bg-transparent">
+            <Button variant="ghost" className="hidden cursor-pointer hover:shadow-sm shadow-primary lg:block text-gray-300 hover:text-white hover:bg-transparent">
               Login
             </Button>
             <ButtonPrimary text="Join Now"  />
@@ -76,11 +74,7 @@ export function Navbar() {
                         key={link.label}
                         href={link.href}
                         onClick={() => setIsOpen(false)}
-                        className={`text-sm font-medium transition ${
-                          link.isActive
-                            ? 'text-green-400'
-                            : 'text-gray-300 hover:text-white'
-                        }`}
+                        className={`text-sm font-medium transition`}
                       >
                         <Button className='w-full bg-gray-800 hover:bg-green-500'>
                           {link.label}

@@ -52,7 +52,7 @@ const ChooseYourRoleSection = () => {
           {roles.map((role, i) => (
             <div
               key={i}
-              className={`flex flex-col items-center text-center mt-20 col-span-4 ${
+              className={`flex flex-col cursor-pointer hover:scale-110 duration-300 items-center text-center mt-20 col-span-4 ${
                  i === 3
                   ? "lg:col-start-3"
                   : i===4

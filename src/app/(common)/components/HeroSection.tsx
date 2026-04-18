@@ -39,7 +39,7 @@ const HeroSection = () => {
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <ButtonPrimary text="Join Now" className="px-8 py-6 text-base font-semibold border-2 border-primary" />
-              <Button className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-black rounded-lg px-8 py-6 text-base font-semibold transition">
+              <Button className="bg-transparent cursor-pointer border-2 border-white text-white hover:bg-white hover:text-black rounded-lg px-8 py-6 text-base font-semibold transition">
                 Watch Demo
               </Button>
             </div>

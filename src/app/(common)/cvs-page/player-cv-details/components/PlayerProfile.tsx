@@ -27,18 +27,18 @@ const attributes: Attribute[] = [
   { name: "Reactions", score: 80, status: "Good" },
 ];
 
-const getBarColor = (status: string): string => {
-  switch (status) {
-    case "Excellent":
-      return "bg-[#00FF62]";
-    case "Good":
-      return "bg-[#FFCC00]";
-    case "Average":
-      return "bg-[#DC143C]";
-    default:
-      return "bg-[#00FF62]";
-  }
-};
+// const getBarColor = (status: string): string => {
+//   switch (status) {
+//     case "Excellent":
+//       return "bg-[#00FF62]";
+//     case "Good":
+//       return "bg-[#FFCC00]";
+//     case "Average":
+//       return "bg-[#DC143C]";
+//     default:
+//       return "bg-[#00FF62]";
+//   }
+// };
 
 const getBadgeVariant = (status: string) => {
   switch (status) {

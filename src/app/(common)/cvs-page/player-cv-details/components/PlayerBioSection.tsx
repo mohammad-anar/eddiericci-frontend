@@ -12,6 +12,8 @@ import leftLeg from "@/assets/cvs-page/id/left-leg-image.png";
 import right from "@/assets/cvs-page/id/right-legt-image.png";
 import positionMap from "@/assets/cvs-page/id/positionmap.png";
 import trofeeIcon from "@/assets/cvs-page/id/trofeeIcon.png";
+import flagFr from "@/assets/cvs-page/id/flag-fr.png";
+import flagIt from "@/assets/cvs-page/id/flag-itally.png";
 import { useState } from "react";
 
 const PlayerBioSection = () => {
@@ -47,11 +49,11 @@ const PlayerBioSection = () => {
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-400">Birth Country</span>
-                  <span>France 🇫🇷</span>
+                  <span className="flex items-center gap-2">France <Image src={flagFr} className="w-5 h-auto" alt="italy flag"/></span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-400">Dual Nationality</span>
-                  <span>Italy 🇮🇹</span>
+                  <span className="flex items-center gap-2">Italy <Image src={flagIt} className="w-5 h-auto" alt="italy flag"/></span>
                 </div>
               </div>
             </div>

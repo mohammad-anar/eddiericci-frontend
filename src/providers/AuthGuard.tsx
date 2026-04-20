@@ -10,6 +10,8 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+    const userRole = localStorage.getItem("userRole") || "player";
+    const dashboardPath = `/dashboard/${userRole}`;
 
     const isAuthPage =
       pathname.startsWith("/login") ||
@@ -17,15 +19,31 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
       pathname.startsWith("/reset-password") ||
       pathname.startsWith("/change-password");
 
-    if (!isLoggedIn && !isAuthPage) {
+    const isDashboardPage = pathname.startsWith("/dashboard");
+
+    // 1. If trying to access dashboard but NOT logged in -> Redirect to login
+    if (isDashboardPage && !isLoggedIn) {
       router.replace("/login");
     }
 
-    if (isLoggedIn && isAuthPage) {
-      router.replace("/");
+    // 2. If logged in and on an auth page -> Redirect to their specific dashboard
+    else if (isLoggedIn && isAuthPage) {
+      router.replace(dashboardPath);
     }
 
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+    // 3. Role-based protection: If logged in but trying to access another role's dashboard
+    else if (isLoggedIn && isDashboardPage && !pathname.startsWith(dashboardPath)) {
+      const roles = ["player", "coach", "academy", "club", "agent", "admin"];
+      const tryingToAccessOtherRole = roles.some(
+        (role) => role !== userRole && pathname.startsWith(`/dashboard/${role}`)
+      );
+
+      if (tryingToAccessOtherRole) {
+        router.replace(dashboardPath);
+      }
+    }
+
+    // All other cases (like accessing / or /about when not logged in) are allowed
     setChecking(false);
   }, [pathname, router]);
 

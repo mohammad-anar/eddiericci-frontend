@@ -3,6 +3,7 @@
 import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 import logo from "@/assets/logo.png";
 import { NavDocuments } from "@/components/nav-documents";
@@ -31,6 +32,15 @@ type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
 };
 
 export function AppSidebar({ sidebarItems, tier, ...props }: AppSidebarProps) {
+  const router = useRouter();
+
+  const handleLogout = () => {
+    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("userEmail");
+    localStorage.removeItem("userRole");
+    router.replace("/login");
+  };
+
   return (
     <Sidebar collapsible="offcanvas" className="border-r-0 bg-[#111111]" {...props}>
       <SidebarHeader className="pt-6 px-4 bg-[#111111]">
@@ -57,11 +67,14 @@ export function AppSidebar({ sidebarItems, tier, ...props }: AppSidebarProps) {
           </div>
         )}
 
-        <button className="flex items-center gap-3 text-[#E31B23] hover:text-red-400 transition-colors px-2 mb-4">
+        <button 
+          onClick={handleLogout}
+          className="flex items-center gap-3 text-[#E31B23] hover:text-red-400 transition-colors px-2 mb-4 cursor-pointer"
+        >
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="rotate-180"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
           <span className="font-medium">Logout</span>
         </button>
       </div>
     </Sidebar>
   );
-}
+}

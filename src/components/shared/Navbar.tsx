@@ -50,9 +50,11 @@ export function Navbar() {
               <span className="text-sm">EN</span>
               <ChevronDown className="w-3 h-3" />
             </button>
-            <Button variant="ghost" className="hidden cursor-pointer hover:shadow-sm shadow-primary lg:block text-gray-300 hover:text-white hover:bg-transparent">
-              Login
-            </Button>
+            <Link href="/login">
+              <Button variant="ghost" className="hidden lg:block cursor-pointer hover:shadow-sm shadow-primary text-gray-300 hover:text-white hover:bg-transparent">
+                Login
+              </Button>
+            </Link>
             <ButtonPrimary text="Join Now"  />
 
             {/* Mobile Menu Button */}
@@ -70,7 +72,7 @@ export function Navbar() {
                   {/* Mobile Navigation Links */}
                   <div className="flex flex-col gap-4 px-6">
                     {navLinks.map((link) => (
-                      <a
+                      <Link
                         key={link.label}
                         href={link.href}
                         onClick={() => setIsOpen(false)}
@@ -79,7 +81,7 @@ export function Navbar() {
                         <Button className='w-full bg-gray-800 hover:bg-green-500'>
                           {link.label}
                         </Button>
-                      </a>
+                      </Link>
                     ))}
                   </div>
 
@@ -94,9 +96,11 @@ export function Navbar() {
 
                   {/* Mobile Action Buttons */}
                   <div className="flex flex-col gap-3 pt-4 border-t border-gray-700 px-6">
-                    <Button variant="outline" className="w-full bg-transparent border-gray-600 hover:bg-green-500 justify-center text-gray-300 hover:text-white">
-                      Login
-                    </Button>
+                    <Link href="/login" onClick={() => setIsOpen(false)}>
+                      <Button variant="outline" className="w-full bg-transparent border-gray-600 hover:bg-green-500 justify-center text-gray-300 hover:text-white">
+                        Login
+                      </Button>
+                    </Link>
                     <ButtonPrimary text="Join Now" className="w-full" />
                   </div>
                 </div>

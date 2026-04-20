@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Audiowide } from "next/font/google";
 import "./globals.css";
+import AuthGuard from "@/providers/AuthGuard";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -46,10 +47,11 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={`${inter.variable} ${audiowide.variable} antialiased`}
-
         cz-shortcut-listen="true"
       >
-        {children}
+        <AuthGuard>
+          {children}
+        </AuthGuard>
       </body>
     </html>
   );

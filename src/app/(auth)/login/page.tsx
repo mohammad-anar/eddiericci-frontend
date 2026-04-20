@@ -15,7 +15,7 @@ interface LoginForm {
 const REDIRECT_MAP: Record<string, string> = {
   "player@gmail.com": "/dashboard/player",
   "coach@gmail.com": "/dashboard/coach",
-  "academy@gmail.com": "/dashboard/academy",
+  "academy@gmail.com": "/dashboard/academy/analysis",
   "club@gmail.com": "/dashboard/club",
   "agent@gmail.com": "/dashboard/agent",
   "admin@gmail.com": "/dashboard/admin",
@@ -44,7 +44,7 @@ export default function LoginPage() {
 
     localStorage.setItem("isLoggedIn", "true");
     localStorage.setItem("userEmail", email);
-    localStorage.setItem("userRole", redirectPath.split("/").pop() || "player");
+    localStorage.setItem("userRole", redirectPath.startsWith("/dashboard/") ? redirectPath.split("/")[2] : "player");
 
     router.push(redirectPath);
   };
@@ -92,6 +92,17 @@ export default function LoginPage() {
               {errors.email.message}
             </p>
           )}
+          {!errors.email && (
+            <div className="text-[10px] ml-1 mt-1 leading-relaxed">
+              <span className="text-gray-500">Test Emails: </span>
+              {Object.keys(REDIRECT_MAP).map((email, i) => (
+                <span key={email}>
+                  <span className="text-primary/70">{email}</span>
+                  {i < Object.keys(REDIRECT_MAP).length - 1 && <span className="text-gray-600">, </span>}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Password Field */}
@@ -128,6 +139,11 @@ export default function LoginPage() {
           {errors.password && (
             <p className="text-red-500 text-[10px] font-medium uppercase tracking-wider ml-1 mt-1">
               {errors.password.message}
+            </p>
+          )}
+          {!errors.password && (
+            <p className="text-gray-500 text-[10px] ml-1 mt-1">
+              Test Password: <span className="text-primary/80">1 to 6</span>
             </p>
           )}
         </div>

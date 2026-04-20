@@ -11,7 +11,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
     const userRole = localStorage.getItem("userRole") || "player";
-    const dashboardPath = `/dashboard/${userRole}`;
+    const dashboardPath = userRole === "academy" ? "/dashboard/academy/analysis" : `/dashboard/${userRole}`;
 
     const isAuthPage =
       pathname.startsWith("/login") ||

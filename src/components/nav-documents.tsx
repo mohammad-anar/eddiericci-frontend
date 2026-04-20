@@ -36,50 +36,20 @@ export function NavDocuments({
             className={cn(
               "mb-2",
               pathName === item.url
-                ? "bg-amber-400 rounded-sm text-white"
-                : "text-black hover:bg-gray-200 hover:text-black rounded-sm",
+                ? "bg-[#E31B23] rounded-lg text-white"
+                : "text-gray-400 hover:bg-white/5 hover:text-white rounded-lg",
             )}
             key={item.name}
           >
-            <SidebarMenuButton className="py-5 hover:bg-transparent" asChild>
+            <SidebarMenuButton className="py-6 hover:bg-transparent" asChild>
               <Link href={item.url}>
                 <div className="w-7">
-                  <item.icon size={22} />
+                  <item.icon size={24} />
                 </div>
 
-                <span className="text-[16px]">{item.name}</span>
+                <span className="text-[15px] font-medium">{item.name}</span>
               </Link>
             </SidebarMenuButton>
-            {/* <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuAction
-                  showOnHover
-                  className="data-[state=open]:bg-accent rounded-sm"
-                >
-                  <IconDots />
-                  <span className="sr-only">More</span>
-                </SidebarMenuAction>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                className="w-24 rounded-lg"
-                side={isMobile ? "bottom" : "right"}
-                align={isMobile ? "end" : "start"}
-              >
-                <DropdownMenuItem>
-                  <IconFolder />
-                  <span>Open</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <IconShare3 />
-                  <span>Share</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem variant="destructive">
-                  <IconTrash />
-                  <span>Delete</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu> */}
           </SidebarMenuItem>
         ))}
         {/* <SidebarMenuItem>

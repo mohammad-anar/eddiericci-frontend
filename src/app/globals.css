@@ -72,7 +72,7 @@
   --color-purple: var(--purple);
   --color-aqua: var(--aqua);
   --color-gold: var(--gold);
-  --color-cardBg: var(--cardBg); /* ✅ FIXED */
+  --color-cardBg: var(--cardBg);
 
   --color-player-card-1: var(--player-card-1);
   --color-player-card-2: var(--player-card-2);

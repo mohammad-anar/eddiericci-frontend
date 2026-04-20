@@ -1,212 +1,67 @@
 "use client";
 
 import * as React from "react";
-import {
-  IconBrandProducthunt,
-  IconCamera,
-  IconCategory,
-  IconChartBar,
-  IconDashboard,
-  IconDashboardFilled,
-  IconDatabase,
-  IconFileAi,
-  IconFileDescription,
-  IconFileWord,
-  IconFolder,
-  IconHelp,
-  IconInnerShadowTop,
-  IconList,
-  IconListDetails,
-  IconMenuOrder,
-  IconReport,
-  IconSearch,
-  IconSettings,
-  IconUsers,
-  IconUsersGroup,
-} from "@tabler/icons-react";
+import Image from "next/image";
+import Link from "next/link";
 
+import logo from "@/assets/logo.png";
 import { NavDocuments } from "@/components/nav-documents";
-import { NavMain } from "@/components/nav-main";
-import { NavSecondary } from "@/components/nav-secondary";
-import { NavUser } from "@/components/nav-user";
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import Link from "next/link";
-import Image from "next/image";
-import logo from "@/assets/logo.png";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import type { Icon } from "@tabler/icons-react";
 
-export const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  navMain: [
-    {
-      title: "Dashboard",
-      url: "#",
-      icon: IconDashboard,
-    },
-    {
-      title: "Lifecycle",
-      url: "#",
-      icon: IconListDetails,
-    },
-    {
-      title: "Analytics",
-      url: "#",
-      icon: IconChartBar,
-    },
-    {
-      title: "Projects",
-      url: "#",
-      icon: IconFolder,
-    },
-    {
-      title: "Team",
-      url: "#",
-      icon: IconUsers,
-    },
-  ],
-  navClouds: [
-    {
-      title: "Capture",
-      icon: IconCamera,
-      isActive: true,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Proposal",
-      icon: IconFileDescription,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Prompts",
-      icon: IconFileAi,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-  ],
-  navSecondary: [
-    {
-      title: "Settings",
-      url: "#",
-      icon: IconSettings,
-    },
-    {
-      title: "Get Help",
-      url: "#",
-      icon: IconHelp,
-    },
-    {
-      title: "Search",
-      url: "#",
-      icon: IconSearch,
-    },
-  ],
-  documents: [
-    {
-      name: "Dashboard",
-      url: "/",
-      icon: IconDashboard,
-    },
-    {
-      name: "Category Management",
-      url: "/category",
-      icon: IconCategory,
-    },
-    {
-      name: "Product Management",
-      url: "/product",
-      icon: IconBrandProducthunt,
-    },
-    {
-      name: "Order Management",
-      url: "/order",
-      icon: IconMenuOrder,
-    },
-    {
-      name: "User List",
-      url: "/user",
-      icon: IconUsersGroup,
-    },
-    {
-      name: "Banner",
-      url: "/banner",
-      icon: IconList,
-    },
-    {
-      name: "Settings",
-      url: "/settings",
-      icon: IconSettings,
-    },
-  ],
+export type SidebarItem = {
+  name: string;
+  url: string;
+  icon: Icon;
 };
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
+  sidebarItems: SidebarItem[];
+  tier?: {
+    name: string;
+    color: string;
+  };
+};
+
+export function AppSidebar({ sidebarItems, tier, ...props }: AppSidebarProps) {
   return (
-    <Sidebar collapsible="offcanvas" {...props}>
-      <SidebarHeader>
+    <Sidebar collapsible="offcanvas" className="border-r-0 bg-[#111111]" {...props}>
+      <SidebarHeader className="pt-6 px-4 bg-[#111111]">
         <SidebarMenu>
           <SidebarMenuItem>
-            {/* <SidebarMenuButton asChild className=" flex items-center border"> */}
-            <div className="flex items-center px-8 pb-2">
-              <Link href="/" className="block w-20 h-20">
-                <Image
-                  src={logo}
-                  className="w-full h-full"
-                  alt="Marbapp logo"
-                />
-              </Link>
-            </div>
-            {/* </SidebarMenuButton> */}
+            <Link href="/" className="flex items-center gap-2 px-2">
+              <div className="flex h-10 w-full items-center justify-start">
+                <Image src={logo} className="h-full w-auto object-contain" alt="K10 football logo" />
+              </div>
+            </Link>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent>
-        {/* <NavMain items={data.navMain} /> */}
-        <NavDocuments items={data.documents} />
-        {/* <NavSecondary items={data.navSecondary} className="mt-auto" /> */}
+      <SidebarContent className="px-2 mt-4 bg-[#111111] overflow-hidden">
+        <ScrollArea className="flex-1 px-2">
+          <NavDocuments items={sidebarItems} />
+        </ScrollArea>
       </SidebarContent>
-      {/* <SidebarFooter>
-        <NavUser user={data.user} />
-      </SidebarFooter> */}
+      <div className="mt-auto p-4 flex flex-col gap-6 bg-[#111111]">
+        {tier && (
+          <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+            <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Current Tier</p>
+            <p className="text-xl font-heading font-bold italic" style={{ color: tier.color }}>{tier.name}</p>
+          </div>
+        )}
+
+        <button className="flex items-center gap-3 text-[#E31B23] hover:text-red-400 transition-colors px-2 mb-4">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="rotate-180"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+          <span className="font-medium">Logout</span>
+        </button>
+      </div>
     </Sidebar>
   );
 }

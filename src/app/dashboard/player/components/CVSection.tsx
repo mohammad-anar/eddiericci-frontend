@@ -15,12 +15,12 @@ export default function CVSection() {
     <div className="">
       <div className=" mx-auto">
         {/* Main Card */}
-        <div className="border border-gray-800 rounded-2xl p-8 bg-gray-900 bg-opacity-50">
+        <div className="border  rounded-2xl p-8  bg-opacity-50">
           {/* Title */}
           <h1 className="text-3xl font-heading text-white mb-8">My CV</h1>
 
           {/* Tabs/Sections */}
-          <div className="flex items-center gap-8 mb-8 pb-8 border-b border-gray-800">
+          <div className="flex items-center gap-8 mb-8 pb-8 border-b ">
             {sections.map((section) => (
               <div key={section.name} className="flex items-center gap-2">
                 <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
@@ -32,7 +32,7 @@ export default function CVSection() {
           {/* Content Section */}
           <div className="flex items-center gap-8">
             {/* Left - Profile Completion */}
-            <div className="border border-gray-700 rounded-lg p-6 bg-gray-800 bg-opacity-50 min-w-fit">
+            <div className="border rounded-lg p-6  min-w-fit">
               <p className="text-gray-400 text-sm mb-4">Profile Completion</p>
               <p className="text-red-600 text-3xl font-bold mb-4">85%</p>
               <div className="w-48 bg-gray-700 rounded-full h-2 overflow-hidden">

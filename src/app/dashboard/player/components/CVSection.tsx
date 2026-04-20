@@ -23,7 +23,7 @@ export default function CVSection() {
           <div className="flex items-center gap-8 mb-8 pb-8 border-b ">
             {sections.map((section) => (
               <div key={section.name} className="flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
+                <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
                 <span className="text-gray-300 text-sm">{section.name}</span>
               </div>
             ))}

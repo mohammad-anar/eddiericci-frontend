@@ -37,7 +37,7 @@ export function AppSidebar({ sidebarItems, tier, ...props }: AppSidebarProps) {
         <SidebarMenu>
           <SidebarMenuItem>
             <Link href="/" className="flex items-center gap-2 px-2">
-              <div className="flex h-10 w-full items-center justify-start">
+              <div className="flex h-full w-full items-center justify-start">
                 <Image src={logo} className="h-full w-auto object-contain" alt="K10 football logo" />
               </div>
             </Link>

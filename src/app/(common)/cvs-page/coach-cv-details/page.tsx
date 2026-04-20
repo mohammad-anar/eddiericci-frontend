@@ -1,7 +1,6 @@
-import React from "react";
-import CoachBioSection from "./components/CoachBioSection";
 import ImageCarousel from "../../components/ImageCarousel";
 import StartJourneySection from "../../components/StartJourneySection";
+import CoachBioSection from "./components/CoachBioSection";
 
 const CoachCVPage = () => {
   return (

@@ -4,6 +4,7 @@ import PlayerBioSection from "./components/PlayerBioSection";
 import RightSideContent from "./components/RightSideContent";
 import MyVideosSection from "@/app/(common)/cvs-page/player-cv-details/components/MyVideoSection";
 import CVSection from "./components/CVSection";
+import GameReportSection from "./components/GaMeReportSection";
 
 const PlayerDashboard = () => {
   return (
@@ -11,10 +12,11 @@ const PlayerDashboard = () => {
       {/* left  */}
       <div className="xl:col-span-5 h-full">
         <PlayerBioSection />
-        <PerformanceChart/>
-        <CVSection/>
-        <MyImagesSection/>
-        <MyVideosSection/>
+        <PerformanceChart />
+        <CVSection />
+        <MyImagesSection />
+        <MyVideosSection />
+        <GameReportSection />
       </div>
       {/* right */}
       <div className="xl:col-span-2 h-full">

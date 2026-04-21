@@ -45,7 +45,7 @@ export default function GameReportSection() {
                   <tr key={report.id} className="border-b border-gray-700 hover:bg-gray-800 hover:bg-opacity-50 transition">
                     <td className="px-4 py-6 text-sm">
                       <div className="flex items-center gap-3">
-                        <FileText className="w-5 h-5 text-red-600 flex-shrink-0" />
+                        <FileText className="w-5 h-5 text-red-600 shrink-0" />
                         <span className="text-red-600 font-semibold">{report.opponent}</span>
                       </div>
                     </td>

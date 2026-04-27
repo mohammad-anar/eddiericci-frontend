@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Audiowide } from "next/font/google";
+import { Inter, Audiowide, Orbitron } from "next/font/google";
 import "./globals.css";
 import AuthGuard from "@/providers/AuthGuard";
 
@@ -10,8 +10,13 @@ const inter = Inter({
 
 const audiowide = Audiowide({
   subsets: ["latin"],
-  weight: "400", // Audiowide only has 400
+  weight: "400",
   variable: "--font-audiowide",
+});
+
+const orbitron = Orbitron({
+  subsets: ["latin"],
+  variable: "--font-orbitron",
 });
 
 
@@ -46,7 +51,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.variable} ${audiowide.variable} antialiased`}
+        className={`${inter.variable} ${audiowide.variable} ${orbitron.variable} antialiased`}
         cz-shortcut-listen="true"
       >
         <AuthGuard>

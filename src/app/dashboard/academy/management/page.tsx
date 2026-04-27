@@ -137,17 +137,17 @@ export default function AcademyManagementPage() {
 
           <DashboardSidebarPanel title="Clubs Interested" icon={<IconHeartFilled size={24} />}>
             <DashboardSidebarItem 
-              avatar="https://upload.wikimedia.org/wikipedia/en/thumb/e/eb/Manchester_City_FC_badge.svg/1200px-Manchester_City_FC_badge.svg.png"
+              avatar="/Manchester-City-F.C-Transparent-File 1.png"
               title="Manchester City"
               subtitle="Viewed your profile"
             />
             <DashboardSidebarItem 
-              avatar="https://upload.wikimedia.org/wikipedia/en/thumb/0/0c/Liverpool_FC.svg/1200px-Liverpool_FC.svg.png"
+              avatar="/pngegg.png"
               title="Liverpool FC"
               subtitle="Viewed your profile"
             />
             <DashboardSidebarItem 
-              avatar="https://upload.wikimedia.org/wikipedia/en/thumb/c/cc/Chelsea_FC.svg/1200px-Chelsea_FC.svg.png"
+              avatar="/pngegg (2).png"
               title="Chelsea FC"
               subtitle="Viewed your profile"
             />

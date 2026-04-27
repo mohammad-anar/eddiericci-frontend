@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# K10 Football - AI-Powered Football Network
 
-## Getting Started
+K10 Football is the world's first validated football network, designed to connect players, coaches, clubs, agents, and academies through verified achievements and AI-powered matching. Built with a modern, high-performance tech stack, it provides a seamless and data-driven experience for the global football ecosystem.
 
-First, run the development server:
+## 🚀 Features
+
+- **Role-Based Dashboards**: Tailored experiences for Players, Coaches, Clubs, Agents, Academies, and Admins.
+- **Verified Achievements**: A secure system to track and validate footballing milestones.
+- **AI-Powered Matching**: Intelligent algorithms to connect talent with opportunities.
+- **Real-time Analytics**: Interactive charts and data visualizations using Recharts.
+- **Advanced Data Management**: High-performance tables with filtering and sorting via TanStack Table.
+- **Responsive & Modern UI**: Built with Radix UI primitives and Tailwind CSS 4 for a premium look and feel.
+- **Dark/Light Mode**: Full theme support with `next-themes`.
+
+## 🛠️ Tech Stack
+
+- **Framework**: [Next.js 16](https://nextjs.org/) (App Router)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/)
+- **UI Components**: [Radix UI](https://www.radix-ui.com/) & [Lucide React](https://lucide.dev/)
+- **State & Forms**: [React Hook Form](https://react-hook-form.com/) & [Zod](https://zod.dev/)
+- **Data Visualization**: [Recharts](https://recharts.org/)
+- **Tables**: [TanStack Table](https://tanstack.com/table/v8)
+- **Drag & Drop**: [@dnd-kit](https://dndkit.com/)
+- **Animations**: `react-fast-marquee`, `tw-animate-css`
+
+## 📦 Getting Started
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) (Latest LTS recommended)
+- [pnpm](https://pnpm.io/) (Recommended package manager)
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/mohammad-anar/eddiericci-frontend.git
+   cd eddiericci-frontend
+   ```
+
+2. Install dependencies:
+   ```bash
+   pnpm install
+   ```
+
+3. Run the development server:
+   ```bash
+   pnpm dev
+   ```
+
+4. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## 🏗️ Project Structure
+
+- `src/app/`: Next.js App Router pages and layouts.
+  - `(auth)/`: Authentication-related routes (Login, Reset Password, etc.).
+  - `dashboard/`: Main application dashboards categorized by user roles.
+- `src/components/`: Reusable UI components (Tables, Charts, Layouts).
+- `src/hooks/`: Custom React hooks.
+- `src/lib/`: Utility functions and library configurations.
+- `src/providers/`: Context providers (AuthGuard, Theme, etc.).
+- `src/assets/`: Local assets (Styles, Images).
+- `public/`: Static assets (Icons, Favicons).
+
+## 🚀 Deployment
+
+The project is optimized for deployment on [Vercel](https://vercel.com/):
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 📄 License
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+This project is private and proprietary.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

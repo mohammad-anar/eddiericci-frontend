@@ -29,7 +29,7 @@ const managementSidebarItems = [
   { name: "Matches", url: "/dashboard/academy/management/matches", icon: IconBallFootball },
   { name: "Extra Events", url: "/dashboard/academy/management/extra-events", icon: IconStar },
   { name: "Sponsors", url: "/dashboard/academy/management/sponsors", icon: IconUsersGroup },
-  { name: "Academy News", url: "/dashboard/academy/management/news", icon: IconNews },
+  { name: "Academy News", url: "/dashboard/academy/management/academy-news", icon: IconNews },
   { name: "Success Story", url: "/dashboard/academy/management/success", icon: IconTrophy },
   { name: "Game Reports", url: "/dashboard/academy/management/reports", icon: IconFileText },
   { name: "Generate CV", url: "/dashboard/academy/management/cv", icon: IconFileText },

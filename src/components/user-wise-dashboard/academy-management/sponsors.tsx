@@ -242,10 +242,16 @@ export const SponsorsManagement = () => {
                     </span>
                   </td>
                   <td className="py-6 px-6 text-center">
-                    <div className="flex items-center justify-center gap-3">
-                      <button className="text-white/50 hover:text-white transition-colors"><IconEye size={18} /></button>
-                      <button className="text-white/50 hover:text-white transition-colors"><IconEdit size={18} /></button>
-                      <button className="text-white/50 hover:text-[#E31B23] transition-colors"><IconTrash size={18} /></button>
+                    <div className="flex items-center justify-center gap-2">
+                      <button className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-white/40 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all">
+                        <IconEye size={18} />
+                      </button>
+                      <button className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-white/40 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all">
+                        <IconEdit size={18} />
+                      </button>
+                      <button className="w-9 h-9 flex items-center justify-center rounded-xl bg-[#E31B23]/10 border border-[#E31B23]/20 text-[#E31B23] hover:bg-[#E31B23] hover:text-white transition-all shadow-lg shadow-[#E31B23]/5 hover:shadow-[#E31B23]/20">
+                        <IconTrash size={18} />
+                      </button>
                     </div>
                   </td>
                 </tr>

@@ -139,10 +139,12 @@ export const ParentsManagement = () => {
                   </td>
                   <td className="py-5 px-6 border-r border-white/15 text-sm font-medium text-white/60 text-center">{p.lastContact}</td>
                   <td className="py-5 px-6 text-center">
-                    <button className="flex items-center gap-2 mx-auto text-white/40 hover:text-white transition-colors group">
-                      <IconMessage size={18} />
-                      <span className="text-[11px] font-black uppercase tracking-widest">Message</span>
-                    </button>
+                    <div className="flex items-center justify-center">
+                      <button className="h-9 px-4 flex items-center justify-center gap-2 rounded-xl bg-white/5 border border-white/10 text-white/40 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all">
+                        <IconMessage size={18} />
+                        <span className="text-[10px] font-black uppercase tracking-widest">Message</span>
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

@@ -91,14 +91,14 @@ const AcademyChat = () => {
 
       <div className="flex flex-1 gap-6 min-h-0">
         {/* Sidebar */}
-        <div className="w-[320px] bg-[#111111] rounded-3xl border border-white/5 flex flex-col overflow-hidden">
+        <div className="w-[320px] bg-[#111111] rounded-3xl border border-white/10 flex flex-col overflow-hidden">
           <div className="p-4">
             <div className="relative">
               <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-white/20" size={18} />
               <input 
                 type="text" 
                 placeholder="Search conversations..."
-                className="w-full bg-white/5 border border-white/5 rounded-xl py-2.5 pl-10 pr-4 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-white/20 transition-all"
+                className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-white/20 transition-all"
               />
             </div>
           </div>
@@ -130,9 +130,9 @@ const AcademyChat = () => {
         </div>
 
         {/* Chat Area */}
-        <div className="flex-1 bg-[#111111] rounded-3xl border border-white/5 flex flex-col overflow-hidden">
+        <div className="flex-1 bg-[#111111] rounded-3xl border border-white/10 flex flex-col overflow-hidden">
           {/* Chat Header */}
-          <div className="p-4 border-b border-white/5 flex justify-between items-center">
+          <div className="p-4 border-b border-white/10 flex justify-between items-center">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full overflow-hidden border border-white/10 shrink-0">
                 <img src="https://i.pravatar.cc/100?u=robert" alt="Robert Silva" className="w-full h-full object-cover" />
@@ -154,7 +154,7 @@ const AcademyChat = () => {
                 <div className={`max-w-[70%] p-4 rounded-2xl text-sm leading-relaxed ${
                   msg.isMe 
                     ? "bg-[#E31B23] text-white rounded-tr-none shadow-lg shadow-[#E31B23]/10" 
-                    : "bg-white/5 text-white/80 rounded-tl-none border border-white/5"
+                    : "bg-white/5 text-white/80 rounded-tl-none border border-white/10"
                 }`}>
                   {msg.text}
                   <div className={`text-[9px] mt-2 font-bold uppercase ${msg.isMe ? "text-white/60" : "text-white/20"}`}>
@@ -166,12 +166,12 @@ const AcademyChat = () => {
           </div>
 
           {/* Input Area */}
-          <div className="p-4 border-t border-white/5">
+          <div className="p-4 border-t border-white/10">
             <div className="relative">
               <input 
                 type="text" 
                 placeholder="Type a message..."
-                className="w-full bg-white/5 border border-white/5 rounded-2xl py-4 pl-6 pr-14 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-white/10 transition-all"
+                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-6 pr-14 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-white/10 transition-all"
               />
               <button className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-[#E31B23] hover:bg-[#C2181F] rounded-xl flex items-center justify-center text-white transition-all shadow-lg shadow-[#E31B23]/20">
                 <IconSend size={18} className="fill-white" />
@@ -188,7 +188,7 @@ const AcademyChat = () => {
           
           <div className="relative w-full max-w-lg bg-[#111111] rounded-[32px] border border-white/10 shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200">
             {/* Modal Header */}
-            <div className="p-8 pb-4 flex justify-between items-center border-b border-white/5">
+            <div className="p-8 pb-4 flex justify-between items-center border-b border-white/10">
               <h2 className="text-2xl font-black uppercase text-white font-orbitron tracking-tight">Create New Chat</h2>
               <button 
                 onClick={() => setShowNewChatModal(false)}
@@ -208,7 +208,7 @@ const AcademyChat = () => {
                     className={`p-6 rounded-2xl border flex flex-col items-center gap-3 transition-all ${
                       chatType === "individual" 
                         ? "bg-[#E31B23]/5 border-[#E31B23] text-white" 
-                        : "bg-white/5 border-white/5 text-white/40 hover:border-white/10"
+                        : "bg-white/5 border-white/10 text-white/40 hover:border-white/10"
                     }`}
                   >
                     <IconUser size={24} className={chatType === "individual" ? "text-[#E31B23]" : ""} />
@@ -222,7 +222,7 @@ const AcademyChat = () => {
                     className={`p-6 rounded-2xl border flex flex-col items-center gap-3 transition-all ${
                       chatType === "group" 
                         ? "bg-[#E31B23]/5 border-[#E31B23] text-white" 
-                        : "bg-white/5 border-white/5 text-white/40 hover:border-white/10"
+                        : "bg-white/5 border-white/10 text-white/40 hover:border-white/10"
                     }`}
                   >
                     <IconUsers size={24} className={chatType === "group" ? "text-[#E31B23]" : ""} />
@@ -245,7 +245,7 @@ const AcademyChat = () => {
                       className={`p-3 rounded-xl border flex items-center gap-3 transition-all text-left ${
                         selectedParticipant === p.id 
                           ? "bg-[#E31B23]/5 border-[#E31B23] text-white" 
-                          : "bg-white/[0.02] border-white/5 text-white hover:border-white/10"
+                          : "bg-white/[0.02] border-white/10 text-white hover:border-white/10"
                       }`}
                     >
                       <div className="w-10 h-10 rounded-full overflow-hidden border border-white/10 shrink-0">

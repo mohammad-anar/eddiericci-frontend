@@ -22,7 +22,7 @@ import { ReactNode } from "react";
 const managementSidebarItems = [
   { name: "Dashboard", url: "/dashboard/academy/management", icon: IconDashboard },
   { name: "Chat", url: "/dashboard/academy/management/chat", icon: IconMessage },
-  { name: "Players Management", url: "/dashboard/academy/management/players", icon: IconUsers },
+  { name: "Players Management", url: "/dashboard/academy/management/players-management", icon: IconUsers },
   { name: "Parents Management", url: "/dashboard/academy/management/parents", icon: IconUserCheck },
   { name: "Training Sessions", url: "/dashboard/academy/management/sessions", icon: IconCalendarEvent },
   { name: "Fees & Payments", url: "/dashboard/academy/management/payments", icon: IconCreditCard },

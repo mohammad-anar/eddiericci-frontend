@@ -159,6 +159,7 @@ export const AnalyticsReport = () => {
                     fontWeight: 'bold',
                     textTransform: 'uppercase'
                   }}
+                  itemStyle={{ color: '#fff' }}
                 />
                 <Legend 
                   layout="vertical" 

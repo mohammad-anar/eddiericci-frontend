@@ -243,9 +243,9 @@ export const SponsorsManagement = () => {
                   </td>
                   <td className="py-6 px-6 text-center">
                     <div className="flex items-center justify-center gap-3">
-                      <button className="text-white/20 hover:text-white transition-colors"><IconEye size={18} /></button>
-                      <button className="text-white/20 hover:text-white transition-colors"><IconEdit size={18} /></button>
-                      <button className="text-white/20 hover:text-[#E31B23] transition-colors"><IconTrash size={18} /></button>
+                      <button className="text-white/50 hover:text-white transition-colors"><IconEye size={18} /></button>
+                      <button className="text-white/50 hover:text-white transition-colors"><IconEdit size={18} /></button>
+                      <button className="text-white/50 hover:text-[#E31B23] transition-colors"><IconTrash size={18} /></button>
                     </div>
                   </td>
                 </tr>

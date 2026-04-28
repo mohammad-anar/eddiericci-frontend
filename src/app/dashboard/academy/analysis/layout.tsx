@@ -18,6 +18,7 @@ const analysisSidebarItems = [
   { name: "Dashboard", url: "/dashboard/academy/analysis", icon: IconDashboard },
   { name: "Academy Profile", url: "/dashboard/academy/analysis/academy-profile", icon: IconSchool },
   { name: "Teams", url: "/dashboard/academy/analysis/teams", icon: IconUsers },
+  { name: "Coach & Players", url: "/dashboard/academy/analysis/coach-players", icon: IconUsers },
   { name: "CVs Library", url: "/dashboard/academy/analysis/cvs", icon: IconBooks },
   { name: "Success Story", url: "/dashboard/academy/analysis/success", icon: IconTrophy },
   { name: "Game Reports", url: "/dashboard/academy/analysis/reports", icon: IconFileText },

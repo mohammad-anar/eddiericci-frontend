@@ -9,6 +9,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { useRouter, usePathname } from "next/navigation";
 
 const CharacteristicTag = ({ label }: { label: string }) => (
   <span className="flex items-center gap-1 bg-white/5 border border-white/10 rounded-md px-2 py-0.5 text-[10px] font-bold text-white uppercase tracking-wider">
@@ -18,6 +19,14 @@ const CharacteristicTag = ({ label }: { label: string }) => (
 );
 
 export const GameReports = () => {
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const handleContinue = () => {
+    const nextPath = `${pathname}-overview`;
+    router.push(nextPath);
+  };
+
   return (
     <div className="flex flex-col gap-8 pb-10">
       {/* Header */}
@@ -178,7 +187,10 @@ export const GameReports = () => {
         <Button className="flex-1 bg-transparent hover:bg-white/5 text-white border border-white/10 h-16 rounded-xl font-black uppercase tracking-[0.2em] transition-all">
           Cancel
         </Button>
-        <Button className="flex-1 bg-[#00FF85] hover:bg-[#00E074] text-black h-16 rounded-xl font-black uppercase tracking-[0.2em] transition-all shadow-[0_0_30px_rgba(0,255,133,0.2)]">
+        <Button 
+          onClick={handleContinue}
+          className="flex-1 bg-[#00FF85] hover:bg-[#00E074] text-black h-16 rounded-xl font-black uppercase tracking-[0.2em] transition-all shadow-[0_0_30px_rgba(0,255,133,0.2)]"
+        >
           Continue
         </Button>
       </div>

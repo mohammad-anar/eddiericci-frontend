@@ -22,9 +22,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
-const RequestStatCard = ({ icon: Icon, value, label }: { icon: any, value: string | number, label: string }) => (
+const RequestStatCard = ({ icon: Icon, value, label, iconColor }: { icon: any, value: string | number, label: string, iconColor: string }) => (
   <div className="bg-[#0A0A0A] border border-white/20 rounded-2xl p-6 flex flex-col gap-4 flex-1">
-    <div className="w-10 h-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white/60">
+    <div className={`w-10 h-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center ${iconColor}`}>
        <Icon size={20} />
     </div>
     <div>
@@ -147,7 +147,7 @@ export const TransferRequests = () => {
                 <div className="space-y-2">
                    <Input 
                      placeholder="Enter full name" 
-                     className="bg-[#111111] border-white/10 h-14 rounded-xl px-6 text-white placeholder:text-white/20"
+                     className="bg-[#111111] border-white/20 h-14 rounded-xl px-6 text-white placeholder:text-white/30"
                    />
                 </div>
 
@@ -203,11 +203,11 @@ export const TransferRequests = () => {
       {/* Summary Stats */}
       <div className="bg-[#111111] border border-white/20 rounded-[40px] p-10 flex flex-col gap-10">
         <div className="flex gap-6">
-          <RequestStatCard icon={IconDownload} value="3" label="Incoming Requests" />
-          <RequestStatCard icon={IconUpload} value="2" label="Outgoing Requests" />
-          <RequestStatCard icon={IconCheck} value="1" label="Approved" />
-          <RequestStatCard icon={IconClock} value="1" label="Pending" />
-          <RequestStatCard icon={IconCircleX} value="1" label="Rejected" />
+          <RequestStatCard icon={IconDownload} value="3" label="Incoming Requests" iconColor="text-blue-500" />
+          <RequestStatCard icon={IconUpload} value="2" label="Outgoing Requests" iconColor="text-purple-500" />
+          <RequestStatCard icon={IconCheck} value="1" label="Approved" iconColor="text-emerald-500" />
+          <RequestStatCard icon={IconClock} value="1" label="Pending" iconColor="text-yellow-500" />
+          <RequestStatCard icon={IconCircleX} value="1" label="Rejected" iconColor="text-red-500" />
         </div>
       </div>
 

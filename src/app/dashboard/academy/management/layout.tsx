@@ -32,7 +32,7 @@ const managementSidebarItems = [
   { name: "Academy News", url: "/dashboard/academy/management/academy-news", icon: IconNews },
   { name: "Success Story", url: "/dashboard/academy/management/success-story", icon: IconTrophy },
   { name: "Game Reports", url: "/dashboard/academy/management/reports", icon: IconFileText },
-  { name: "Generate CV", url: "/dashboard/academy/management/cv", icon: IconFileText },
+  { name: "Generate CV", url: "/dashboard/academy/management/generate-cv", icon: IconFileText },
   { name: "Analytics Report", url: "/dashboard/academy/management/analytics-report", icon: IconChartBar },
   { name: "Product Store", url: "/dashboard/academy/management/product-store", icon: IconBuildingStore },
   { name: "Settings", url: "/dashboard/academy/management/settings", icon: IconSettings },

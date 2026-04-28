@@ -104,8 +104,8 @@ export const Financials = () => {
                     <StatusPill status={row.status} />
                   </td>
                   <td className="px-6 py-5 text-center">
-                    <button className="w-10 h-10 inline-flex items-center justify-center rounded-xl border border-white/20 bg-white/5 text-red-600/40 hover:text-red-600 hover:bg-red-600/5 transition-all hover:scale-110">
-                       <IconEye size={18} />
+                    <button className="w-10 h-10 inline-flex items-center justify-center rounded-xl border border-red-500/20 bg-red-500/5 text-red-500 hover:text-red-400 hover:bg-red-500/10 transition-all hover:scale-110">
+                       <IconEye size={20} stroke={2} />
                     </button>
                   </td>
                 </tr>

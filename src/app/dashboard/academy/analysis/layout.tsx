@@ -24,7 +24,7 @@ const analysisSidebarItems = [
   { name: "Game Reports", url: "/dashboard/academy/analysis/game-reports", icon: IconFileText },
   { name: "Player Evaluation", url: "/dashboard/academy/analysis/player-evaluation", icon: IconUsers },
   { name: "Financials", url: "/dashboard/academy/analysis/financials", icon: IconCoins },
-  { name: "Requests", url: "/dashboard/academy/analysis/requests", icon: IconInbox },
+  { name: "Transfer Requests", url: "/dashboard/academy/analysis/transfer-requests", icon: IconInbox },
   { name: "Analytics", url: "/dashboard/academy/analysis/analytics", icon: IconChartBar },
   { name: "Settings", url: "/dashboard/academy/analysis/settings", icon: IconSettings },
 ];

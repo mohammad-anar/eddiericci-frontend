@@ -22,7 +22,7 @@ const adminSidebarItems = [
   { name: "Academies", url: "/dashboard/admin/academies", icon: IconSchool },
   { name: "Agents", url: "/dashboard/admin/agents", icon: IconUserSearch },
   { name: "Clubs", url: "/dashboard/admin/clubs", icon: IconBuildingCommunity },
-  { name: "Membership Plans", url: "/dashboard/admin/plans", icon: IconFileText },
+  { name: "Membership Plans", url: "/dashboard/admin/membership-plans", icon: IconFileText },
   { name: "Approvals", url: "/dashboard/admin/approvals", icon: IconCheckupList },
   { name: "Payments", url: "/dashboard/admin/payments", icon: IconCreditCard },
   { name: "Analytics", url: "/dashboard/admin/analytics", icon: IconChartBar },

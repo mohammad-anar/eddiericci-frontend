@@ -8,6 +8,8 @@ import {
 } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 
+import { DashboardTable, Column } from "@/components/dashboard/dashboard-table";
+
 const CvPill = ({ type }: { type: "Silver" | "Gold" | "Bronze" }) => {
   const styles = {
     Silver: "bg-white/10 text-white border-white/20",
@@ -27,7 +29,82 @@ const StatusBadge = ({ active }: { active: boolean }) => (
   </span>
 );
 
+interface PlayerRow {
+  name: string;
+  pos: string;
+  age: number;
+  country: string;
+  academy: string;
+  cv: "Silver" | "Gold" | "Bronze";
+  reports: number;
+  active: boolean;
+}
+
 export const SuperAdminPlayers = () => {
+  const columns: Column<PlayerRow>[] = [
+    {
+      header: "Name",
+      key: "name",
+      render: (row) => (
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-white/10 overflow-hidden border border-white/20">
+             <img src={`https://i.pravatar.cc/150?u=${row.name}`} alt={row.name} className="w-full h-full object-cover" />
+          </div>
+          <div>
+            <p className="text-white text-sm font-black uppercase">{row.name}</p>
+            <p className="text-red-500 text-[10px] font-bold uppercase">{row.pos}</p>
+          </div>
+        </div>
+      )
+    },
+    { header: "Age", key: "age", align: "center", cellClassName: "text-white/60 text-sm font-black font-orbitron" },
+    { header: "Country", key: "country", align: "center", cellClassName: "text-white/60 text-sm font-medium" },
+    { 
+      header: "Academy", 
+      key: "academy", 
+      align: "center", 
+      render: (row) => <span className="text-white text-sm font-black uppercase tracking-tight">{row.academy}</span> 
+    },
+    { 
+      header: "CV Type", 
+      key: "cv", 
+      align: "center", 
+      render: (row) => <CvPill type={row.cv} /> 
+    },
+    { header: "Reports", key: "reports", align: "center", cellClassName: "text-white/60 text-sm font-medium" },
+    { 
+      header: "Status", 
+      key: "status", 
+      align: "center", 
+      render: (row) => <StatusBadge active={row.active} /> 
+    },
+    {
+      header: "Actions",
+      key: "actions",
+      align: "center",
+      render: () => (
+        <div className="flex items-center justify-center gap-2">
+           <button className="w-9 h-9 inline-flex items-center justify-center rounded-xl border border-white/20 bg-white/5 text-white/70 hover:text-white hover:border-white/40 hover:bg-white/10 transition-all hover:scale-105">
+              <IconEye size={18} stroke={2} />
+           </button>
+           <button className="w-9 h-9 inline-flex items-center justify-center rounded-xl border border-yellow-500/30 bg-yellow-500/5 text-yellow-500 hover:text-yellow-400 hover:border-yellow-500/40 hover:bg-yellow-500/10 transition-all hover:scale-105">
+              <IconLock size={18} stroke={2} />
+           </button>
+           <button className="w-9 h-9 inline-flex items-center justify-center rounded-xl border border-red-500/30 bg-red-500/5 text-red-500 hover:text-red-400 hover:border-red-500/40 hover:bg-red-500/10 transition-all hover:scale-105">
+              <IconTrash size={18} stroke={2} />
+           </button>
+        </div>
+      )
+    }
+  ];
+
+  const data: PlayerRow[] = [
+    { name: "Marcus Silva", pos: "Forward", age: 19, country: "Brazil", academy: "Elite FC Academy", cv: "Silver", reports: 12, active: true },
+    { name: "David Chen", pos: "Midfielder", age: 18, country: "England", academy: "Champions Academy", cv: "Gold", reports: 9, active: true },
+    { name: "Alex Jonson", pos: "Defender", age: 20, country: "Spain", academy: "Elite FC Academy", cv: "Silver", reports: 8, active: false },
+    { name: "James Brown", pos: "Goalkeeper", age: 17, country: "Argentina", academy: "Youth Stars", cv: "Bronze", reports: 10, active: true },
+  ];
+
   return (
     <div className="flex flex-col gap-8 pb-10">
       {/* Header */}
@@ -48,75 +125,7 @@ export const SuperAdminPlayers = () => {
         </div>
 
         {/* Professional Table */}
-        <div className="border border-white/20 rounded-2xl overflow-hidden">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-white/5 border-b border-white/20 text-[10px] font-black text-white uppercase tracking-wider">
-                <th className="px-6 py-4 border-r border-white/20">Name</th>
-                <th className="px-6 py-4 border-r border-white/20 text-center">Age</th>
-                <th className="px-6 py-4 border-r border-white/20 text-center">Country</th>
-                <th className="px-6 py-4 border-r border-white/20 text-center">Academy</th>
-                <th className="px-6 py-4 border-r border-white/20 text-center">CV Type</th>
-                <th className="px-6 py-4 border-r border-white/20 text-center">Reports</th>
-                <th className="px-6 py-4 border-r border-white/20 text-center">Status</th>
-                <th className="px-6 py-4 text-center">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-white/20">
-              {[
-                { name: "Marcus Silva", pos: "Forward", age: 19, country: "Brazil", academy: "Elite FC Academy", cv: "Silver" as const, reports: 12, active: true },
-                { name: "David Chen", pos: "Midfielder", age: 18, country: "England", academy: "Champions Academy", cv: "Gold" as const, reports: 9, active: true },
-                { name: "Alex Jonson", pos: "Defender", age: 20, country: "Spain", academy: "Elite FC Academy", cv: "Silver" as const, reports: 8, active: false },
-                { name: "James Brown", pos: "Goalkeeper", age: 17, country: "Argentina", academy: "Youth Stars", cv: "Bronze" as const, reports: 10, active: true },
-              ].map((row, i) => (
-                <tr key={i} className="hover:bg-white/[0.02] transition-colors">
-                  <td className="px-6 py-5 border-r border-white/20">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-white/10 overflow-hidden border border-white/20">
-                         <img src={`https://i.pravatar.cc/150?u=${row.name}`} alt={row.name} className="w-full h-full object-cover" />
-                      </div>
-                      <div>
-                        <p className="text-white text-sm font-black uppercase">{row.name}</p>
-                        <p className="text-red-500 text-[10px] font-bold uppercase">{row.pos}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-5 border-r border-white/20 text-center">
-                    <span className="text-white/60 text-sm font-black font-orbitron">{row.age}</span>
-                  </td>
-                  <td className="px-6 py-5 border-r border-white/20 text-center">
-                    <span className="text-white/60 text-sm font-medium">{row.country}</span>
-                  </td>
-                  <td className="px-6 py-5 border-r border-white/20 text-center">
-                    <span className="text-white text-sm font-black uppercase tracking-tight">{row.academy}</span>
-                  </td>
-                  <td className="px-6 py-5 border-r border-white/20 text-center">
-                    <CvPill type={row.cv} />
-                  </td>
-                  <td className="px-6 py-5 border-r border-white/20 text-center">
-                    <span className="text-white/60 text-sm font-medium">{row.reports}</span>
-                  </td>
-                  <td className="px-6 py-5 border-r border-white/20 text-center">
-                    <StatusBadge active={row.active} />
-                  </td>
-                  <td className="px-6 py-5">
-                    <div className="flex items-center justify-center gap-2">
-                       <button className="w-9 h-9 inline-flex items-center justify-center rounded-xl border border-white/20 bg-white/5 text-white/70 hover:text-white hover:border-white/40 hover:bg-white/10 transition-all hover:scale-105">
-                          <IconEye size={18} stroke={2} />
-                       </button>
-                       <button className="w-9 h-9 inline-flex items-center justify-center rounded-xl border border-yellow-500/30 bg-yellow-500/5 text-yellow-500 hover:text-yellow-400 hover:border-yellow-500/40 hover:bg-yellow-500/10 transition-all hover:scale-105">
-                          <IconLock size={18} stroke={2} />
-                       </button>
-                       <button className="w-9 h-9 inline-flex items-center justify-center rounded-xl border border-red-500/30 bg-red-500/5 text-red-500 hover:text-red-400 hover:border-red-500/40 hover:bg-red-500/10 transition-all hover:scale-105">
-                          <IconTrash size={18} stroke={2} />
-                       </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <DashboardTable columns={columns} data={data} />
       </div>
     </div>
   );

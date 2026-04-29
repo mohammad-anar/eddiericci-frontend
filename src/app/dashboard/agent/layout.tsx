@@ -15,8 +15,8 @@ import { ReactNode } from "react";
 
 const agentSidebarItems = [
   { name: "Dashboard", url: "/dashboard/agent", icon: IconDashboard },
-  { name: "My Profile", url: "/dashboard/agent/profile", icon: IconUser },
-  { name: "Licensed Verification", url: "/dashboard/agent/verification", icon: IconRosetteFilled },
+  { name: "My Profile", url: "/dashboard/agent/my-profile", icon: IconUser },
+  { name: "Licensed Verification", url: "/dashboard/agent/licensed-verification", icon: IconRosetteFilled },
   { name: "Discover Players", url: "/dashboard/agent/discover", icon: IconSearch },
   { name: "Liked CVs", url: "/dashboard/agent/liked", icon: IconHeart },
   { name: "Shared Profiles", url: "/dashboard/agent/shared", icon: IconShare },

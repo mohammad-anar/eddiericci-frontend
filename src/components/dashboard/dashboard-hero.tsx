@@ -17,6 +17,7 @@ interface DashboardHeroProps {
     value: string;
   }[];
   characterImage?: string;
+  logoImage?: string;
 }
 
 export const DashboardHero = ({
@@ -28,6 +29,7 @@ export const DashboardHero = ({
   details,
   contacts,
   characterImage,
+  logoImage,
 }: DashboardHeroProps) => {
   const getIcon = (type: string) => {
     switch (type) {
@@ -43,10 +45,10 @@ export const DashboardHero = ({
     <div className="relative rounded-3xl overflow-hidden min-h-[500px] border border-white/20 bg-[#0D0D0D] group flex flex-col justify-center">
       {/* Background Image */}
       <div 
-        className="absolute inset-0 bg-cover bg-center opacity-40 transition-transform duration-700 group-hover:scale-105"
+        className="absolute inset-0 bg-[length:100%_auto] bg-no-repeat bg-center opacity-50"
         style={{ backgroundImage: `url(${backgroundImage})` }}
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent w-2/3" />
       
       {/* Standing Character */}
       {characterImage && (
@@ -59,6 +61,13 @@ export const DashboardHero = ({
 
       <div className="relative p-8 md:p-12 w-full flex flex-col gap-8 z-20">
         <div className="space-y-6">
+          {/* Logo Image */}
+          {logoImage && (
+            <div className="mb-4">
+              <img src={logoImage} alt="Club Logo" className="w-24 h-auto object-contain" />
+            </div>
+          )}
+          
           {/* Rating Circle */}
           {rating && (
             <div className="w-24 h-24 rounded-full border-4 border-[#E31B23] flex items-center justify-center bg-black/50 backdrop-blur-md shadow-[0_0_30px_rgba(227,27,35,0.2)]">

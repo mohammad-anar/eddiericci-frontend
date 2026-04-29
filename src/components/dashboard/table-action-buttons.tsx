@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { IconEye, IconPencil, IconTrash, IconHeart, IconShare, IconCheck, IconX } from "@tabler/icons-react";
+import { IconEye, IconPencil, IconTrash, IconHeart, IconShare, IconCheck, IconX, IconDots } from "@tabler/icons-react";
 
 interface TableActionButtonsProps {
   onView?: () => void;
@@ -10,6 +10,7 @@ interface TableActionButtonsProps {
   onShare?: () => void;
   onVerify?: () => void;
   onReject?: () => void;
+  onDots?: () => void;
   viewColor?: string;
   editColor?: string;
   deleteColor?: string;
@@ -17,6 +18,7 @@ interface TableActionButtonsProps {
   shareColor?: string;
   verifyColor?: string;
   rejectColor?: string;
+  dotsColor?: string;
   isHeartFilled?: boolean;
 }
 
@@ -28,6 +30,7 @@ export const TableActionButtons = ({
   onShare,
   onVerify,
   onReject,
+  onDots,
   viewColor = "text-white/40 hover:text-white border-white/10 hover:border-white/20 bg-white/5 hover:bg-white/10",
   editColor = "text-white/40 hover:text-white border-white/10 hover:border-white/20 bg-white/5 hover:bg-white/10",
   deleteColor = "text-red-500 hover:text-red-400 border-red-500/20 hover:border-red-500/40 bg-red-500/5 hover:bg-red-500/10",
@@ -35,6 +38,7 @@ export const TableActionButtons = ({
   shareColor = "text-white/40 hover:text-white border-white/10 hover:border-white/20 bg-white/5 hover:bg-white/10",
   verifyColor = "text-green-500 hover:text-green-400 border-green-500/20 hover:border-green-500/40 bg-green-500/5 hover:bg-green-500/10",
   rejectColor = "text-red-500 hover:text-red-400 border-red-500/20 hover:border-red-500/40 bg-red-500/5 hover:bg-red-500/10",
+  dotsColor = "text-white/40 hover:text-white border-white/10 hover:border-white/20 bg-white/5 hover:bg-white/10",
   isHeartFilled = false,
 }: TableActionButtonsProps) => {
   return (
@@ -99,6 +103,15 @@ export const TableActionButtons = ({
           className={`w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl border transition-all hover:scale-105 ${deleteColor}`}
         >
           <IconTrash size={18} />
+        </button>
+      )}
+
+      {onDots && (
+        <button 
+          onClick={onDots}
+          className={`w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl border transition-all hover:scale-105 ${dotsColor}`}
+        >
+          <IconDots size={18} />
         </button>
       )}
     </div>

@@ -26,11 +26,12 @@ interface SettingsInputProps {
   placeholder?: string;
   type?: string;
   isDate?: boolean;
+  icon?: React.ReactNode;
   value?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export const SettingsInput = ({ label, placeholder, type = "text", isDate, value, onChange }: SettingsInputProps) => (
+export const SettingsInput = ({ label, placeholder, type = "text", isDate, icon, value, onChange }: SettingsInputProps) => (
   <div className="space-y-2">
     <label className="text-[10px] text-gray-400 uppercase font-black tracking-widest">{label}</label>
     <div className="relative">
@@ -41,7 +42,8 @@ export const SettingsInput = ({ label, placeholder, type = "text", isDate, value
         placeholder={placeholder}
         className="w-full h-12 bg-white/[0.02] border border-white/25 rounded-xl px-4 text-sm font-bold text-white focus:outline-none focus:border-[#E31B23]/50 placeholder:text-gray-700 transition-all" 
       />
-      {isDate && <IconCalendar className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />}
+      {isDate && !icon && <IconCalendar className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />}
+      {icon && <div className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">{icon}</div>}
     </div>
   </div>
 );

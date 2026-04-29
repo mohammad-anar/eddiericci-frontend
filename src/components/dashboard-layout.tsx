@@ -12,9 +12,10 @@ interface DashboardLayoutProps {
     color: string;
   };
   showToggle?: boolean;
+  customToggle?: ReactNode;
 }
 
-export function DashboardLayout({ children, sidebarItems, tier, showToggle = false }: DashboardLayoutProps) {
+export function DashboardLayout({ children, sidebarItems, tier, showToggle = false, customToggle }: DashboardLayoutProps) {
   return (
     <SidebarProvider
       style={
@@ -26,7 +27,7 @@ export function DashboardLayout({ children, sidebarItems, tier, showToggle = fal
     >
       <AppSidebar variant="inset" sidebarItems={sidebarItems} tier={tier} />
       <SidebarInset className="bg-[#0A0A0A] text-white">
-        <SiteHeader showToggle={showToggle} />
+        <SiteHeader showToggle={showToggle} customToggle={customToggle} />
         <main className="p-4 md:p-6 lg:p-8 pb-0 md:pb-0 lg:pb-0">
           {children}
         </main>

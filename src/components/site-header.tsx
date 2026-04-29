@@ -2,8 +2,9 @@
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { usePathname, useRouter } from "next/navigation";
 import { NavUser } from "./nav-user";
+import { ReactNode } from "react";
 
-export function SiteHeader({ showToggle = false }: { showToggle?: boolean }) {
+export function SiteHeader({ showToggle = false, customToggle }: { showToggle?: boolean, customToggle?: ReactNode }) {
   const pathName = usePathname();
   const isAnalysis = pathName.includes("/analysis");
   const router = useRouter();
@@ -51,6 +52,12 @@ export function SiteHeader({ showToggle = false }: { showToggle?: boolean }) {
             className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-4 text-sm text-gray-300 focus:outline-none focus:ring-1 focus:ring-[#E31B23]"
           />
         </div>
+        
+        {customToggle && (
+          <div className="hidden lg:flex">
+            {customToggle}
+          </div>
+        )}
       </div>
 
       <div className="flex items-center gap-4 text-gray-300">

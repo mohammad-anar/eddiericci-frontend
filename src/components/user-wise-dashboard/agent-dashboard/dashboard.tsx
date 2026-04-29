@@ -15,6 +15,7 @@ import {
 import { DashboardStatCard } from "@/components/dashboard/dashboard-stat-card";
 import { DashboardSidebarPanel, DashboardSidebarItem } from "@/components/dashboard/dashboard-sidebar";
 import { DashboardTable, Column } from "@/components/dashboard/dashboard-table";
+import { TableActionButtons } from "@/components/dashboard/table-action-buttons";
 import { Button } from "@/components/ui/button";
 import { 
   BarChart, 
@@ -124,11 +125,11 @@ const columns: Column<Player>[] = [
     key: "actions",
     align: "center",
     render: () => (
-      <div className="flex justify-center gap-3 text-gray-400">
-        <IconEye size={18} className="cursor-pointer hover:text-white transition-colors" />
-        <IconHeart size={18} className="cursor-pointer hover:text-[#E31B23] transition-colors" />
-        <IconShare size={18} className="cursor-pointer hover:text-white transition-colors" />
-      </div>
+      <TableActionButtons 
+        onView={() => {}}
+        onHeart={() => {}}
+        onShare={() => {}}
+      />
     ),
   },
 ];

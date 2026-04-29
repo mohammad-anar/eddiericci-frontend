@@ -83,8 +83,6 @@ const columns: Column<Player>[] = [
       <TableActionButtons 
         onView={() => {}}
         onHeart={() => {}}
-        isHeartFilled={true}
-        heartColor="text-[#E31B23] border-[#E31B23]/30 bg-[#E31B23]/10 hover:bg-[#E31B23]/20"
         onShare={() => {}}
       />
     ),
@@ -98,18 +96,24 @@ const mockPlayers: Player[] = [
   { avatar: "https://i.pravatar.cc/150?u=13", name: "James Brown", position: "Goalkeeper", rating: 7.9, club: "Liverpool Academy", country: "Argentina", age: 17, status: "Bronze" },
 ];
 
-export const LikedCVs = () => {
+export const DiscoverPlayers = () => {
   return (
     <div className="p-2 md:p-6 space-y-6">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white font-orbitron tracking-wide mb-1">Liked CVs</h1>
-        <p className="text-gray-400 text-sm font-medium">Players you've shown interest in</p>
+        <h1 className="text-3xl font-bold text-white font-orbitron tracking-wide mb-1">Discover Players</h1>
+        <p className="text-gray-400 text-sm font-medium">Browse verified athlete profiles</p>
       </div>
 
       <div className="bg-[#111111] border border-white/15 rounded-3xl p-6 md:p-8 space-y-6">
         <div className="flex flex-wrap gap-4 justify-end mb-2">
           <Button variant="outline" className="bg-transparent border-white/10 text-gray-300 hover:bg-white/5 hover:text-white rounded-lg">
             All Positions <IconChevronDown className="ml-2 w-4 h-4" />
+          </Button>
+          <Button variant="outline" className="bg-transparent border-white/10 text-gray-300 hover:bg-white/5 hover:text-white rounded-lg">
+            Country <IconChevronDown className="ml-2 w-4 h-4" />
+          </Button>
+          <Button variant="outline" className="bg-transparent border-white/10 text-gray-300 hover:bg-white/5 hover:text-white rounded-lg">
+            Age Range <IconChevronDown className="ml-2 w-4 h-4" />
           </Button>
           <Button variant="outline" className="bg-transparent border-white/10 text-gray-300 hover:bg-white/5 hover:text-white rounded-lg">
             All Status <IconChevronDown className="ml-2 w-4 h-4" />

@@ -17,7 +17,7 @@ const SectionHeader = ({ title }: { title: string }) => (
 
 export const AgentVerification = () => {
   return (
-    <div className="p-2 md:p-6 space-y-6 max-w-5xl">
+    <div className="p-2 md:p-6 space-y-6">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-white font-orbitron tracking-wide mb-1">Licensed Verification</h1>
         <p className="text-gray-400 text-sm font-medium">Manage your agent verification and licensing</p>

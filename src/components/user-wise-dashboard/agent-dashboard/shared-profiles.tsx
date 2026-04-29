@@ -6,7 +6,7 @@ import { DashboardTable, Column } from "@/components/dashboard/dashboard-table";
 import { TableActionButtons } from "@/components/dashboard/table-action-buttons";
 import { Button } from "@/components/ui/button";
 
-type Player = {
+type SharedPlayer = {
   avatar: string;
   name: string;
   position: string;
@@ -14,19 +14,18 @@ type Player = {
   club: string;
   country: string;
   age: number;
-  status: "Gold" | "Silver" | "Bronze";
+  sharedWith: string;
+  status: "Viewed" | "Not Viewed";
 };
 
-const getStatusColor = (status: "Gold" | "Silver" | "Bronze") => {
-  switch (status) {
-    case "Gold": return "bg-[#ffc107] text-black";
-    case "Silver": return "bg-[#e0e0e0] text-black";
-    case "Bronze": return "bg-[#cd7f32] text-white";
-    default: return "bg-gray-500 text-white";
+const getStatusBadge = (status: "Viewed" | "Not Viewed") => {
+  if (status === "Viewed") {
+    return "border-green-500/50 bg-green-500/10 text-green-500";
   }
+  return "border-white/20 bg-white/5 text-gray-300";
 };
 
-const columns: Column<Player>[] = [
+const columns: Column<SharedPlayer>[] = [
   {
     header: "Name",
     key: "name",
@@ -66,11 +65,17 @@ const columns: Column<Player>[] = [
     cellClassName: "text-gray-400",
   },
   {
+    header: "Shared With",
+    key: "sharedWith",
+    align: "center",
+    cellClassName: "text-gray-400",
+  },
+  {
     header: "Status",
     key: "status",
     align: "center",
     render: (row) => (
-      <span className={`px-4 py-1.5 rounded-full text-xs font-bold ${getStatusColor(row.status)}`}>
+      <span className={`px-4 py-1 rounded-full border text-xs font-bold ${getStatusBadge(row.status)}`}>
         {row.status}
       </span>
     ),
@@ -83,33 +88,38 @@ const columns: Column<Player>[] = [
       <TableActionButtons 
         onView={() => {}}
         onHeart={() => {}}
-        isHeartFilled={true}
-        heartColor="text-[#E31B23] border-[#E31B23]/30 bg-[#E31B23]/10 hover:bg-[#E31B23]/20"
         onShare={() => {}}
+        shareColor="text-[#E31B23] border-[#E31B23]/30 bg-[#E31B23]/10 hover:bg-[#E31B23]/20"
       />
     ),
   },
 ];
 
-const mockPlayers: Player[] = [
-  { avatar: "https://i.pravatar.cc/150?u=10", name: "Marcus Silva", position: "Forward", rating: 9.2, club: "Manchester Academy", country: "Brazil", age: 19, status: "Silver" },
-  { avatar: "https://i.pravatar.cc/150?u=11", name: "David Chen", position: "Midfielder", rating: 8.8, club: "Chelsea Youth", country: "England", age: 18, status: "Gold" },
-  { avatar: "https://i.pravatar.cc/150?u=12", name: "Alex Jonson", position: "Defender", rating: 8.5, club: "Barcelona B", country: "Spain", age: 20, status: "Silver" },
-  { avatar: "https://i.pravatar.cc/150?u=13", name: "James Brown", position: "Goalkeeper", rating: 7.9, club: "Liverpool Academy", country: "Argentina", age: 17, status: "Bronze" },
+const mockPlayers: SharedPlayer[] = [
+  { avatar: "https://i.pravatar.cc/150?u=10", name: "Marcus Silva", position: "Forward", rating: 9.2, club: "Manchester Academy", country: "Brazil", age: 19, sharedWith: "Elite Agents Ltd", status: "Viewed" },
+  { avatar: "https://i.pravatar.cc/150?u=11", name: "David Chen", position: "Midfielder", rating: 8.8, club: "Chelsea Youth", country: "England", age: 18, sharedWith: "Scout Network Pro", status: "Not Viewed" },
+  { avatar: "https://i.pravatar.cc/150?u=12", name: "Alex Jonson", position: "Defender", rating: 8.5, club: "Barcelona B", country: "Spain", age: 20, sharedWith: "Global Sports Agency", status: "Viewed" },
+  { avatar: "https://i.pravatar.cc/150?u=13", name: "James Brown", position: "Goalkeeper", rating: 7.9, club: "Liverpool Academy", country: "Argentina", age: 17, sharedWith: "European Scouts", status: "Not Viewed" },
 ];
 
-export const LikedCVs = () => {
+export const SharedProfiles = () => {
   return (
     <div className="p-2 md:p-6 space-y-6">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white font-orbitron tracking-wide mb-1">Liked CVs</h1>
-        <p className="text-gray-400 text-sm font-medium">Players you've shown interest in</p>
+        <h1 className="text-3xl font-bold text-white font-orbitron tracking-wide mb-1">Shared Profiles</h1>
+        <p className="text-gray-400 text-sm font-medium">Players you've shared with other members</p>
       </div>
 
       <div className="bg-[#111111] border border-white/15 rounded-3xl p-6 md:p-8 space-y-6">
         <div className="flex flex-wrap gap-4 justify-end mb-2">
           <Button variant="outline" className="bg-transparent border-white/10 text-gray-300 hover:bg-white/5 hover:text-white rounded-lg">
             All Positions <IconChevronDown className="ml-2 w-4 h-4" />
+          </Button>
+          <Button variant="outline" className="bg-transparent border-white/10 text-gray-300 hover:bg-white/5 hover:text-white rounded-lg">
+            Country <IconChevronDown className="ml-2 w-4 h-4" />
+          </Button>
+          <Button variant="outline" className="bg-transparent border-white/10 text-gray-300 hover:bg-white/5 hover:text-white rounded-lg">
+            Age Range <IconChevronDown className="ml-2 w-4 h-4" />
           </Button>
           <Button variant="outline" className="bg-transparent border-white/10 text-gray-300 hover:bg-white/5 hover:text-white rounded-lg">
             All Status <IconChevronDown className="ml-2 w-4 h-4" />

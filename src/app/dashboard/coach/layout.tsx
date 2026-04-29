@@ -10,7 +10,9 @@ import {
   IconReport,
   IconUserCheck
 } from "@tabler/icons-react";
-import { ReactNode, useState } from "react";
+import { ReactNode, useState, createContext } from "react";
+
+export const CoachContext = createContext<{ hasAcademy: boolean }>({ hasAcademy: false });
 
 const coachSidebarItemsWithoutAcademy = [
   { name: "Dashboard", url: "/dashboard/coach", icon: IconDashboard },
@@ -60,12 +62,14 @@ export default function CoachLayout({ children }: { children: ReactNode }) {
   );
 
   return (
-    <DashboardLayout 
-      sidebarItems={currentSidebarItems}
-      tier={{ name: "Silver", color: "#C0C0C0" }}
-      customToggle={customToggle}
-    >
-      {children}
-    </DashboardLayout>
+    <CoachContext.Provider value={{ hasAcademy }}>
+      <DashboardLayout 
+        sidebarItems={currentSidebarItems}
+        tier={{ name: "Silver", color: "#C0C0C0" }}
+        customToggle={customToggle}
+      >
+        {children}
+      </DashboardLayout>
+    </CoachContext.Provider>
   );
 }

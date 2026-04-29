@@ -16,16 +16,16 @@ export const CoachContext = createContext<{ hasAcademy: boolean }>({ hasAcademy:
 
 const coachSidebarItemsWithoutAcademy = [
   { name: "Dashboard", url: "/dashboard/coach", icon: IconDashboard },
-  { name: "My CV", url: "/dashboard/coach/cv", icon: IconFileText },
-  { name: "My Images & Videos", url: "/dashboard/coach/media", icon: IconPhotoVideo },
+  { name: "My CV", url: "/dashboard/coach/my-cv", icon: IconFileText },
+  { name: "My Images & Videos", url: "/dashboard/coach/my-images&videos", icon: IconPhotoVideo },
   { name: "Analytics", url: "/dashboard/coach/analytics", icon: IconChartBar },
   { name: "Settings", url: "/dashboard/coach/settings", icon: IconSettings },
 ];
 
 const coachSidebarItemsWithAcademy = [
   { name: "Dashboard", url: "/dashboard/coach", icon: IconDashboard },
-  { name: "My CV", url: "/dashboard/coach/cv", icon: IconFileText },
-  { name: "My Images & Videos", url: "/dashboard/coach/media", icon: IconPhotoVideo },
+  { name: "My CV", url: "/dashboard/coach/my-cv", icon: IconFileText },
+  { name: "My Images & Videos", url: "/dashboard/coach/my-images&videos", icon: IconPhotoVideo },
   { name: "My Teams", url: "/dashboard/coach/teams", icon: IconUsers },
   { name: "Game Reports", url: "/dashboard/coach/game-reports", icon: IconReport },
   { name: "Player CV Validations", url: "/dashboard/coach/player-validations", icon: IconUserCheck },

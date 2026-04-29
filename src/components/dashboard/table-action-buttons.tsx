@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { IconEye, IconPencil, IconTrash, IconHeart, IconShare } from "@tabler/icons-react";
+import { IconEye, IconPencil, IconTrash, IconHeart, IconShare, IconCheck, IconX } from "@tabler/icons-react";
 
 interface TableActionButtonsProps {
   onView?: () => void;
@@ -8,11 +8,15 @@ interface TableActionButtonsProps {
   onDelete?: () => void;
   onHeart?: () => void;
   onShare?: () => void;
+  onVerify?: () => void;
+  onReject?: () => void;
   viewColor?: string;
   editColor?: string;
   deleteColor?: string;
   heartColor?: string;
   shareColor?: string;
+  verifyColor?: string;
+  rejectColor?: string;
   isHeartFilled?: boolean;
 }
 
@@ -22,11 +26,15 @@ export const TableActionButtons = ({
   onDelete,
   onHeart,
   onShare,
+  onVerify,
+  onReject,
   viewColor = "text-white/40 hover:text-white border-white/10 hover:border-white/20 bg-white/5 hover:bg-white/10",
   editColor = "text-white/40 hover:text-white border-white/10 hover:border-white/20 bg-white/5 hover:bg-white/10",
   deleteColor = "text-red-500 hover:text-red-400 border-red-500/20 hover:border-red-500/40 bg-red-500/5 hover:bg-red-500/10",
   heartColor = "text-white/40 hover:text-[#E31B23] border-white/10 hover:border-[#E31B23]/30 bg-white/5 hover:bg-[#E31B23]/10",
   shareColor = "text-white/40 hover:text-white border-white/10 hover:border-white/20 bg-white/5 hover:bg-white/10",
+  verifyColor = "text-green-500 hover:text-green-400 border-green-500/20 hover:border-green-500/40 bg-green-500/5 hover:bg-green-500/10",
+  rejectColor = "text-red-500 hover:text-red-400 border-red-500/20 hover:border-red-500/40 bg-red-500/5 hover:bg-red-500/10",
   isHeartFilled = false,
 }: TableActionButtonsProps) => {
   return (
@@ -37,6 +45,24 @@ export const TableActionButtons = ({
           className={`w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl border transition-all hover:scale-105 ${viewColor}`}
         >
           <IconEye size={18} />
+        </button>
+      )}
+      
+      {onVerify && (
+        <button 
+          onClick={onVerify}
+          className={`w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl border transition-all hover:scale-105 ${verifyColor}`}
+        >
+          <IconCheck size={18} />
+        </button>
+      )}
+
+      {onReject && (
+        <button 
+          onClick={onReject}
+          className={`w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl border transition-all hover:scale-105 ${rejectColor}`}
+        >
+          <IconX size={18} />
         </button>
       )}
       

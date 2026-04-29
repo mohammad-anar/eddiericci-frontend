@@ -26,9 +26,9 @@ const coachSidebarItemsWithAcademy = [
   { name: "Dashboard", url: "/dashboard/coach", icon: IconDashboard },
   { name: "My CV", url: "/dashboard/coach/my-cv", icon: IconFileText },
   { name: "My Images & Videos", url: "/dashboard/coach/my-images&videos", icon: IconPhotoVideo },
-  { name: "My Teams", url: "/dashboard/coach/teams", icon: IconUsers },
+  { name: "My Teams", url: "/dashboard/coach/my-teams", icon: IconUsers },
   { name: "Game Reports", url: "/dashboard/coach/game-reports", icon: IconReport },
-  { name: "Player CV Validations", url: "/dashboard/coach/player-validations", icon: IconUserCheck },
+  { name: "Player CV Validations", url: "/dashboard/coach/player-cv-validations", icon: IconUserCheck },
   { name: "Analytics", url: "/dashboard/coach/analytics", icon: IconChartBar },
   { name: "Settings", url: "/dashboard/coach/settings", icon: IconSettings },
 ];

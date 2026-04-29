@@ -16,7 +16,7 @@ export const DashboardSidebarPanel = ({
   className = "",
 }: DashboardSidebarPanelProps) => {
   return (
-    <div className={`bg-[#111111] rounded-3xl border border-white/5 p-6 flex flex-col gap-6 ${className}`}>
+    <div className={`bg-[#111111] rounded-3xl border border-white/15 p-6 flex flex-col gap-6 ${className}`}>
       <div className="flex items-center gap-3">
         {icon && <div className={iconColor}>{icon}</div>}
         <h2 className="text-lg md:text-xl font-black uppercase tracking-tight text-white font-orbitron">

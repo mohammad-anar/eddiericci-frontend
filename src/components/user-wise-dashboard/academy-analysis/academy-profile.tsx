@@ -12,7 +12,6 @@ import { DashboardHero } from "@/components/dashboard/dashboard-hero";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
 
 export const AcademyProfile = () => {
   return (
@@ -39,7 +38,7 @@ export const AcademyProfile = () => {
           {/* Profile Hero Card */}
           <DashboardHero 
             backgroundImage="https://images.unsplash.com/photo-1526232761682-d26e03ac148e?q=80&w=2058"
-            logo="/image 47.png"
+            logoImage="/image 47.png"
             badgeText="Active Academy"
             title="Santos FC Academy"
             subtitle="Premier League Academy"
@@ -185,4 +184,4 @@ export const AcademyProfile = () => {
       </div>
     </div>
   );
-};
+};

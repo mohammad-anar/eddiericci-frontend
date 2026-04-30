@@ -33,7 +33,7 @@ const AcademyManagementDashboard = () => {
           {/* Hero Section */}
           <DashboardHero 
             backgroundImage="/banner.png"
-            logo="/image 47.png"
+            logoImage="/image 47.png"
             badgeText="Active Academy"
             title="Santos FC Academy"
             subtitle="Premier League Academy"

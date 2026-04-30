@@ -136,7 +136,7 @@ const AcademyAnalysisDashboard = () => {
             <div className="flex justify-between items-center">
               <div>
                 <h2 className="text-2xl font-black uppercase text-white font-orbitron">Financials</h2>
-                <p className="text-xs text-white/40 font-bold uppercase tracking-widest">Track your academy's revenue and transactions</p>
+                <p className="text-xs text-white/40 font-bold uppercase tracking-widest">Track your academy&apos;s revenue and transactions</p>
               </div>
             </div>
             

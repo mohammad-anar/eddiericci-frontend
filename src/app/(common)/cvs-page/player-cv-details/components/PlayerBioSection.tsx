@@ -48,7 +48,7 @@ const ALL_STYLES = [
   { id: "playmaker", label: "Playmaker" },
 ];
 
-const PlayerBioSection = () => {
+const PlayerBioSection = ({ editable=false }: { editable?: boolean }) => {
   const [isPositionMap, setIsPositionMap] = useState(true);
   const [position, setPosition] = useState("Defensive Midfielder");
   const [selectedStyleIds, setSelectedStyleIds] = useState<string[]>([

@@ -35,7 +35,6 @@ const METRICS_DATA: Record<string, MetricRow[]> = {
     { category: 'Opponent Reading', score: 88, trend: 5, grade: 'Excellent' },
     { category: 'Game Flow Understanding', score: 85, trend: 2, grade: 'Good' },
     { category: 'Pressure Handling', score: 90, trend: 4, grade: 'Excellent' },
-    { category: 'Pressure Handling', score: 90, trend: 4, grade: 'Good' },
   ],
   Vision: [
     { category: 'Peripheral Vision', score: 87, trend: 3, grade: 'Excellent' },
@@ -86,7 +85,7 @@ export function MetricsAnalysis() {
             {/* Table */}
             <TabsContent value={activeTab}>
               <Table className="border border-border">
-                
+
                 {/* Header */}
                 <TableHeader>
                   <TableRow className="border-border">
@@ -137,11 +136,10 @@ export function MetricsAnalysis() {
                       {/* Grade */}
                       <TableCell className="text-right">
                         <Badge
-                          className={`font-medium ${
-                            metric.grade === 'Excellent'
-                              ? 'bg-primary text-black hover:bg-primary'
-                              : 'bg-blue text-white hover:bg-blue'
-                          }`}
+                          className={`font-medium ${metric.grade === 'Excellent'
+                            ? 'bg-primary text-black hover:bg-primary'
+                            : 'bg-blue text-white hover:bg-blue'
+                            }`}
                         >
                           {metric.grade}
                         </Badge>

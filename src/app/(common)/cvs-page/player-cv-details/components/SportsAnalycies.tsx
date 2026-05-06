@@ -90,24 +90,7 @@ const matchesData: MatchStats[] = [
     redCards: 0,
     passAccuracy: 93,
     rating: "8.3",
-  },
-  {
-    date: "2023-10-16",
-    league: "La Liga",
-    team1: "Villarreal CF",
-    team2: "FC Barcelona",
-    score: "3-0",
-    result: "L",
-    stadium: "Camp Nou",
-    goals: 0,
-    assists: 1,
-    passes: 82,
-    timePlayedMinutes: 52,
-    yellowCards: 0,
-    redCards: 1,
-    passAccuracy: 82,
-    rating: "8.3",
-  },
+  }
 ];
 
 const getResultColor = (result: "W" | "D" | "L") => {
@@ -153,126 +136,13 @@ function SportsAnalycies() {
   return (
     <div className="container ">
       <h1 className="mb-8 text-center text-3xl font-bold text-white font-heading">
-        GAME SUMMARY (LAST 5 MATCHES)
+        GAME SUMMARY (LAST 4 MATCHES)
       </h1>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        {/* Left Column - Match Cards */}
-        <div className="lg:col-span-2 space-y-4">
-          {matchesData.map((match, idx) => (
-            <Card
-              key={idx}
-              className="border border-border bg-black p-6 text-white rounded-lg"
-            >
-              {/* Header Row */}
-              <div className="mb-4 flex items-center justify-between ">
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-2 text-sm">
-                    <CalendarIcon className="h-4 w-4 text-gray-400" />
-                    <span className="text-gray-400">{match.date}</span>
-                  </div>
-                  <Badge className="bg-gray-800 text-gray-300 hover:bg-gray-700">
-                    {match.league}
-                  </Badge>
-                </div>
-                <div className="text-right">
-                  <div className="text-lg font-bold text-[#00FF62]">
-                    {match.rating}
-                  </div>
-                  <div className="text-xs text-gray-400">Rating</div>
-                </div>
-              </div>
+      <div className="space-y-6">
 
-              {/* Teams and Score */}
-              <div className="mb-4 flex items-center justify-start">
-                <div className="flex items-center gap-3 ">
-                  <div className="text-sm">
-                    <div className="font-semibold">{match.team1}</div>
-                  </div>
-                </div>
-                <div className="mx-4 text-center bg-cardBg p-3 px-5 rounded-lg -mt-8">
-                  <div className="text-xl font-bold">{match.score}</div>
-                </div>
-                <div className="flex items-center gap-3  justify-end">
-
-                  <div className="text-sm text-right">
-                    <div className="font-semibold">{match.team2}</div>
-                  </div>
-                  <Badge
-                    className={`${getResultColor(match.result)} font-bold`}
-                  >
-                    {getResultText(match.result)}
-                  </Badge>
-                </div>
-              </div>
-
-              {/* Stadium */}
-              <div className="mb-4 flex items-center gap-2 text-sm text-gray-400">
-                <MapPinIcon className="h-4 w-4" />
-                <span>{match.stadium}</span>
-              </div>
-
-              {/* Stats Grid */}
-              <div className="mb-4 grid grid-cols-4 gap-4 border-t border-b border-border py-4">
-                <div className="text-center">
-                  <div className="text-lg font-bold text-white">
-                    {match.goals}
-                  </div>
-                  <div className="text-xs text-gray-400">Goals</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-lg font-bold text-white">
-                    {match.assists}
-                  </div>
-                  <div className="text-xs text-gray-400">Assists</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-lg font-bold text-white">
-                    {match.passes}
-                  </div>
-                  <div className="text-xs text-gray-400">Passes</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-lg font-bold text-white">
-                    {match.timePlayedMinutes}
-                  </div>
-                  <div className="text-xs text-gray-400">Time Played</div>
-                </div>
-              </div>
-
-              {/* Cards and Accuracy */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  {
-                    <div>
-                      <div className="flex items-center gap-1">
-                        <div className="h-6 w-4 bg-[#FFCC00]" />
-                      </div>
-                      <span>{match.yellowCards}</span>
-                    </div>
-                  }
-                  {
-                    <div>
-                      <div className="flex items-center gap-1">
-                        <div className="h-6 w-4 bg-[#DC143C]" />
-                      </div>
-                      <span>{match.redCards}</span>
-                    </div>
-                  }
-                </div>
-                <div className="text-right text-sm">
-                  <div className="font-semibold text-white">
-                    {match.passAccuracy}%
-                  </div>
-                  <div className="text-xs text-gray-400">Pass Accuracy</div>
-                </div>
-              </div>
-            </Card>
-          ))}
-        </div>
-
-        {/* Right Column - Performance Cards */}
-        <div className="space-y-4">
+        {/* top 2 rows */}
+        <div className="space-y-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
           {/* Overall Performance */}
           <Card className="border-0 bg-gradient-to-br from-[#1B4D2E] to-[#0F3B1F] p-6 text-white rounded-lg">
             <div className="mb-4 text-sm font-semibold text-[#00FF62]">
@@ -382,6 +252,121 @@ function SportsAnalycies() {
             </div>
           </Card>
         </div>
+        {/* bottom row */}
+        <div className="  grid grid-cols-1  xl:grid-cols-2 gap-5">
+          {matchesData.map((match, idx) => (
+            <Card
+              key={idx}
+              className="border border-border bg-black p-6 text-white rounded-lg"
+            >
+              {/* Header Row */}
+              <div className="mb-4 flex items-center justify-between ">
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2 text-sm">
+                    <CalendarIcon className="h-4 w-4 text-gray-400" />
+                    <span className="text-gray-400">{match.date}</span>
+                  </div>
+                  <Badge className="bg-gray-800 text-gray-300 hover:bg-gray-700">
+                    {match.league}
+                  </Badge>
+                </div>
+                <div className="text-right">
+                  <div className="text-lg font-bold text-[#00FF62]">
+                    {match.rating}
+                  </div>
+                  <div className="text-xs text-gray-400">Rating</div>
+                </div>
+              </div>
+
+              {/* Teams and Score */}
+              <div className="mb-4 flex items-center justify-start">
+                <div className="flex items-center gap-3 ">
+                  <div className="text-sm">
+                    <div className="font-semibold">{match.team1}</div>
+                  </div>
+                </div>
+                <div className="mx-4 text-center bg-cardBg p-3 px-5 rounded-lg -mt-8">
+                  <div className="text-xl font-bold">{match.score}</div>
+                </div>
+                <div className="flex items-center gap-3  justify-end">
+
+                  <div className="text-sm text-right">
+                    <div className="font-semibold">{match.team2}</div>
+                  </div>
+                  <Badge
+                    className={`${getResultColor(match.result)} font-bold`}
+                  >
+                    {getResultText(match.result)}
+                  </Badge>
+                </div>
+              </div>
+
+              {/* Stadium */}
+              <div className=" flex items-center gap-2 text-sm text-gray-400">
+                <MapPinIcon className="h-4 w-4" />
+                <span>{match.stadium}</span>
+              </div>
+
+              {/* Stats Grid */}
+              <div className="mb-4 grid grid-cols-4 gap-4 border-t border-b border-border py-4">
+                <div className="text-center">
+                  <div className="text-lg font-bold text-white">
+                    {match.goals}
+                  </div>
+                  <div className="text-xs text-gray-400">Goals</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-lg font-bold text-white">
+                    {match.assists}
+                  </div>
+                  <div className="text-xs text-gray-400">Assists</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-lg font-bold text-white">
+                    {match.passes}
+                  </div>
+                  <div className="text-xs text-gray-400">Passes</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-lg font-bold text-white">
+                    {match.timePlayedMinutes}
+                  </div>
+                  <div className="text-xs text-gray-400">Time Played</div>
+                </div>
+              </div>
+
+              {/* Cards and Accuracy */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  {
+                    <div>
+                      <div className="flex items-center gap-1">
+                        <div className="h-6 w-4 bg-[#FFCC00]" />
+                      </div>
+                      <span>{match.yellowCards}</span>
+                    </div>
+                  }
+                  {
+                    <div>
+                      <div className="flex items-center gap-1">
+                        <div className="h-6 w-4 bg-[#DC143C]" />
+                      </div>
+                      <span>{match.redCards}</span>
+                    </div>
+                  }
+                </div>
+                <div className="text-right text-sm">
+                  <div className="font-semibold text-white">
+                    {match.passAccuracy}%
+                  </div>
+                  <div className="text-xs text-gray-400">Pass Accuracy</div>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+
+
       </div>
     </div>
   );

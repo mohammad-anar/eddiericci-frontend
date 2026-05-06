@@ -42,7 +42,7 @@ const skillCategories: SkillCategory[] = [
       { name: "Teamwork", value: 89 },
       { name: "Work Rate", value: 87 },
       { name: "Decisions", value: 85 },
-      { name: "Concentration", value: 83 },
+      { name: "Att. Position", value: 83 },
     ],
   },
   {
@@ -88,15 +88,14 @@ export function SkillsAttributes() {
         <div className="grid grid-cols-4 gap-8">
           {skillCategories.map((category) => (
             <div key={category.category} className={`space-y-4 pl-6`}>
-              <h2 className={`text-xl border-l-4 font-heading ${
-                        category.category === "Technical"
-                          ? "border-blue"
-                          : category.category === "Physical"
-                            ? "border-red"
-                            : category.category === "Tactical"
-                              ? "border-primary"
-                              : "border-yellow"
-                      } pl-4  text-foreground`}>
+              <h2 className={`text-xl border-l-4 font-heading ${category.category === "Technical"
+                ? "border-blue"
+                : category.category === "Physical"
+                  ? "border-red"
+                  : category.category === "Tactical"
+                    ? "border-primary"
+                    : "border-yellow"
+                } pl-4  text-foreground`}>
                 {category.category}
               </h2>
 
@@ -113,15 +112,14 @@ export function SkillsAttributes() {
                     </div>
                     <Progress
                       value={skill.value}
-                      className={`h-2 ${
-                        category.category === "Technical"
-                          ? "[&>div]:bg-blue"
-                          : category.category === "Physical"
-                            ? "[&>div]:bg-red"
-                            : category.category === "Tactical"
-                              ? "[&>div]:bg-primary"
-                              : "[&>div]:bg-yellow"
-                      }`}
+                      className={`h-2 ${category.category === "Technical"
+                        ? "[&>div]:bg-blue"
+                        : category.category === "Physical"
+                          ? "[&>div]:bg-red"
+                          : category.category === "Tactical"
+                            ? "[&>div]:bg-primary"
+                            : "[&>div]:bg-yellow"
+                        }`}
                       style={{ background: "#ffffff" }}
                     />
                   </div>

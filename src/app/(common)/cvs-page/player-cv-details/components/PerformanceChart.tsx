@@ -29,33 +29,35 @@ const CustomTooltip = ({ active, payload }: any) => {
 
 const PerformanceChart = ({ title, percentage, data }: PerformanceChartProps) => {
   return (
-    <div className="flex flex-col items-center">
-      <ResponsiveContainer width={280} height={280}>
-        <PieChart>
-          <Pie
-            data={data}
-            cx="50%"
-            cy="50%"
-            innerRadius={60}
-            outerRadius={90}
-            paddingAngle={2}
-            dataKey="value"
-            startAngle={90}
-            endAngle={-270}
-          >
-            {data.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={entry.color} />
-            ))}
-            <Label
-              value={`${percentage}%`}
-              position="center"
-              fill="white"
-              className="text-4xl font-bold"
-            />
-          </Pie>
-          <Tooltip content={<CustomTooltip />} />
-        </PieChart>
-      </ResponsiveContainer>
+    <div className="flex flex-col items-center w-full">
+      <div className="w-full aspect-square max-w-[400px]">
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie
+              data={data}
+              cx="50%"
+              cy="50%"
+              innerRadius="65%"
+              outerRadius="95%"
+              paddingAngle={2}
+              dataKey="value"
+              startAngle={90}
+              endAngle={-270}
+            >
+              {data.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.color} />
+              ))}
+              <Label
+                value={`${percentage}%`}
+                position="center"
+                fill="white"
+                className="text-4xl md:text-5xl font-bold"
+              />
+            </Pie>
+            <Tooltip content={<CustomTooltip />} />
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
 
       {/* ✅ Added Legend */}
       <div className="flex flex-wrap justify-center gap-4 mt-4">
@@ -99,9 +101,9 @@ export function PerformanceAnalytics() {
         PERFORMANCE ANALYTICS
       </h1>
 
-      <div className=" bg-black/30 rounded-2xl ">
+      <div className=" bg-black/30 rounded-2xl p-6 md:p-10">
         {/* Charts Grid */}
-        <div className="grid grid-cols-2 gap-8 mb-12 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-12 items-start">
           {/* Chart 1 - Skills */}
           <div className="flex justify-center">
             <PerformanceChart

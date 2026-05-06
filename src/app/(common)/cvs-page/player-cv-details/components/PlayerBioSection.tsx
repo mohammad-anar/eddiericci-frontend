@@ -532,7 +532,7 @@ const PlayerBioSection = () => {
               <h2 className="text-lg text-center font-heading font-normal mb-4">
                 Career Highlights
               </h2>
-              <div className="space-y-2 text-xs text-gray-300">
+              <div className="space-y-2 text-xs text-gray-300 border-l-2 border-green-600">
                 <div className="flex gap-2">
                   <Image src={trofeeIcon} alt="trofeeImage" />
                   <span>2019 - BRAZILIAN CHAMPIONSHIP - FLAMENGO</span>

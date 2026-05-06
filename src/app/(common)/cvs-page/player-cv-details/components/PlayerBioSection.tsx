@@ -1,5 +1,4 @@
 "use client";
-import { ChevronDown } from "lucide-react";
 import Image from "next/image";
 import playerImage from "@/assets/cvs-page/id/player-image.png";
 import flagImage from "@/assets/cvs-page/id/flag.png";
@@ -15,9 +14,66 @@ import trofeeIcon from "@/assets/cvs-page/id/trofeeIcon.png";
 import flagFr from "@/assets/cvs-page/id/flag-fr.png";
 import flagIt from "@/assets/cvs-page/id/flag-itally.png";
 import { useState } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+
+const ALL_STYLES = [
+  { id: "technical", label: "Technical" },
+  { id: "finesse-shot", label: "Finesse Shot" },
+  { id: "incisive-pass", label: "Incisive Pass" },
+  { id: "long-ball", label: "Long Ball Specialist" },
+  { id: "speedster", label: "Speedster" },
+  { id: "power-header", label: "Power Header" },
+  { id: "interceptor", label: "Interceptor" },
+  { id: "block", label: "Block Specialist" },
+  { id: "clinical-finisher", label: "Clinical Finisher" },
+  { id: "dribbling", label: "Dribbling Wizard" },
+  { id: "set-piece", label: "Set Piece Specialist" },
+  { id: "playmaker", label: "Playmaker" },
+];
 
 const PlayerBioSection = () => {
   const [isPositionMap, setIsPositionMap] = useState(true);
+  const [position, setPosition] = useState("Defensive Midfielder");
+  const [selectedStyleIds, setSelectedStyleIds] = useState<string[]>([
+    "technical",
+    "finesse-shot",
+    "incisive-pass",
+  ]);
+
+  const toggleStyle = (id: string) => {
+    setSelectedStyleIds((prev) => {
+      if (prev.includes(id)) {
+        return prev.filter((styleId) => styleId !== id);
+      }
+      if (prev.length < 5) {
+        return [...prev, id];
+      }
+      return prev;
+    });
+  };
+
+  const orderedSelectedStyles = selectedStyleIds.map(
+    (id) => ALL_STYLES.find((s) => s.id === id)!
+  );
+
+  const styleBadges = [badge1, badge2, badge3];
   return (
     <>
       <div className="container">
@@ -49,11 +105,11 @@ const PlayerBioSection = () => {
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-400">Birth Country</span>
-                  <span className="flex items-center gap-2">France <Image src={flagFr} className="w-5 h-auto" alt="italy flag"/></span>
+                  <span className="flex items-center gap-2">France <Image src={flagFr} className="w-5 h-auto" alt="italy flag" /></span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-400">Dual Nationality</span>
-                  <span className="flex items-center gap-2">Italy <Image src={flagIt} className="w-5 h-auto" alt="italy flag"/></span>
+                  <span className="flex items-center gap-2">Italy <Image src={flagIt} className="w-5 h-auto" alt="italy flag" /></span>
                 </div>
               </div>
             </div>
@@ -182,10 +238,39 @@ const PlayerBioSection = () => {
 
             {/* Position Selector */}
             <div className="mb-8">
-              <button className="flex items-center gap-2 border border-border px-4 py-2 rounded hover:bg-gray-900">
-                <span>Defensive Midfielder</span>
-                <ChevronDown size={16} />
-              </button>
+              <Select value={position} onValueChange={setPosition}>
+                <SelectTrigger className="border-border px-4 py-2 rounded hover:bg-gray-900 bg-transparent text-foreground">
+                  <SelectValue placeholder="Select position" />
+                </SelectTrigger>
+                <SelectContent className="bg-cardBg border-border text-foreground">
+                  <SelectGroup className="mb-2">
+                    <SelectLabel className="text-gray-400 font-bold text-xs">Goalkeepers</SelectLabel>
+                    <SelectItem value="Goalkeeper">Goalkeeper</SelectItem>
+                  </SelectGroup>
+                  <SelectGroup className="mb-2">
+                    <SelectLabel className="text-gray-400 font-bold text-xs">Defenders</SelectLabel>
+                    <SelectItem value="Center Back">Center Back</SelectItem>
+                    <SelectItem value="Right Back">Right Back</SelectItem>
+                    <SelectItem value="Left Back">Left Back</SelectItem>
+                    <SelectItem value="Wing Back">Wing Back</SelectItem>
+                  </SelectGroup>
+                  <SelectGroup className="mb-2">
+                    <SelectLabel className="text-gray-400 font-bold text-xs">Midfielders</SelectLabel>
+                    <SelectItem value="Defensive Midfielder">Defensive Midfielder</SelectItem>
+                    <SelectItem value="Central Midfielder">Central Midfielder</SelectItem>
+                    <SelectItem value="Attacking Midfielder">Attacking Midfielder</SelectItem>
+                    <SelectItem value="Right Midfielder">Right Midfielder</SelectItem>
+                    <SelectItem value="Left Midfielder">Left Midfielder</SelectItem>
+                  </SelectGroup>
+                  <SelectGroup className="mb-2">
+                    <SelectLabel className="text-gray-400 font-bold text-xs">Forwards</SelectLabel>
+                    <SelectItem value="Right Winger">Right Winger</SelectItem>
+                    <SelectItem value="Left Winger">Left Winger</SelectItem>
+                    <SelectItem value="Center Forward">Center Forward</SelectItem>
+                    <SelectItem value="Striker">Striker</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
             </div>
 
             {/* Player Image */}
@@ -202,32 +287,61 @@ const PlayerBioSection = () => {
             {/* Player Style Section */}
             <div className="w-full space-y-6">
               <div className="text-center">
-                <h3 className="text-2xl font-bold font-heading mb-6">
-                  Player Style
-                </h3>
+                <div className="flex items-center justify-center gap-4 mb-6">
+                  <h3 className="text-2xl font-bold font-heading">
+                    Player Style
+                  </h3>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" size="sm" className="h-7 text-xs">
+                        Edit
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="bg-cardBg border-border text-foreground">
+                      <DialogHeader>
+                        <DialogTitle>Select Player Styles (Max 3)</DialogTitle>
+                      </DialogHeader>
+                      <div className="grid grid-cols-2 gap-4 py-4">
+                        {ALL_STYLES.map((style) => (
+                          <div
+                            key={style.id}
+                            className="flex items-center space-x-2"
+                          >
+                            <Checkbox
+                              id={style.id}
+                              checked={selectedStyleIds.includes(style.id)}
+                              onCheckedChange={() => toggleStyle(style.id)}
+                              disabled={
+                                !selectedStyleIds.includes(style.id) &&
+                                selectedStyleIds.length >= 5
+                              }
+                            />
+                            <Label
+                              htmlFor={style.id}
+                              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                            >
+                              {style.label}
+                            </Label>
+                          </div>
+                        ))}
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </div>
 
                 <div className="space-y-4">
-                  {/* Technical */}
-                  <div className="flex justify-center">
-                    <Image src={badge1} className="w-20 h-20" alt="badge1" />
-                  </div>
-                  <p className="text-lg font-heading">Technical</p>
-
-                  {/* Finesse Shot */}
-                  <div className="flex justify-center">
-                    <div className="flex justify-center">
-                      <Image src={badge2} className="w-20 h-20" alt="badge1" />
+                  {orderedSelectedStyles.map((style, index) => (
+                    <div key={style.id} className="space-y-4">
+                      <div className="flex justify-center">
+                        <Image
+                          src={styleBadges[index >= 3 ? index - 2 : index]}
+                          className="w-20 h-20"
+                          alt={style.label}
+                        />
+                      </div>
+                      <p className="text-lg font-heading">{style.label}</p>
                     </div>
-                  </div>
-                  <p className="text-lg font-heading">Finesse Shot</p>
-
-                  {/* Incisive Pass */}
-                  <div className="flex justify-center">
-                    <div className="flex justify-center">
-                      <Image src={badge3} className="w-20 h-20" alt="badge1" />
-                    </div>
-                  </div>
-                  <p className="text-lg font-heading">Incisive Pass</p>
+                  ))}
                 </div>
               </div>
             </div>
@@ -420,23 +534,23 @@ const PlayerBioSection = () => {
               </h2>
               <div className="space-y-2 text-xs text-gray-300">
                 <div className="flex gap-2">
-                  <Image src={trofeeIcon} alt="trofeeImage"/>
+                  <Image src={trofeeIcon} alt="trofeeImage" />
                   <span>2019 - BRAZILIAN CHAMPIONSHIP - FLAMENGO</span>
                 </div>
                 <div className="flex gap-2">
-                  <Image src={trofeeIcon} alt="trofeeImage"/>
+                  <Image src={trofeeIcon} alt="trofeeImage" />
                   <span>2010 - CAMPEONATA - PAULISTA - CORINTHIANS</span>
                 </div>
                 <div className="flex gap-2">
-                  <Image src={trofeeIcon} alt="trofeeImage"/>
+                  <Image src={trofeeIcon} alt="trofeeImage" />
                   <span>2015 - BRAZILIAN CHAMPIONSHIP - FLAMENGO FC</span>
                 </div>
                 <div className="flex gap-2">
-                  <Image src={trofeeIcon} alt="trofeeImage"/>
+                  <Image src={trofeeIcon} alt="trofeeImage" />
                   <span>2014 PAULISTA CUP - SAO PAULO FC</span>
                 </div>
                 <div className="flex gap-2">
-                  <Image src={trofeeIcon} alt="trofeeImage"/>
+                  <Image src={trofeeIcon} alt="trofeeImage" />
                   <span>2017/2020 - CAMPEONATO CARIOCA - VASCO FC</span>
                 </div>
               </div>

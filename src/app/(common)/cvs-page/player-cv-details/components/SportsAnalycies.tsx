@@ -132,7 +132,7 @@ const getResultText = (result: "W" | "D" | "L") => {
   }
 };
 
-export default function SportsAnalycies() {
+function SportsAnalycies() {
   const wins = matchesData.filter((m) => m.result === "W").length;
   const draws = matchesData.filter((m) => m.result === "D").length;
   const losses = matchesData.filter((m) => m.result === "L").length;
@@ -145,7 +145,7 @@ export default function SportsAnalycies() {
 
   const avgPassAccuracy = Math.round(
     matchesData.reduce((sum, m) => sum + m.passAccuracy, 0) /
-      matchesData.length,
+    matchesData.length,
   );
   const avgTackles = (2.4).toFixed(1);
   const avgInterceptions = (2.4).toFixed(1);
@@ -194,7 +194,7 @@ export default function SportsAnalycies() {
                   <div className="text-xl font-bold">{match.score}</div>
                 </div>
                 <div className="flex items-center gap-3  justify-end">
-                  
+
                   <div className="text-sm text-right">
                     <div className="font-semibold">{match.team2}</div>
                   </div>
@@ -386,3 +386,6 @@ export default function SportsAnalycies() {
     </div>
   );
 }
+
+
+export default SportsAnalycies;

@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { usePlayerStats } from './FullEditablePage'
 import {
   Tabs,
   TabsContent,
@@ -19,57 +20,106 @@ import {
 
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
+import { Input } from '@/components/ui/input'
 
 interface MetricRow {
   category: string
   score: number
   trend: number
-  grade: 'Excellent' | 'Good'
+  grade: 'Excellent' | 'Good' | 'Average' | 'Poor'
 }
+
+const getGrade = (score: number): 'Excellent' | 'Good' | 'Average' | 'Poor' => {
+  if (score >= 90) return 'Excellent';
+  if (score >= 80) return 'Good';
+  if (score >= 70) return 'Average';
+  return 'Poor';
+};
+
+const getGradeColor = (grade: string) => {
+  switch (grade) {
+    case 'Excellent': return 'bg-primary text-black';
+    case 'Good': return 'bg-blue text-white';
+    case 'Average': return 'bg-yellow text-black';
+    case 'Poor': return 'bg-red text-white';
+    default: return 'bg-gray-500 text-white';
+  }
+};
+
+const getProgressColor = (grade: string) => {
+  switch (grade) {
+    case 'Excellent': return '[&>div]:bg-primary';
+    case 'Good': return '[&>div]:bg-blue';
+    case 'Average': return '[&>div]:bg-yellow';
+    case 'Poor': return '[&>div]:bg-red';
+    default: return '[&>div]:bg-gray-500';
+  }
+};
 
 const METRIC_CATEGORIES = ['Perception', 'Vision', 'Intelligence']
 
-const METRICS_DATA: Record<string, MetricRow[]> = {
-  Perception: [
-    { category: 'Space Awareness', score: 92, trend: 3, grade: 'Excellent' },
-    { category: 'Opponent Reading', score: 88, trend: 5, grade: 'Excellent' },
-    { category: 'Game Flow Understanding', score: 85, trend: 2, grade: 'Good' },
-    { category: 'Pressure Handling', score: 90, trend: 4, grade: 'Excellent' },
-  ],
-  Vision: [
-    { category: 'Peripheral Vision', score: 87, trend: 3, grade: 'Excellent' },
-    { category: 'Focus Control', score: 92, trend: 2, grade: 'Excellent' },
-    { category: 'Pattern Recognition', score: 89, trend: 4, grade: 'Good' },
-    { category: 'Decision Speed', score: 91, trend: 5, grade: 'Excellent' },
-    { category: 'Visual Acuity', score: 86, trend: 1, grade: 'Good' },
-  ],
-  Intelligence: [
-    { category: 'Tactical Analysis', score: 94, trend: 3, grade: 'Excellent' },
-    { category: 'Strategy Planning', score: 89, trend: 2, grade: 'Excellent' },
-    { category: 'Adaptation Rate', score: 91, trend: 4, grade: 'Good' },
-    { category: 'Risk Assessment', score: 88, trend: 5, grade: 'Excellent' },
-    { category: 'Learning Curve', score: 90, trend: 3, grade: 'Good' },
-  ],
-}
-
-export function MetricsAnalysis() {
+export function MetricsAnalysis({ editable = false }: { editable?: boolean }) {
   const [activeTab, setActiveTab] = useState('Perception')
+  const [metricsData, setMetricsData] = useState<Record<string, MetricRow[]>>({
+    Perception: [
+      { category: 'Space Awareness', score: 92, trend: 3, grade: 'Excellent' },
+      { category: 'Opponent Reading', score: 88, trend: 5, grade: 'Good' },
+      { category: 'Game Flow Understanding', score: 85, trend: 2, grade: 'Good' },
+      { category: 'Pressure Handling', score: 90, trend: 4, grade: 'Excellent' },
+    ],
+    Vision: [
+      { category: 'Peripheral Vision', score: 87, trend: 3, grade: 'Good' },
+      { category: 'Focus Control', score: 92, trend: 2, grade: 'Excellent' },
+      { category: 'Pattern Recognition', score: 89, trend: 4, grade: 'Good' },
+      { category: 'Decision Speed', score: 91, trend: 5, grade: 'Excellent' },
+      { category: 'Visual Acuity', score: 86, trend: 1, grade: 'Good' },
+    ],
+    Intelligence: [
+      { category: 'Tactical Analysis', score: 94, trend: 3, grade: 'Excellent' },
+      { category: 'Strategy Planning', score: 89, trend: 2, grade: 'Good' },
+      { category: 'Adaptation Rate', score: 91, trend: 4, grade: 'Excellent' },
+      { category: 'Risk Assessment', score: 88, trend: 5, grade: 'Good' },
+      { category: 'Learning Curve', score: 90, trend: 3, grade: 'Excellent' },
+    ],
+  })
+
+  const { setMetricsAvg } = usePlayerStats();
+
+  useEffect(() => {
+    const allRows = Object.values(metricsData).flat();
+    const avg = allRows.reduce((sum, r) => sum + r.score, 0) / allRows.length;
+    setMetricsAvg(Math.round(avg));
+  }, [metricsData, setMetricsAvg]);
+
+  const handleUpdate = (tab: string, idx: number, field: keyof MetricRow, value: any) => {
+    setMetricsData(prev => {
+      const newData = { ...prev };
+      const row = { ...newData[tab][idx] };
+      
+      if (field === 'score') {
+        const score = Math.max(0, Math.min(100, parseInt(value) || 0));
+        row.score = score;
+        row.grade = getGrade(score);
+      } else if (field === 'trend') {
+        row.trend = Math.max(0, parseInt(value) || 0);
+      } else {
+        (row as any)[field] = value;
+      }
+      
+      newData[tab][idx] = row;
+      return newData;
+    });
+  };
 
   return (
     <div className="w-full py-16 px-6 bg-background">
       <div className="container mx-auto">
-
-        {/* Heading */}
         <h2 className="font-heading text-4xl md:text-5xl font-bold text-center text-foreground mb-12 tracking-wider">
           DETAILED ANALYSIS METRICS
         </h2>
 
-        {/* Card */}
         <div className="border border-border rounded-lg  p-8">
-
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-
-            {/* Tabs */}
             <TabsList className="grid w-full grid-cols-3 mb-8 p-1 rounded-full">
               {METRIC_CATEGORIES.map((category) => (
                 <TabsTrigger
@@ -82,18 +132,15 @@ export function MetricsAnalysis() {
               ))}
             </TabsList>
 
-            {/* Table */}
             <TabsContent value={activeTab}>
               <Table className="border border-border">
-
-                {/* Header */}
                 <TableHeader>
                   <TableRow className="border-border">
                     <TableHead className="border-r border-border">
                       Category
                     </TableHead>
                     <TableHead className="text-center border-r border-border">
-                      Score
+                      Score (0-100)
                     </TableHead>
                     <TableHead className="text-center border-r border-border">
                       Trend
@@ -104,42 +151,65 @@ export function MetricsAnalysis() {
                   </TableRow>
                 </TableHeader>
 
-                {/* Body */}
                 <TableBody>
-                  {METRICS_DATA[activeTab].map((metric, idx) => (
+                  {metricsData[activeTab].map((metric, idx) => (
                     <TableRow
                       key={idx}
                       className="border-b border-border hover:bg-[#262626] transition-colors"
                     >
-                      {/* Category */}
                       <TableCell className="font-medium border-r border-border">
-                        {metric.category}
+                        {editable ? (
+                          <Input 
+                            value={metric.category} 
+                            onChange={(e) => handleUpdate(activeTab, idx, 'category', e.target.value)}
+                            className="h-7 text-xs bg-transparent border-none"
+                          />
+                        ) : (
+                          metric.category
+                        )}
                       </TableCell>
 
-                      {/* Score */}
-                      <TableCell className="border-r border-border">
+                      <TableCell className="border-r border-border min-w-[200px]">
                         <div className="flex items-center justify-center gap-3">
-                          <Progress value={metric.score} className="w-16 h-1.5" />
-                          <span className="font-medium text-sm min-w-[35px] text-right">
-                            {metric.score}
-                          </span>
+                          <Progress 
+                            value={metric.score} 
+                            className={`w-32 h-1.5 ${getProgressColor(metric.grade)}`} 
+                          />
+                          {editable ? (
+                            <Input 
+                              type="number" 
+                              min={0}
+                              max={100}
+                              value={metric.score} 
+                              onChange={(e) => handleUpdate(activeTab, idx, 'score', e.target.value)}
+                              className="h-7 w-16 text-xs bg-transparent"
+                            />
+                          ) : (
+                            <span className="font-medium text-sm min-w-[35px] text-right">
+                              {metric.score}
+                            </span>
+                          )}
                         </div>
                       </TableCell>
 
-                      {/* Trend */}
                       <TableCell className="text-center border-r border-border">
-                        <span className="text-primary font-medium text-sm">
-                          +{metric.trend}
-                        </span>
+                        {editable ? (
+                          <Input 
+                            type="number" 
+                            value={metric.trend} 
+                            onChange={(e) => handleUpdate(activeTab, idx, 'trend', e.target.value)}
+                            className="h-7 w-12 text-xs bg-transparent mx-auto"
+                          />
+                        ) : (
+                          <span className="text-primary font-medium text-sm">
+                            +{metric.trend}
+                          </span>
+                        )}
                       </TableCell>
 
-                      {/* Grade */}
                       <TableCell className="text-right">
                         <Badge
-                          className={`font-medium ${metric.grade === 'Excellent'
-                            ? 'bg-primary text-black hover:bg-primary'
-                            : 'bg-blue text-white hover:bg-blue'
-                            }`}
+                          className={`font-medium min-w-[80px] justify-center ${getGradeColor(metric.grade)}`}
                         >
                           {metric.grade}
                         </Badge>
@@ -147,13 +217,11 @@ export function MetricsAnalysis() {
                     </TableRow>
                   ))}
                 </TableBody>
-
               </Table>
             </TabsContent>
-
           </Tabs>
         </div>
       </div>
     </div>
   )
-}
+}

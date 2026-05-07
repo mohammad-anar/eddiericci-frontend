@@ -13,7 +13,8 @@ import positionMap from "@/assets/cvs-page/id/positionmap.png";
 import trofeeIcon from "@/assets/cvs-page/id/trofeeIcon.png";
 import flagFr from "@/assets/cvs-page/id/flag-fr.png";
 import flagIt from "@/assets/cvs-page/id/flag-itally.png";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { usePlayerStats } from "./FullEditablePage";
 import {
   Select,
   SelectContent,
@@ -32,6 +33,10 @@ import {
 } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Progress } from "@/components/ui/progress";
+import { useRef } from "react";
 
 const ALL_STYLES = [
   { id: "technical", label: "Technical" },
@@ -48,28 +53,193 @@ const ALL_STYLES = [
   { id: "playmaker", label: "Playmaker" },
 ];
 
-const PlayerBioSection = ({ editable=false }: { editable?: boolean }) => {
-  const [isPositionMap, setIsPositionMap] = useState(true);
-  const [position, setPosition] = useState("Defensive Midfielder");
-  const [selectedStyleIds, setSelectedStyleIds] = useState<string[]>([
-    "technical",
-    "finesse-shot",
-    "incisive-pass",
-  ]);
+const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
+  const [playerData, setPlayerData] = useState({
+    fullName: "Marcus Silva",
+    dob: "15/03/1996",
+    age: "24",
+    birthCountry: "France",
+    birthCountryFlag: flagFr,
+    dualNationality: "Italy",
+    dualNationalityFlag: flagIt,
+    email: "marcus.silva@email.com",
+    phone: "+351 912 345 678",
+    location: "France",
+    website: "www.k10football.com",
+    height: "1.82",
+    weight: "76",
+    leftLegUsage: 31,
+    rightLegUsage: 87,
+    leftLegImage: leftLeg,
+    rightLegImage: right,
+    languages: [
+      { name: "Portuguese", level: "NATIVE", color: "text-primary" },
+      { name: "English", level: "FLUENT", color: "text-yellow" },
+      { name: "Spanish", level: "INTERMEDIATE", color: "text-orange" },
+    ],
+    rating: 94,
+    playerImage: playerImage,
+    strengths: {
+      pace: 82,
+      shooting: 84,
+      passing: 89,
+      dribbling: 85,
+      defending: 78,
+      physical: 70,
+    },
+    performanceMetrics: {
+      passAccuracy: 92,
+      shootAccuracy: 78,
+      dribbleSuccess: 85,
+      tackleSuccess: 72,
+    },
+    marketValue: "45M",
+    marketTrend: "5 Mln last season",
+    transferStatus: "Active",
+    contractUntil: "June, 2026",
+    agent: "John Morrison",
+    agency: "Elite Sports Mgmt",
+    mainFlag: flagImage,
+    position: "Defensive Midfielder",
+    selectedStyleIds: ["technical", "finesse-shot", "incisive-pass"],
+    careerHighlights: [
+      {
+        year: "2019",
+        title: "BRAZILIAN CHAMPIONSHIP",
+        club: "FLAMENGO",
+        icon: trofeeIcon,
+      },
+      {
+        year: "2010",
+        title: "CAMPEONATA - PAULISTA",
+        club: "CORINTHIANS",
+        icon: trofeeIcon,
+      },
+      {
+        year: "2015",
+        title: "BRAZILIAN CHAMPIONSHIP",
+        club: "FLAMENGO FC",
+        icon: trofeeIcon,
+      },
+      {
+        year: "2014",
+        title: "PAULISTA CUP",
+        club: "SAO PAULO FC",
+        icon: trofeeIcon,
+      },
+      {
+        year: "2017/2020",
+        title: "CAMPEONATO CARIOCA",
+        club: "VASCO FC",
+        icon: trofeeIcon,
+      },
+    ],
+    seasonStats: {
+      matches: 28,
+      goals: 8,
+      assists: 16,
+      avgRating: 8.4,
+    },
+  });
 
-  const toggleStyle = (id: string) => {
-    setSelectedStyleIds((prev) => {
-      if (prev.includes(id)) {
-        return prev.filter((styleId) => styleId !== id);
+  const { setBioRating } = usePlayerStats();
+
+  useEffect(() => {
+    setBioRating(playerData.rating);
+  }, [playerData.rating, setBioRating]);
+
+  const [isPositionMap, setIsPositionMap] = useState(true);
+
+  const handleUpdate = (field: string, value: any) => {
+    setPlayerData((prev) => {
+      const keys = field.split(".");
+      if (keys.length === 1) return { ...prev, [field]: value };
+
+      const newState = { ...prev };
+      let current: any = newState;
+      for (let i = 0; i < keys.length - 1; i++) {
+        current[keys[i]] = { ...current[keys[i]] };
+        current = current[keys[i]];
       }
-      if (prev.length < 5) {
-        return [...prev, id];
-      }
-      return prev;
+      current[keys[keys.length - 1]] = value;
+      return newState;
     });
   };
 
-  const orderedSelectedStyles = selectedStyleIds.map(
+  const handleImageUpload = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    field: string
+  ) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        handleUpdate(field, reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const EditableImage = ({
+    src,
+    alt,
+    className,
+    field,
+    width,
+    height,
+  }: {
+    src: any;
+    alt: string;
+    className?: string;
+    field: string;
+    width?: number;
+    height?: number;
+  }) => {
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    return (
+      <div
+        className={`relative group ${editable ? "cursor-pointer" : ""}`}
+        onClick={() => editable && fileInputRef.current?.click()}
+      >
+        <Image
+          src={src}
+          alt={alt}
+          className={className}
+          width={width}
+          height={height}
+          layout={width || height ? undefined : "fill"}
+        />
+        {editable && (
+          <>
+            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity rounded">
+              <span className="text-[10px] text-white">Change</span>
+            </div>
+            <input
+              type="file"
+              ref={fileInputRef}
+              className="hidden"
+              accept="image/*"
+              onChange={(e) => handleImageUpload(e, field)}
+            />
+          </>
+        )}
+      </div>
+    );
+  };
+
+  const toggleStyle = (id: string) => {
+    const currentStyles = playerData.selectedStyleIds;
+    if (currentStyles.includes(id)) {
+      handleUpdate(
+        "selectedStyleIds",
+        currentStyles.filter((styleId) => styleId !== id)
+      );
+    } else if (currentStyles.length < 5) {
+      handleUpdate("selectedStyleIds", [...currentStyles, id]);
+    }
+  };
+
+  const orderedSelectedStyles = playerData.selectedStyleIds.map(
     (id) => ALL_STYLES.find((s) => s.id === id)!
   );
 
@@ -85,120 +255,287 @@ const PlayerBioSection = ({ editable=false }: { editable?: boolean }) => {
         <div className="grid grid-cols-12 gap-6">
           {/* LEFT COLUMN */}
           <div className="col-span-3 h-fit space-y-6 bg-cardBg">
-            {/* Personal Information */}
             <div className=" p-6">
               <h2 className="text-lg text-center font-heading font-normal mb-4">
                 Personal Information
               </h2>
               <div className="space-y-3 text-sm">
-                <div className="flex justify-between">
+                <div className="flex justify-between items-center">
                   <span className="text-gray-400">Full Name</span>
-                  <span>Marcus Silva</span>
+                  {editable ? (
+                    <Input
+                      value={playerData.fullName}
+                      onChange={(e) => handleUpdate("fullName", e.target.value)}
+                      className="h-7 text-xs w-32"
+                    />
+                  ) : (
+                    <span>{playerData.fullName}</span>
+                  )}
                 </div>
-                <div className="flex justify-between">
+                <div className="flex justify-between items-center">
                   <span className="text-gray-400">Date of Birth</span>
-                  <span>15/03/1996</span>
+                  {editable ? (
+                    <Input
+                      value={playerData.dob}
+                      onChange={(e) => handleUpdate("dob", e.target.value)}
+                      className="h-7 text-xs w-32"
+                    />
+                  ) : (
+                    <span>{playerData.dob}</span>
+                  )}
                 </div>
-                <div className="flex justify-between">
+                <div className="flex justify-between items-center">
                   <span className="text-gray-400">Age</span>
-                  <span>24 years</span>
+                  {editable ? (
+                    <Input
+                      value={playerData.age}
+                      onChange={(e) => handleUpdate("age", e.target.value)}
+                      className="h-7 text-xs w-32"
+                    />
+                  ) : (
+                    <span>{playerData.age} years</span>
+                  )}
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-400">Birth Country</span>
-                  <span className="flex items-center gap-2">France <Image src={flagFr} className="w-5 h-auto" alt="italy flag" /></span>
+                  <div className="flex items-center gap-2">
+                    {editable ? (
+                      <Input
+                        value={playerData.birthCountry}
+                        onChange={(e) =>
+                          handleUpdate("birthCountry", e.target.value)
+                        }
+                        className="h-7 text-xs w-20"
+                      />
+                    ) : (
+                      <span>{playerData.birthCountry}</span>
+                    )}
+                    <div className="relative w-5 h-4">
+                      <EditableImage
+                        src={playerData.birthCountryFlag}
+                        alt="birth country flag"
+                        field="birthCountryFlag"
+                      />
+                    </div>
+                  </div>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-400">Dual Nationality</span>
-                  <span className="flex items-center gap-2">Italy <Image src={flagIt} className="w-5 h-auto" alt="italy flag" /></span>
+                  <div className="flex items-center gap-2">
+                    {editable ? (
+                      <Input
+                        value={playerData.dualNationality}
+                        onChange={(e) =>
+                          handleUpdate("dualNationality", e.target.value)
+                        }
+                        className="h-7 text-xs w-20"
+                      />
+                    ) : (
+                      <span>{playerData.dualNationality}</span>
+                    )}
+                    <div className="relative w-5 h-4">
+                      <EditableImage
+                        src={playerData.dualNationalityFlag}
+                        alt="dual nationality flag"
+                        field="dualNationalityFlag"
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Contact */}
             <div className="p-6">
               <h2 className="text-lg text-center font-heading font-normal mb-4">
                 Contact
               </h2>
               <div className="space-y-2 text-sm text-primary">
-                <div>📧 marcus.silva@email.com</div>
-                <div>📱 +351 912 345 678</div>
-                <div>📍 France</div>
-                <div>🌐 www.k10football.com</div>
+                <div className="flex items-center gap-2">
+                  <span>📧</span>
+                  {editable ? (
+                    <Input
+                      value={playerData.email}
+                      onChange={(e) => handleUpdate("email", e.target.value)}
+                      className="h-7 text-xs bg-transparent border-primary/30"
+                    />
+                  ) : (
+                    <span>{playerData.email}</span>
+                  )}
+                </div>
+                <div className="flex items-center gap-2">
+                  <span>📱</span>
+                  {editable ? (
+                    <Input
+                      value={playerData.phone}
+                      onChange={(e) => handleUpdate("phone", e.target.value)}
+                      className="h-7 text-xs bg-transparent border-primary/30"
+                    />
+                  ) : (
+                    <span>{playerData.phone}</span>
+                  )}
+                </div>
+                <div className="flex items-center gap-2">
+                  <span>📍</span>
+                  {editable ? (
+                    <Input
+                      value={playerData.location}
+                      onChange={(e) => handleUpdate("location", e.target.value)}
+                      className="h-7 text-xs bg-transparent border-primary/30"
+                    />
+                  ) : (
+                    <span>{playerData.location}</span>
+                  )}
+                </div>
+                <div className="flex items-center gap-2">
+                  <span>🌐</span>
+                  {editable ? (
+                    <Input
+                      value={playerData.website}
+                      onChange={(e) => handleUpdate("website", e.target.value)}
+                      className="h-7 text-xs bg-transparent border-primary/30"
+                    />
+                  ) : (
+                    <span>{playerData.website}</span>
+                  )}
+                </div>
               </div>
             </div>
 
-            {/* Physical Stats */}
             <div className="p-6">
               <h2 className="text-lg text-center font-heading font-normal mb-4">
                 Physical Stats
               </h2>
               <div className="flex justify-around text-center mb-6">
                 <div>
-                  <div className="text-2xl font-bold text-primary">1.82</div>
+                  {editable ? (
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={playerData.height}
+                      onChange={(e) => handleUpdate("height", e.target.value)}
+                      className="h-8 text-center font-bold text-primary w-16 mb-1"
+                    />
+                  ) : (
+                    <div className="text-2xl font-bold text-primary">
+                      {playerData.height}
+                    </div>
+                  )}
                   <div className="text-xs text-gray-400">HEIGHT (m)</div>
                 </div>
                 <div>
-                  <div className="text-2xl font-bold text-primary">76</div>
+                  {editable ? (
+                    <Input
+                      type="number"
+                      value={playerData.weight}
+                      onChange={(e) => handleUpdate("weight", e.target.value)}
+                      className="h-8 text-center font-bold text-primary w-16 mb-1"
+                    />
+                  ) : (
+                    <div className="text-2xl font-bold text-primary">
+                      {playerData.weight}
+                    </div>
+                  )}
                   <div className="text-xs text-gray-400">WEIGHT (kg)</div>
                 </div>
               </div>
 
               <div className=" grid grid-cols-2 gap-6">
                 <div className="border-2 bg-gray-600/30 p-3 rounded-xl">
-                  <Image
-                    src={leftLeg}
-                    className="mb-2 mx-auto"
-                    alt="leg with ball"
-                  />
+                  <div className="relative w-full h-16 mb-2">
+                    <EditableImage
+                      src={playerData.leftLegImage}
+                      alt="left leg"
+                      field="leftLegImage"
+                      className="object-contain"
+                    />
+                  </div>
                   <div className="flex justify-between text-sm mb-1">
                     <span>Left</span>
-                    <span className="text-primary">31%</span>
+                    <span className="text-primary">
+                      {playerData.leftLegUsage}%
+                    </span>
                   </div>
-                  <div className="h-2 bg-gray-700 rounded overflow-hidden">
-                    <div
-                      className="h-full bg-primary"
-                      style={{ width: "31%" }}
-                    ></div>
-                  </div>
+                  {editable ? (
+                    <input
+                      type="range"
+                      value={playerData.leftLegUsage}
+                      onChange={(e) =>
+                        handleUpdate("leftLegUsage", parseInt(e.target.value))
+                      }
+                      className="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-primary"
+                    />
+                  ) : (
+                    <Progress value={playerData.leftLegUsage} />
+                  )}
                 </div>
                 <div className="border-2 bg-gray-600/30 p-3 rounded-xl">
-                  <Image
-                    src={right}
-                    className="mb-2 mx-auto"
-                    alt="leg with ball"
-                  />
+                  <div className="relative w-full h-16 mb-2">
+                    <EditableImage
+                      src={playerData.rightLegImage}
+                      alt="right leg"
+                      field="rightLegImage"
+                      className="object-contain"
+                    />
+                  </div>
                   <div className="flex justify-between text-sm mb-1">
                     <span>Right</span>
-                    <span className="text-primary">87%</span>
+                    <span className="text-primary">
+                      {playerData.rightLegUsage}%
+                    </span>
                   </div>
-                  <div className="h-2 bg-gray-700 rounded overflow-hidden">
-                    <div
-                      className="h-full bg-primary"
-                      style={{ width: "87%" }}
-                    ></div>
-                  </div>
+                  {editable ? (
+                    <input
+                      type="range"
+                      value={playerData.rightLegUsage}
+                      onChange={(e) =>
+                        handleUpdate("rightLegUsage", parseInt(e.target.value))
+                      }
+                      className="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-primary"
+                    />
+                  ) : (
+                    <Progress value={playerData.rightLegUsage} />
+                  )}
                 </div>
               </div>
             </div>
 
-            {/* Languages */}
             <div className="p-6">
               <h2 className="text-lg text-center font-heading font-normal mb-4">
                 Languages
               </h2>
               <div className="space-y-2 text-sm">
-                <div className="flex justify-between items-center">
-                  <span>Portuguese</span>
-                  <span className="text-primary text-xs">NATIVE</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span>English</span>
-                  <span className="text-yellow text-xs">FLUENT</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span>Spanish</span>
-                  <span className="text-orange text-xs">INTERMEDIATE</span>
-                </div>
+                {playerData.languages.map((lang, idx) => (
+                  <div key={idx} className="flex justify-between items-center">
+                    {editable ? (
+                      <Input
+                        value={lang.name}
+                        onChange={(e) => {
+                          const newLangs = [...playerData.languages];
+                          newLangs[idx].name = e.target.value;
+                          handleUpdate("languages", newLangs);
+                        }}
+                        className="h-7 text-xs w-24 bg-transparent"
+                      />
+                    ) : (
+                      <span>{lang.name}</span>
+                    )}
+                    {editable ? (
+                      <Input
+                        value={lang.level}
+                        onChange={(e) => {
+                          const newLangs = [...playerData.languages];
+                          newLangs[idx].level = e.target.value;
+                          handleUpdate("languages", newLangs);
+                        }}
+                        className="h-7 text-xs w-24 bg-transparent text-right"
+                      />
+                    ) : (
+                      <span className={`${lang.color} text-xs`}>
+                        {lang.level}
+                      </span>
+                    )}
+                  </div>
+                ))}
               </div>
             </div>
 
@@ -228,17 +565,51 @@ const PlayerBioSection = ({ editable=false }: { editable?: boolean }) => {
             {/* Player Name */}
             <div className="text-center mb-8">
               <div className="flex items-center mb-8 justify-center gap-2">
-                <Image src={flagImage} alt="flag" />
+                <div className="relative w-8 h-6">
+                  <EditableImage
+                    src={playerData.mainFlag}
+                    alt="flag"
+                    field="mainFlag"
+                  />
+                </div>
               </div>
 
-              <h1 className="text-2xl font-bold font-heading mb-2">
-                Marcus Silva <span className="text-primary">[94]</span>
+              <h1 className="text-2xl font-bold font-heading mb-2 flex items-center justify-center gap-2">
+                {editable ? (
+                  <>
+                    <Input
+                      value={playerData.fullName}
+                      onChange={(e) => handleUpdate("fullName", e.target.value)}
+                      className="h-9 text-xl font-bold text-center w-48"
+                    />
+                    <span className="text-primary flex items-center">
+                      [
+                      <Input
+                        type="number"
+                        value={playerData.rating}
+                        onChange={(e) =>
+                          handleUpdate("rating", parseInt(e.target.value))
+                        }
+                        className="h-7 w-12 p-1 text-center bg-transparent border-none text-primary font-bold"
+                      />
+                      ]
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    {playerData.fullName}{" "}
+                    <span className="text-primary">[{playerData.rating}]</span>
+                  </>
+                )}
               </h1>
             </div>
 
             {/* Position Selector */}
             <div className="mb-8">
-              <Select value={position} onValueChange={setPosition}>
+              <Select
+                value={playerData.position}
+                onValueChange={(val) => handleUpdate("position", val)}
+              >
                 <SelectTrigger className="border-border px-4 py-2 rounded hover:bg-gray-900 bg-transparent text-foreground">
                   <SelectValue placeholder="Select position" />
                 </SelectTrigger>
@@ -275,12 +646,11 @@ const PlayerBioSection = ({ editable=false }: { editable?: boolean }) => {
 
             {/* Player Image */}
             <div className="relative w-full h-125 mb-8">
-              <Image
-                src={playerImage}
-                alt="Marcus Silva"
-                fill
+              <EditableImage
+                src={playerData.playerImage}
+                alt={playerData.fullName}
+                field="playerImage"
                 className="object-contain"
-                priority
               />
             </div>
 
@@ -309,11 +679,14 @@ const PlayerBioSection = ({ editable=false }: { editable?: boolean }) => {
                           >
                             <Checkbox
                               id={style.id}
-                              checked={selectedStyleIds.includes(style.id)}
+                              checked={playerData.selectedStyleIds.includes(
+                                style.id
+                              )}
                               onCheckedChange={() => toggleStyle(style.id)}
                               disabled={
-                                !selectedStyleIds.includes(style.id) &&
-                                selectedStyleIds.length >= 5
+                                !playerData.selectedStyleIds.includes(
+                                  style.id
+                                ) && playerData.selectedStyleIds.length >= 5
                               }
                             />
                             <Label
@@ -349,233 +722,310 @@ const PlayerBioSection = ({ editable=false }: { editable?: boolean }) => {
 
           {/* RIGHT COLUMN */}
           <div className="col-span-3 space-y-6 bg-cardBg">
-            {/* Strength */}
             <div className="p-6">
               <h2 className="text-lg text-center font-heading font-normal mb-4">
                 Strength
               </h2>
               <div className="space-y-2 text-sm">
-                <div>
-                  <div className="flex justify-between mb-1">
-                    <span>Pace</span>
-                    <span className="text-primary">82</span>
+                {Object.entries(playerData.strengths).map(([key, value]) => (
+                  <div key={key}>
+                    <div className="flex justify-between mb-1 capitalize">
+                      <span>{key}</span>
+                      <span className="text-primary">{value}</span>
+                    </div>
+                    {editable ? (
+                      <input
+                        type="range"
+                        value={value}
+                        onChange={(e) =>
+                          handleUpdate(
+                            `strengths.${key}`,
+                            parseInt(e.target.value)
+                          )
+                        }
+                        className="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-primary"
+                      />
+                    ) : (
+                      <Progress value={value} />
+                    )}
                   </div>
-                  <div className="h-2 bg-gray-700 rounded overflow-hidden">
-                    <div
-                      className="h-full bg-primary"
-                      style={{ width: "82%" }}
-                    ></div>
-                  </div>
-                </div>
-                <div>
-                  <div className="flex justify-between mb-1">
-                    <span>Shooting</span>
-                    <span className="text-primary">84</span>
-                  </div>
-                  <div className="h-2 bg-gray-700 rounded overflow-hidden">
-                    <div
-                      className="h-full bg-primary"
-                      style={{ width: "84%" }}
-                    ></div>
-                  </div>
-                </div>
-                <div>
-                  <div className="flex justify-between mb-1">
-                    <span>Passing</span>
-                    <span className="text-primary">89</span>
-                  </div>
-                  <div className="h-2 bg-gray-700 rounded overflow-hidden">
-                    <div
-                      className="h-full bg-primary"
-                      style={{ width: "89%" }}
-                    ></div>
-                  </div>
-                </div>
-                <div>
-                  <div className="flex justify-between mb-1">
-                    <span>Dribbling</span>
-                    <span className="text-primary">85</span>
-                  </div>
-                  <div className="h-2 bg-gray-700 rounded overflow-hidden">
-                    <div
-                      className="h-full bg-primary"
-                      style={{ width: "85%" }}
-                    ></div>
-                  </div>
-                </div>
-                <div>
-                  <div className="flex justify-between mb-1">
-                    <span>Defending</span>
-                    <span className="text-primary">78</span>
-                  </div>
-                  <div className="h-2 bg-gray-700 rounded overflow-hidden">
-                    <div
-                      className="h-full bg-primary"
-                      style={{ width: "78%" }}
-                    ></div>
-                  </div>
-                </div>
-                <div>
-                  <div className="flex justify-between mb-1">
-                    <span>Physical</span>
-                    <span className="text-primary">70</span>
-                  </div>
-                  <div className="h-2 bg-gray-700 rounded overflow-hidden">
-                    <div
-                      className="h-full bg-primary"
-                      style={{ width: "70%" }}
-                    ></div>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
 
-            {/* Performance Metrics */}
             <div className="p-6">
               <h2 className="text-lg text-center font-heading font-normal mb-4">
                 Performance Metrics
               </h2>
               <div className="space-y-2 text-sm">
-                <div>
-                  <div className="flex justify-between mb-1">
-                    <span>Pass Accuracy</span>
-                    <span className="text-primary">92%</span>
-                  </div>
-                  <div className="h-2 bg-gray-700 rounded overflow-hidden">
-                    <div
-                      className="h-full bg-primary"
-                      style={{ width: "92%" }}
-                    ></div>
-                  </div>
-                </div>
-                <div>
-                  <div className="flex justify-between mb-1">
-                    <span>Shoot Accuracy</span>
-                    <span className="text-primary">78%</span>
-                  </div>
-                  <div className="h-2 bg-gray-700 rounded overflow-hidden">
-                    <div
-                      className="h-full bg-primary"
-                      style={{ width: "78%" }}
-                    ></div>
-                  </div>
-                </div>
-                <div>
-                  <div className="flex justify-between mb-1">
-                    <span>Dribble Success</span>
-                    <span className="text-primary">85%</span>
-                  </div>
-                  <div className="h-2 bg-gray-700 rounded overflow-hidden">
-                    <div
-                      className="h-full bg-primary"
-                      style={{ width: "85%" }}
-                    ></div>
-                  </div>
-                </div>
-                <div>
-                  <div className="flex justify-between mb-1">
-                    <span>Tackle Success</span>
-                    <span className="text-primary">72%</span>
-                  </div>
-                  <div className="h-2 bg-gray-700 rounded overflow-hidden">
-                    <div
-                      className="h-full bg-primary"
-                      style={{ width: "72%" }}
-                    ></div>
-                  </div>
-                </div>
+                {Object.entries(playerData.performanceMetrics).map(
+                  ([key, value]) => (
+                    <div key={key}>
+                      <div className="flex justify-between mb-1 capitalize">
+                        <span>{key.replace(/([A-Z])/g, " $1")}</span>
+                        <span className="text-primary">{value}%</span>
+                      </div>
+                      {editable ? (
+                        <input
+                          type="range"
+                          value={value}
+                          onChange={(e) =>
+                            handleUpdate(
+                              `performanceMetrics.${key}`,
+                              parseInt(e.target.value)
+                            )
+                          }
+                          className="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-primary"
+                        />
+                      ) : (
+                        <Progress value={value} />
+                      )}
+                    </div>
+                  )
+                )}
               </div>
             </div>
 
-            {/* Market Value */}
             <div className="p-6">
               <h2 className="text-lg text-center font-heading font-normal mb-4">
                 Market Value
               </h2>
               <div className="mb-4">
-                <div className="text-3xl font-bold text-primary mb-1">$45M</div>
+                {editable ? (
+                  <Input
+                    value={playerData.marketValue}
+                    onChange={(e) =>
+                      handleUpdate("marketValue", e.target.value)
+                    }
+                    className="h-10 text-2xl font-bold text-primary mb-1 bg-transparent"
+                  />
+                ) : (
+                  <div className="text-3xl font-bold text-primary mb-1">
+                    ${playerData.marketValue}
+                  </div>
+                )}
                 <p className="text-xs text-gray-400">Current Market Value</p>
-                <p className="text-xs text-primary mt-2">
-                  📈 5 Mln last season
-                </p>
+                {editable ? (
+                  <Input
+                    value={playerData.marketTrend}
+                    onChange={(e) =>
+                      handleUpdate("marketTrend", e.target.value)
+                    }
+                    className="h-7 text-xs text-primary mt-2 bg-transparent"
+                  />
+                ) : (
+                  <p className="text-xs text-primary mt-2">
+                    📈 {playerData.marketTrend}
+                  </p>
+                )}
               </div>
             </div>
 
-            {/* Transfer Status */}
             <div className="p-6">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-lg text-center font-heading font-normal">
                   Transfer Status
                 </h2>
-                <span className="text-xs bg-primary text-black px-2 py-1 rounded">
-                  Active
-                </span>
+                {editable ? (
+                  <Input
+                    value={playerData.transferStatus}
+                    onChange={(e) =>
+                      handleUpdate("transferStatus", e.target.value)
+                    }
+                    className="h-6 w-20 text-[10px] bg-primary text-black px-2 py-0 rounded"
+                  />
+                ) : (
+                  <span className="text-xs bg-primary text-black px-2 py-1 rounded">
+                    {playerData.transferStatus}
+                  </span>
+                )}
               </div>
               <div className="space-y-3 text-sm">
-                <div className="flex justify-between">
+                <div className="flex justify-between items-center">
                   <span className="text-gray-400">Contract Until</span>
-                  <span>June, 2026</span>
+                  {editable ? (
+                    <Input
+                      value={playerData.contractUntil}
+                      onChange={(e) =>
+                        handleUpdate("contractUntil", e.target.value)
+                      }
+                      className="h-7 text-xs w-28 bg-transparent"
+                    />
+                  ) : (
+                    <span>{playerData.contractUntil}</span>
+                  )}
                 </div>
-                <div className="flex justify-between">
+                <div className="flex justify-between items-center">
                   <span className="text-gray-400">Agent</span>
-                  <span>John Morrison</span>
+                  {editable ? (
+                    <Input
+                      value={playerData.agent}
+                      onChange={(e) => handleUpdate("agent", e.target.value)}
+                      className="h-7 text-xs w-28 bg-transparent"
+                    />
+                  ) : (
+                    <span>{playerData.agent}</span>
+                  )}
                 </div>
-                <div className="flex justify-between">
+                <div className="flex justify-between items-center">
                   <span className="text-gray-400">Agency</span>
-                  <span>Elite Sports Mgmt</span>
+                  {editable ? (
+                    <Input
+                      value={playerData.agency}
+                      onChange={(e) => handleUpdate("agency", e.target.value)}
+                      className="h-7 text-xs w-28 bg-transparent"
+                    />
+                  ) : (
+                    <span>{playerData.agency}</span>
+                  )}
                 </div>
               </div>
             </div>
 
-            {/* Career Highlights */}
             <div className="p-6">
               <h2 className="text-lg text-center font-heading font-normal mb-4">
                 Career Highlights
               </h2>
-              <div className="space-y-2 text-xs text-gray-300 border-l-2 border-green-600">
-                <div className="flex gap-2">
-                  <Image src={trofeeIcon} alt="trofeeImage" />
-                  <span>2019 - BRAZILIAN CHAMPIONSHIP - FLAMENGO</span>
-                </div>
-                <div className="flex gap-2">
-                  <Image src={trofeeIcon} alt="trofeeImage" />
-                  <span>2010 - CAMPEONATA - PAULISTA - CORINTHIANS</span>
-                </div>
-                <div className="flex gap-2">
-                  <Image src={trofeeIcon} alt="trofeeImage" />
-                  <span>2015 - BRAZILIAN CHAMPIONSHIP - FLAMENGO FC</span>
-                </div>
-                <div className="flex gap-2">
-                  <Image src={trofeeIcon} alt="trofeeImage" />
-                  <span>2014 PAULISTA CUP - SAO PAULO FC</span>
-                </div>
-                <div className="flex gap-2">
-                  <Image src={trofeeIcon} alt="trofeeImage" />
-                  <span>2017/2020 - CAMPEONATO CARIOCA - VASCO FC</span>
-                </div>
+              <div className="space-y-2 text-xs text-gray-300 border-l-2 border-green-600 pl-2">
+                {playerData.careerHighlights.map((highlight, idx) => (
+                  <div key={idx} className="flex gap-2 items-start">
+                    <div className="relative w-4 h-4 mt-0.5 shrink-0">
+                      <EditableImage
+                        src={highlight.icon}
+                        alt="trofee"
+                        field={`careerHighlights.${idx}.icon`}
+                      />
+                    </div>
+                    {editable ? (
+                      <div className="flex flex-col gap-1 w-full">
+                        <Input
+                          value={highlight.year}
+                          onChange={(e) => {
+                            const newHighlights = [
+                              ...playerData.careerHighlights,
+                            ];
+                            newHighlights[idx].year = e.target.value;
+                            handleUpdate("careerHighlights", newHighlights);
+                          }}
+                          className="h-6 text-[10px] p-1 bg-transparent"
+                        />
+                        <Input
+                          value={highlight.title}
+                          onChange={(e) => {
+                            const newHighlights = [
+                              ...playerData.careerHighlights,
+                            ];
+                            newHighlights[idx].title = e.target.value;
+                            handleUpdate("careerHighlights", newHighlights);
+                          }}
+                          className="h-6 text-[10px] p-1 bg-transparent"
+                        />
+                        <Input
+                          value={highlight.club}
+                          onChange={(e) => {
+                            const newHighlights = [
+                              ...playerData.careerHighlights,
+                            ];
+                            newHighlights[idx].club = e.target.value;
+                            handleUpdate("careerHighlights", newHighlights);
+                          }}
+                          className="h-6 text-[10px] p-1 bg-transparent"
+                        />
+                      </div>
+                    ) : (
+                      <span>
+                        {highlight.year} - {highlight.title} - {highlight.club}
+                      </span>
+                    )}
+                  </div>
+                ))}
               </div>
             </div>
 
-            {/* Current Season Stats */}
             <div className="p-6">
               <h2 className="text-lg text-center font-heading font-normal mb-6">
                 Current Season Stats
               </h2>
               <div className="grid grid-cols-2 gap-4">
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-primary">28</div>
+                  {editable ? (
+                    <Input
+                      type="number"
+                      value={playerData.seasonStats.matches}
+                      onChange={(e) =>
+                        handleUpdate(
+                          "seasonStats.matches",
+                          parseInt(e.target.value)
+                        )
+                      }
+                      className="h-8 text-center font-bold text-primary w-full bg-transparent"
+                    />
+                  ) : (
+                    <div className="text-3xl font-bold text-primary">
+                      {playerData.seasonStats.matches}
+                    </div>
+                  )}
                   <div className="text-xs text-gray-400 mt-1">MATCHES</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-primary">8</div>
+                  {editable ? (
+                    <Input
+                      type="number"
+                      value={playerData.seasonStats.goals}
+                      onChange={(e) =>
+                        handleUpdate(
+                          "seasonStats.goals",
+                          parseInt(e.target.value)
+                        )
+                      }
+                      className="h-8 text-center font-bold text-primary w-full bg-transparent"
+                    />
+                  ) : (
+                    <div className="text-3xl font-bold text-primary">
+                      {playerData.seasonStats.goals}
+                    </div>
+                  )}
                   <div className="text-xs text-gray-400 mt-1">GOALS</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-primary">16</div>
+                  {editable ? (
+                    <Input
+                      type="number"
+                      value={playerData.seasonStats.assists}
+                      onChange={(e) =>
+                        handleUpdate(
+                          "seasonStats.assists",
+                          parseInt(e.target.value)
+                        )
+                      }
+                      className="h-8 text-center font-bold text-primary w-full bg-transparent"
+                    />
+                  ) : (
+                    <div className="text-3xl font-bold text-primary">
+                      {playerData.seasonStats.assists}
+                    </div>
+                  )}
                   <div className="text-xs text-gray-400 mt-1">ASSISTS</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-primary">8.4</div>
+                  {editable ? (
+                    <Input
+                      type="number"
+                      step="0.1"
+                      value={playerData.seasonStats.avgRating}
+                      onChange={(e) =>
+                        handleUpdate(
+                          "seasonStats.avgRating",
+                          parseFloat(e.target.value)
+                        )
+                      }
+                      className="h-8 text-center font-bold text-primary w-full bg-transparent"
+                    />
+                  ) : (
+                    <div className="text-3xl font-bold text-primary">
+                      {playerData.seasonStats.avgRating}
+                    </div>
+                  )}
                   <div className="text-xs text-gray-400 mt-1">
                     AVERAGE RATING
                   </div>

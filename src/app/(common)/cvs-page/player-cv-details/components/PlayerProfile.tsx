@@ -1,10 +1,13 @@
 "use client";
 
+import React, { useState, useEffect } from "react";
 import flag from "@/assets/cvs-page//id/flag.png";
 import playerImage from "@/assets/cvs-page/id/player-short-image.png";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import Image from "next/image";
+import { Input } from "@/components/ui/input";
+import { usePlayerStats } from "./FullEditablePage";
 
 interface Attribute {
   name: string;
@@ -12,33 +15,11 @@ interface Attribute {
   status: "Excellent" | "Good" | "Average";
 }
 
-const attributes: Attribute[] = [
-  { name: "Crossing", score: 84, status: "Excellent" },
-  { name: "Sprint Speed", score: 82, status: "Excellent" },
-  { name: "Stamina", score: 82, status: "Excellent" },
-  { name: "Marking", score: 72, status: "Good" },
-  { name: "Stand Tackle", score: 75, status: "Good" },
-  { name: "Slide Tackle", score: 100, status: "Excellent" },
-  { name: "Heading", score: 60, status: "Average" },
-  { name: "Aggression", score: 87, status: "Excellent" },
-  { name: "Interception", score: 72, status: "Good" },
-  { name: "Short Pass", score: 85, status: "Excellent" },
-  { name: "Ball Control", score: 80, status: "Good" },
-  { name: "Reactions", score: 80, status: "Good" },
-];
-
-// const getBarColor = (status: string): string => {
-//   switch (status) {
-//     case "Excellent":
-//       return "bg-[#00FF62]";
-//     case "Good":
-//       return "bg-[#FFCC00]";
-//     case "Average":
-//       return "bg-[#DC143C]";
-//     default:
-//       return "bg-[#00FF62]";
-//   }
-// };
+const getBadgeStatus = (score: number): "Excellent" | "Good" | "Average" => {
+  if (score >= 80) return "Excellent";
+  if (score >= 70) return "Good";
+  return "Average";
+};
 
 const getBadgeVariant = (status: string) => {
   switch (status) {
@@ -53,7 +34,45 @@ const getBadgeVariant = (status: string) => {
   }
 };
 
-export default function PlayerProfile() {
+export default function PlayerProfile({ editable = false }: { editable?: boolean }) {
+  const { bioRating, skillsAvg, metricsAvg, attributesAvg } = usePlayerStats();
+  
+  const [playerInfo, setPlayerInfo] = useState({
+    name: "Marcus Silva",
+    country: "France",
+    position: "Defensive Midfielder",
+  });
+
+  const [attrData, setAttrData] = useState<Attribute[]>([
+    { name: "Crossing", score: 84, status: "Excellent" },
+    { name: "Sprint Speed", score: 82, status: "Excellent" },
+    { name: "Stamina", score: 82, status: "Excellent" },
+    { name: "Marking", score: 72, status: "Good" },
+    { name: "Stand Tackle", score: 75, status: "Good" },
+    { name: "Slide Tackle", score: 100, status: "Excellent" },
+    { name: "Heading", score: 60, status: "Average" },
+    { name: "Aggression", score: 87, status: "Excellent" },
+    { name: "Interception", score: 72, status: "Good" },
+    { name: "Short Pass", score: 85, status: "Excellent" },
+    { name: "Ball Control", score: 80, status: "Good" },
+    { name: "Reactions", score: 80, status: "Good" },
+  ]);
+
+  const overallRating = Math.round((bioRating + skillsAvg + metricsAvg + attributesAvg) / 4);
+
+  const handleUpdate = (idx: number, value: number) => {
+    setAttrData(prev => {
+      const newData = [...prev];
+      newData[idx].score = value;
+      newData[idx].status = getBadgeStatus(value);
+      return newData;
+    });
+  };
+
+  const handleInfoChange = (field: string, value: any) => {
+    setPlayerInfo(prev => ({ ...prev, [field]: value }));
+  };
+
   return (
     <div className=" text-white p-8">
       <div className="container grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -76,7 +95,7 @@ export default function PlayerProfile() {
               <div className="w-32 h-32 rounded-full bg-[#2a2a2a] border-4 border-primary flex items-center justify-center">
                 <div className="text-center">
                   <div className="text-4xl font-bold text-white font-heading">
-                    100
+                    {overallRating}
                   </div>
                 </div>
               </div>
@@ -84,16 +103,38 @@ export default function PlayerProfile() {
 
             {/* Player Info */}
             <div className="text-center p-6 space-y-3">
-              <h2 className="text-2xl font-bold text-white font-heading">
-                Marcus Silva
-              </h2>
-              <div className="flex items-center justify-center gap-2">
-                <span className="text-base text-gray-300">France</span>
-                <span className="text-xl">
-                  <Image className="w-10" src={flag} alt="flag" />
-                </span>
-              </div>
-              <p className="text-sm text-gray-400">Defensive Midfielder</p>
+              {editable ? (
+                <div className="space-y-2">
+                  <Input 
+                    value={playerInfo.name} 
+                    onChange={(e) => handleInfoChange('name', e.target.value)}
+                    className="text-xl font-bold bg-transparent text-center h-8"
+                  />
+                  <Input 
+                    value={playerInfo.country} 
+                    onChange={(e) => handleInfoChange('country', e.target.value)}
+                    className="text-sm bg-transparent text-center h-6"
+                  />
+                  <Input 
+                    value={playerInfo.position} 
+                    onChange={(e) => handleInfoChange('position', e.target.value)}
+                    className="text-xs bg-transparent text-center h-6 text-gray-400"
+                  />
+                </div>
+              ) : (
+                <>
+                  <h2 className="text-2xl font-bold text-white font-heading">
+                    {playerInfo.name}
+                  </h2>
+                  <div className="flex items-center justify-center gap-2">
+                    <span className="text-base text-gray-300">{playerInfo.country}</span>
+                    <span className="text-xl">
+                      <Image className="w-10" src={flag} alt="flag" />
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-400">{playerInfo.position}</p>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -106,7 +147,7 @@ export default function PlayerProfile() {
             </h1>
 
             <div className="space-y-4">
-              {attributes.map((attr, idx) => (
+              {attrData.map((attr, idx) => (
                 <div
                   key={idx}
                   className="flex items-center gap-4 p-4 bg-[#1a1a1a] border border-border rounded-lg"
@@ -118,7 +159,16 @@ export default function PlayerProfile() {
 
                   {/* Progress Bar (shadcn/ui) */}
                   <div className="flex-1 min-w-0 max-w-xs">
-                    <Progress value={attr.score} className="h-2 bg-[#2a2a2a]" />
+                    {editable ? (
+                      <input 
+                        type="range" 
+                        value={attr.score} 
+                        onChange={(e) => handleUpdate(idx, parseInt(e.target.value))}
+                        className="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-primary"
+                      />
+                    ) : (
+                      <Progress value={attr.score} className="h-2 bg-[#2a2a2a]" />
+                    )}
                   </div>
 
                   {/* Score */}

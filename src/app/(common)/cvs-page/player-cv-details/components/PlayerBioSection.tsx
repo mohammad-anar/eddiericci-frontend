@@ -499,9 +499,10 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
             {/* Player Name */}
             <div className="text-center mb-8">
               <div className="flex items-center mb-8 justify-center gap-2">
-                <div className="relative w-8 h-6">
+                <div className="relative w-28 h-20">
                   <Image
                     src={playerData.mainFlag}
+                    className="w-full h-full"
                     alt="flag"
                   />
                 </div>
@@ -760,19 +761,9 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                 <h2 className="text-lg text-center font-heading font-normal">
                   Transfer Status
                 </h2>
-                {editable ? (
-                  <Input
-                    value={playerData.transferStatus}
-                    onChange={(e) =>
-                      handleUpdate("transferStatus", e.target.value)
-                    }
-                    className="h-6 w-20 text-[10px] bg-primary text-black px-2 py-0 rounded"
-                  />
-                ) : (
-                  <span className="text-xs bg-primary text-black px-2 py-1 rounded">
-                    {playerData.transferStatus}
-                  </span>
-                )}
+                <span className="text-xs bg-primary text-black px-2 py-1 rounded">
+                  {playerData.transferStatus}
+                </span>
               </div>
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between items-center">

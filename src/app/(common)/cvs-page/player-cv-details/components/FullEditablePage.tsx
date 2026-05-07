@@ -32,7 +32,7 @@ export const usePlayerStats = () => {
     return context;
 };
 
-const FullEditablePage = () => {
+const FullEditablePage = ({ editable = false }: { editable?: boolean }) => {
     const [bioRating, setBioRating] = useState(94);
     const [skillsAvg, setSkillsAvg] = useState(85);
     const [metricsAvg, setMetricsAvg] = useState(88);
@@ -45,18 +45,18 @@ const FullEditablePage = () => {
             metricsAvg, setMetricsAvg,
             attributesAvg, setAttributesAvg
         }}>
-            <PlayerBioSection editable={true} />
+            <PlayerBioSection editable={editable} />
             <ClubSection />
-            <SkillsAttributes editable={true} />
+            <SkillsAttributes editable={editable} />
             <PerformanceAnalytics />
-            <AttributesAnalysis editable={true} />
-            <MetricsAnalysis editable={true} />
+            <AttributesAnalysis editable={editable} />
+            <MetricsAnalysis editable={editable} />
             <SportsAnalytics />
-            <PlayerProfile editable={true} />
-            <DocSection />
+            <PlayerProfile editable={editable} />
+            <DocSection editable={editable} />
             <MyImagesSection />
             <MyVideosSection />
-            <AdditionalNotesSection editable={true} />
+            <AdditionalNotesSection editable={editable} />
         </PlayerStatsContext.Provider>
     );
 };

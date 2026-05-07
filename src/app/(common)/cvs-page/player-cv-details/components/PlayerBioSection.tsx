@@ -36,7 +36,6 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
-import { useRef } from "react";
 
 const ALL_STYLES = [
   { id: "technical", label: "Technical" },
@@ -166,67 +165,6 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
     });
   };
 
-  const handleImageUpload = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    field: string
-  ) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        handleUpdate(field, reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const EditableImage = ({
-    src,
-    alt,
-    className,
-    field,
-    width,
-    height,
-  }: {
-    src: any;
-    alt: string;
-    className?: string;
-    field: string;
-    width?: number;
-    height?: number;
-  }) => {
-    const fileInputRef = useRef<HTMLInputElement>(null);
-    return (
-      <div
-        className={`relative group ${editable ? "cursor-pointer" : ""}`}
-        onClick={() => editable && fileInputRef.current?.click()}
-      >
-        <Image
-          src={src}
-          alt={alt}
-          className={className}
-          width={width}
-          height={height}
-          layout={width || height ? undefined : "fill"}
-        />
-        {editable && (
-          <>
-            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity rounded">
-              <span className="text-[10px] text-white">Change</span>
-            </div>
-            <input
-              type="file"
-              ref={fileInputRef}
-              className="hidden"
-              accept="image/*"
-              onChange={(e) => handleImageUpload(e, field)}
-            />
-          </>
-        )}
-      </div>
-    );
-  };
-
   const toggleStyle = (id: string) => {
     const currentStyles = playerData.selectedStyleIds;
     if (currentStyles.includes(id)) {
@@ -311,10 +249,9 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                       <span>{playerData.birthCountry}</span>
                     )}
                     <div className="relative w-5 h-4">
-                      <EditableImage
+                      <Image
                         src={playerData.birthCountryFlag}
                         alt="birth country flag"
-                        field="birthCountryFlag"
                       />
                     </div>
                   </div>
@@ -334,10 +271,9 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                       <span>{playerData.dualNationality}</span>
                     )}
                     <div className="relative w-5 h-4">
-                      <EditableImage
+                      <Image
                         src={playerData.dualNationalityFlag}
                         alt="dual nationality flag"
-                        field="dualNationalityFlag"
                       />
                     </div>
                   </div>
@@ -442,10 +378,9 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
               <div className=" grid grid-cols-2 gap-6">
                 <div className="border-2 bg-gray-600/30 p-3 rounded-xl">
                   <div className="relative w-full h-16 mb-2">
-                    <EditableImage
+                    <Image
                       src={playerData.leftLegImage}
                       alt="left leg"
-                      field="leftLegImage"
                       className="object-contain"
                     />
                   </div>
@@ -470,10 +405,9 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                 </div>
                 <div className="border-2 bg-gray-600/30 p-3 rounded-xl">
                   <div className="relative w-full h-16 mb-2">
-                    <EditableImage
+                    <Image
                       src={playerData.rightLegImage}
                       alt="right leg"
-                      field="rightLegImage"
                       className="object-contain"
                     />
                   </div>
@@ -566,10 +500,9 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
             <div className="text-center mb-8">
               <div className="flex items-center mb-8 justify-center gap-2">
                 <div className="relative w-8 h-6">
-                  <EditableImage
+                  <Image
                     src={playerData.mainFlag}
                     alt="flag"
-                    field="mainFlag"
                   />
                 </div>
               </div>
@@ -645,12 +578,13 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
             </div>
 
             {/* Player Image */}
-            <div className="relative w-full h-125 mb-8">
-              <EditableImage
+            <div className="relative w-full h-[723px] mb-8">
+              <Image
                 src={playerData.playerImage}
                 alt={playerData.fullName}
-                field="playerImage"
-                className="object-contain"
+                className="object-contain w-full h-full"
+                width={500}
+                height={500}
               />
             </div>
 
@@ -890,10 +824,9 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                 {playerData.careerHighlights.map((highlight, idx) => (
                   <div key={idx} className="flex gap-2 items-start">
                     <div className="relative w-4 h-4 mt-0.5 shrink-0">
-                      <EditableImage
+                      <Image
                         src={highlight.icon}
                         alt="trofee"
-                        field={`careerHighlights.${idx}.icon`}
                       />
                     </div>
                     {editable ? (

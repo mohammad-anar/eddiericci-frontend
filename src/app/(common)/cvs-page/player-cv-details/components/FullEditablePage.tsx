@@ -53,7 +53,7 @@ const FullEditablePage = () => {
             <MetricsAnalysis editable={true} />
             <SportsAnalytics />
             <PlayerProfile editable={true} />
-            <DocSection editable={true} />
+            <DocSection />
             <MyImagesSection />
             <MyVideosSection />
             <AdditionalNotesSection editable={true} />

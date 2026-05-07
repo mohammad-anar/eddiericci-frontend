@@ -823,7 +823,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
               <div className="space-y-2 text-xs text-gray-300 border-l-2 border-green-600 pl-2">
                 {playerData.careerHighlights.map((highlight, idx) => (
                   <div key={idx} className="flex gap-2 items-start">
-                    <div className="relative w-4 h-4 mt-0.5 shrink-0">
+                    <div className="relative w-8 h-8 mt-0.5 shrink-0">
                       <Image
                         src={highlight.icon}
                         alt="trofee"

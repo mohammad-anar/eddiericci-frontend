@@ -46,9 +46,9 @@ const FullEditablePage = () => {
             attributesAvg, setAttributesAvg
         }}>
             <PlayerBioSection editable={true} />
-            <ClubSection editable={true} />
+            <ClubSection  />
             <SkillsAttributes editable={true} />
-            <PerformanceAnalytics editable={true} />
+            <PerformanceAnalytics  />
             <AttributesAnalysis editable={true} />
             <MetricsAnalysis editable={true} />
             <SportsAnalytics />

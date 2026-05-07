@@ -48,7 +48,7 @@ const FullEditablePage = () => {
             <PlayerBioSection editable={true} />
             <ClubSection />
             <SkillsAttributes editable={true} />
-            <PerformanceAnalytics  />
+            <PerformanceAnalytics />
             <AttributesAnalysis editable={true} />
             <MetricsAnalysis editable={true} />
             <SportsAnalytics />

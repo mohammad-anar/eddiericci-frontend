@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Audiowide, Orbitron } from "next/font/google";
 import "./globals.css";
 import AuthGuard from "@/providers/AuthGuard";
+import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -49,13 +50,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${inter.variable} ${audiowide.variable} ${orbitron.variable} antialiased`}
-        cz-shortcut-listen="true"
       >
         <AuthGuard>
           {children}
+          <Toaster />
         </AuthGuard>
       </body>
     </html>

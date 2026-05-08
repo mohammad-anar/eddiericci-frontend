@@ -13,8 +13,9 @@ import positionMap from "@/assets/cvs-page/id/positionmap.png";
 import trofeeIcon from "@/assets/cvs-page/id/trofeeIcon.png";
 import flagFr from "@/assets/cvs-page/id/flag-fr.png";
 import flagIt from "@/assets/cvs-page/id/flag-itally.png";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { usePlayerStats } from "./FullEditablePage";
+import { toast } from "sonner";
 import {
   Select,
   SelectContent,
@@ -36,7 +37,6 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
-
 const ALL_STYLES = [
   { id: "technical", label: "Technical" },
   { id: "finesse-shot", label: "Finesse Shot" },
@@ -50,6 +50,12 @@ const ALL_STYLES = [
   { id: "dribbling", label: "Dribbling Wizard" },
   { id: "set-piece", label: "Set Piece Specialist" },
   { id: "playmaker", label: "Playmaker" },
+  { id: "acrobatic", label: "Acrobatic" },
+  { id: "deadball", label: "Dead Ball Specialist" },
+  { id: "relentless", label: "Relentless" },
+  { id: "quick-step", label: "Quick Step" },
+  { id: "trickster", label: "Trickster" },
+  { id: "whipped-cross", label: "Whipped Cross" },
 ];
 
 const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
@@ -149,6 +155,92 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
 
   const [isPositionMap, setIsPositionMap] = useState(true);
 
+  const handleImageUpload = (
+    file: File,
+    field: string
+  ) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      handleUpdate(field, reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const EditableImage = ({
+    src,
+    alt,
+    className,
+    field,
+    width,
+    height,
+    layout
+  }: {
+    src: any;
+    alt: string;
+    className?: string;
+    field: string;
+    width?: number;
+    height?: number;
+    layout?: "fill" | "responsive" | "intrinsic" | "fixed";
+  }) => {
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const playerStats = usePlayerStats();
+    const [role, setRole] = useState<string>("player");
+
+    useEffect(() => {
+      const currentRole = localStorage.getItem("userRole") || playerStats?.role || "player";
+      setRole(currentRole);
+    }, [playerStats?.role]);
+
+    const canUpload = role === "player";
+
+    const handleDrop = (e: React.DragEvent) => {
+      e.preventDefault();
+      if (!canUpload) return;
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith("image/")) {
+        handleImageUpload(file, field);
+      }
+    };
+
+    return (
+      <div
+        className={`relative group w-full ${canUpload ? "cursor-pointer" : ""}`}
+        onClick={() => canUpload && fileInputRef.current?.click()}
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={handleDrop}
+        onContextMenu={(e) => e.preventDefault()}
+      >
+        <Image
+          src={src}
+          alt={alt}
+          className={className}
+          width={width || 500}
+          height={height || 500}
+          layout={layout}
+          draggable={false}
+        />
+        {canUpload && (
+          <>
+            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity rounded">
+              <span className="text-[10px] text-white font-black uppercase tracking-widest">Drop or Click</span>
+            </div>
+            <input
+              type="file"
+              ref={fileInputRef}
+              className="hidden"
+              accept="image/*"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) handleImageUpload(file, field);
+              }}
+            />
+          </>
+        )}
+      </div>
+    );
+  };
+
   const handleUpdate = (field: string, value: any) => {
     setPlayerData((prev) => {
       const keys = field.split(".");
@@ -177,6 +269,30 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
     }
   };
 
+  const handleShare = async () => {
+    const shareUrl = window.location.href;
+    const shareData = {
+      title: `${playerData.fullName}'s Professional Football CV`,
+      text: `Check out ${playerData.fullName}'s verified football profile on Eddie Ricci Management.`,
+      url: shareUrl,
+    };
+
+    try {
+      if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+        await navigator.share(shareData);
+        toast.success("Shared successfully!");
+      } else {
+        await navigator.clipboard.writeText(shareUrl);
+        toast.success("Profile link copied to clipboard!");
+      }
+    } catch (err) {
+      if ((err as Error).name !== "AbortError") {
+        await navigator.clipboard.writeText(shareUrl);
+        toast.success("Profile link copied to clipboard!");
+      }
+    }
+  };
+
   const orderedSelectedStyles = playerData.selectedStyleIds.map(
     (id) => ALL_STYLES.find((s) => s.id === id)!
   );
@@ -186,13 +302,16 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
     <>
       <div className="container">
         <div className="py-5 flex items-center justify-end">
-          <Button className="bg-gray-500/20">
-            Share <IconShare />
+          <Button 
+            onClick={handleShare}
+            className="bg-gray-500/20 hover:bg-gray-500/30 transition-colors"
+          >
+            Share <IconShare className="ml-2" />
           </Button>
         </div>
-        <div className="grid grid-cols-12 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
           {/* LEFT COLUMN */}
-          <div className="col-span-3 h-fit space-y-6 bg-cardBg">
+          <div className="col-span-1 md:col-span-3 h-fit space-y-6 bg-cardBg">
             <div className=" p-6">
               <h2 className="text-lg text-center font-heading font-normal mb-4">
                 Personal Information
@@ -249,9 +368,10 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                       <span>{playerData.birthCountry}</span>
                     )}
                     <div className="relative w-5 h-4">
-                      <Image
+                      <EditableImage
                         src={playerData.birthCountryFlag}
                         alt="birth country flag"
+                        field="birthCountryFlag"
                       />
                     </div>
                   </div>
@@ -271,9 +391,10 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                       <span>{playerData.dualNationality}</span>
                     )}
                     <div className="relative w-5 h-4">
-                      <Image
+                      <EditableImage
                         src={playerData.dualNationalityFlag}
                         alt="dual nationality flag"
+                        field="dualNationalityFlag"
                       />
                     </div>
                   </div>
@@ -382,6 +503,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                       src={playerData.leftLegImage}
                       alt="left leg"
                       className="object-contain"
+                      layout="fill"
                     />
                   </div>
                   <div className="flex justify-between text-sm mb-1">
@@ -409,6 +531,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                       src={playerData.rightLegImage}
                       alt="right leg"
                       className="object-contain"
+                      layout="fill"
                     />
                   </div>
                   <div className="flex justify-between text-sm mb-1">
@@ -495,15 +618,16 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
           </div>
 
           {/* CENTER COLUMN - PLAYER IMAGE */}
-          <div className="col-span-6 flex flex-col items-center">
+          <div className="col-span-1 md:col-span-6 flex flex-col items-center">
             {/* Player Name */}
             <div className="text-center mb-8">
               <div className="flex items-center mb-8 justify-center gap-2">
                 <div className="relative w-28 h-20">
-                  <Image
+                  <EditableImage
                     src={playerData.mainFlag}
                     className="w-full h-full"
                     alt="flag"
+                    field="mainFlag"
                   />
                 </div>
               </div>
@@ -580,12 +704,13 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
 
             {/* Player Image */}
             <div className="relative w-full h-[723px] mb-8">
-              <Image
+              <EditableImage
                 src={playerData.playerImage}
                 alt={playerData.fullName}
-                className="object-contain w-full h-full"
-                width={500}
-                height={500}
+                className="object-contain w-[300px] mx-auto h-full"
+                width={300}
+                height={300}
+                field="playerImage"
               />
             </div>
 
@@ -656,7 +781,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
           </div>
 
           {/* RIGHT COLUMN */}
-          <div className="col-span-3 space-y-6 bg-cardBg">
+          <div className="col-span-1 md:col-span-3 space-y-6 bg-cardBg">
             <div className="p-6">
               <h2 className="text-lg text-center font-heading font-normal mb-4">
                 Strength
@@ -815,9 +940,10 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                 {playerData.careerHighlights.map((highlight, idx) => (
                   <div key={idx} className="flex gap-2 items-start">
                     <div className="relative w-8 h-8 mt-0.5 shrink-0">
-                      <Image
+                      <EditableImage
                         src={highlight.icon}
                         alt="trofee"
+                        field={`careerHighlights.${idx}.icon`}
                       />
                     </div>
                     {editable ? (

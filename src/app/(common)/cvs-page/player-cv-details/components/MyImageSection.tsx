@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +13,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Eye, Heart, Upload } from "lucide-react";
 import Image from "next/image";
+import { usePlayerStats } from "./FullEditablePage";
 
 interface ImageCard {
   id: string;
@@ -63,6 +64,15 @@ const SAMPLE_IMAGES: ImageCard[] = [
 ];
 
 export default function MyImagesSection() {
+  const playerStats = usePlayerStats();
+  const [role, setRole] = useState<string>("player");
+
+  useEffect(() => {
+    // Check localStorage first for real role, then context
+    const currentRole = localStorage.getItem("userRole") || playerStats?.role || "player";
+    setRole(currentRole);
+  }, [playerStats?.role]);
+
   const [images, setImages] = useState<ImageCard[]>(SAMPLE_IMAGES);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -111,14 +121,16 @@ export default function MyImagesSection() {
             <h1 className="text-4xl text-white mb-2 font-heading">My Images</h1>
             <p className="text-gray-400">Match highlights & training</p>
           </div>
-          <Button
-            onClick={() => setIsModalOpen(true)}
-            className="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700"
-            variant="outline"
-          >
-            <Upload className="w-4 h-4 mr-2" />
-            Upload Image
-          </Button>
+          {role === "player" && (
+            <Button
+              onClick={() => setIsModalOpen(true)}
+              className="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700"
+              variant="outline"
+            >
+              <Upload className="w-4 h-4 mr-2" />
+              Upload Image
+            </Button>
+          )}
         </div>
 
         {/* Image Grid */}
@@ -135,6 +147,8 @@ export default function MyImagesSection() {
                   width={500}
                   height={500}
                   className="w-full h-full object-cover hover:scale-105 transition-transform"
+                  onContextMenu={(e) => e.preventDefault()}
+                  draggable={false}
                 />
               </div>
               <div className="p-4">

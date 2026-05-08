@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
 import { Eye, Heart, Upload } from 'lucide-react'
+import { usePlayerStats } from './FullEditablePage'
 
 interface VideoCard {
   id: string
@@ -58,6 +59,15 @@ const SAMPLE_VIDEOS: VideoCard[] = [
 ]
 
 export default function MyVideosSection() {
+  const playerStats = usePlayerStats();
+  const [role, setRole] = useState<string>("player");
+
+  useEffect(() => {
+    // Check localStorage first for real role, then context
+    const currentRole = localStorage.getItem("userRole") || playerStats?.role || "player";
+    setRole(currentRole);
+  }, [playerStats?.role]);
+
   const [videos, setVideos] = useState<VideoCard[]>(SAMPLE_VIDEOS)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [formData, setFormData] = useState({
@@ -106,14 +116,16 @@ export default function MyVideosSection() {
             <h1 className="text-4xl text-white mb-2 font-heading">My Videos</h1>
             <p className="text-gray-400">Match highlights & training</p>
           </div>
-          <Button
-            onClick={() => setIsModalOpen(true)}
-            className="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700"
-            variant="outline"
-          >
-            <Upload className="w-4 h-4 mr-2" />
-            Upload Video
-          </Button>
+          {role === 'player' && (
+            <Button
+              onClick={() => setIsModalOpen(true)}
+              className="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700"
+              variant="outline"
+            >
+              <Upload className="w-4 h-4 mr-2" />
+              Upload Video
+            </Button>
+          )}
         </div>
 
         {/* Video Grid */}
@@ -128,6 +140,7 @@ export default function MyVideosSection() {
                   src={vid.video}
                   className="w-full h-full object-cover"
                   controls
+                  onContextMenu={(e) => e.preventDefault()}
                 />
               </div>
 

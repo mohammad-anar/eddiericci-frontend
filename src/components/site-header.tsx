@@ -30,7 +30,7 @@ export function SiteHeader({ showToggle = false, customToggle }: { showToggle?: 
       <div className="flex flex-1 items-center gap-4">
         <SidebarTrigger className="lg:hidden text-white" />
         
-        <div className="relative w-full max-w-2xl">
+        <div className="hidden sm:relative sm:block w-full max-w-2xl">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"
@@ -84,12 +84,12 @@ export function SiteHeader({ showToggle = false, customToggle }: { showToggle?: 
           </div>
         )}
 
-        <div className="flex items-center gap-1 cursor-pointer bg-white/5 border border-white/10 px-3 py-1.5 rounded-lg text-sm font-medium">
+        <div className="hidden xs:flex items-center gap-1 cursor-pointer bg-white/5 border border-white/10 px-3 py-1.5 rounded-lg text-sm font-medium">
           <span>EN</span>
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
         </div>
         
-        <div className="relative cursor-pointer hover:text-white transition-colors">
+        <div className="hidden xs:block relative cursor-pointer hover:text-white transition-colors">
           <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
           <span className="absolute top-0 right-0 w-2 h-2 bg-[#E31B23] rounded-full border border-[#0A0A0A]"></span>
         </div>

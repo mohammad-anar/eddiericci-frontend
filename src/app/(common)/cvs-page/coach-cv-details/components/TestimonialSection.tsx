@@ -4,7 +4,7 @@ import { Star } from 'lucide-react'
 import Image from 'next/image'
 import Marquee from 'react-fast-marquee'
 
-export default function TestimonialSection() {
+export default function TestimonialSection({ editable }: { editable?: boolean }) {
   const testimonials = [
     {
       id: 1,

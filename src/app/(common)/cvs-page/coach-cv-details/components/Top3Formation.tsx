@@ -5,7 +5,7 @@ import formation2 from "@/assets/cvs-page/id/formation2.png"
 import formation3 from "@/assets/cvs-page/id/formation3.png"
 import Image from 'next/image'
 
-export default function Top3Formation() {
+export default function Top3Formation({ editable }: { editable?: boolean }) {
   const logos = [
     { id: 1, name: 'Logo 1', image: formation1 },
     { id: 2, name: 'Logo 2', image: formation2 },

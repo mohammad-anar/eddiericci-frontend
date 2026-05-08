@@ -7,7 +7,7 @@ import logo3 from "@/assets/cvs-page/id/courses-logo3.png"
 import logo4 from "@/assets/cvs-page/id/courses-logo4.png"
 import Image from 'next/image'
 
-export default function ComplementaryCoursesSection() {
+export default function ComplementaryCoursesSection({ editable }: { editable?: boolean }) {
   const logos = [
     { id: 1, name: 'Logo 1', image: logo1 },
     { id: 2, name: 'Logo 2', image: logo2 },

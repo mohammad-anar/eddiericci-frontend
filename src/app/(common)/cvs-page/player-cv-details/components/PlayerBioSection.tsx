@@ -68,7 +68,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
 
   const { setBioRating, role } = usePlayerStats();
 
-  const canEditBio = editable && (role === "player" || role === "parent");
+  const canEditBio = editable && (role === "player" || role === "parent" || role === "coach");
   const canEditEvaluation = editable && (role === "player" || role === "parent" || role === "coach");
 
   useEffect(() => {
@@ -115,9 +115,9 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
       setRole(currentRole);
     }, [role]);
 
-    const canUpload = (field === "playerImage" || field === "birthCountryFlag" || field === "dualNationalityFlag")
-      ? (role === "player" || role === "parent")
-      : canEditEvaluation;
+    const canUpload = editable && ((field === "playerImage" || field === "birthCountryFlag" || field === "dualNationalityFlag")
+      ? (role === "player" || role === "parent" || role === "coach")
+      : canEditEvaluation);
 
     const handleDrop = (e: React.DragEvent) => {
       e.preventDefault();

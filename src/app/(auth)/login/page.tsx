@@ -6,6 +6,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useAppDispatch } from "@/lib/hooks/reduxHooks";
+import { setAccessToken, setUser } from "@/redux/features/auth";
 
 interface LoginForm {
   email: string;
@@ -23,6 +25,7 @@ const REDIRECT_MAP: Record<string, string> = {
 
 export default function LoginPage() {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const [showPassword, setShowPassword] = useState(false);
   const {
     register,
@@ -44,7 +47,12 @@ export default function LoginPage() {
 
     localStorage.setItem("isLoggedIn", "true");
     localStorage.setItem("userEmail", email);
-    localStorage.setItem("userRole", redirectPath.startsWith("/dashboard/") ? redirectPath.split("/")[2] : "player");
+    const role = redirectPath.startsWith("/dashboard/") ? redirectPath.split("/")[2] : "player";
+    localStorage.setItem("userRole", role);
+
+    // Sync with Redux
+    dispatch(setAccessToken("dummy-token"));
+    dispatch(setUser({ user: { email, role } }));
 
     router.push(redirectPath);
   };

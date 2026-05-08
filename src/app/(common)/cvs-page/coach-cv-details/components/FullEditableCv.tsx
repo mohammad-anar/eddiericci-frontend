@@ -12,10 +12,15 @@ import {
   PlayerStatsProvider,
   usePlayerStats,
 } from "../../player-cv-details/components/FullEditablePage";
+import { useAppSelector } from "@/lib/hooks/reduxHooks";
+import { AuthState } from "@/redux/features/auth";
 
 const FullEditableCv = ({ editable = true }: { editable?: boolean }) => {
   const { role } = usePlayerStats() || { role: "player" };
-  const canEdit = editable && role === "coach";
+  const { accessToken } = useAppSelector((state) => state.auth as AuthState);
+
+  const isActuallyEditable = editable && !!accessToken;
+  const canEdit = isActuallyEditable && role === "coach";
 
   return (
     <>

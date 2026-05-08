@@ -7,11 +7,23 @@ export interface AuthState {
   refreshToken: string | null;
 }
 
-const initialState: AuthState = {
-  user: null,
-  accessToken: null,
-  refreshToken: null,
+const getInitialAuth = () => {
+  if (typeof window === "undefined") return { user: null, accessToken: null, refreshToken: null };
+  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+  const userRole = localStorage.getItem("userRole");
+  const userEmail = localStorage.getItem("userEmail");
+
+  if (isLoggedIn) {
+    return {
+      user: { email: userEmail, role: userRole },
+      accessToken: "dummy-token",
+      refreshToken: null,
+    };
+  }
+  return { user: null, accessToken: null, refreshToken: null };
 };
+
+const initialState: AuthState = getInitialAuth();
 
 const authSlice = createSlice({
   name: "user",

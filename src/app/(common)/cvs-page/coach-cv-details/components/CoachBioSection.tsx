@@ -83,6 +83,8 @@ type CoachData = {
   keySkills: string[];
   clubs: { name: string; period: string }[];
   qualifications: { id: number; text: string }[];
+  playerImage: StaticImageData | string;
+  mainFlag: StaticImageData | string;
 };
 
 const COACH_STYLE_GROUPS = [
@@ -142,6 +144,8 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
       { name: "GBN CFN B", count: 2 },
       { name: "GBN CFN B", count: 4 },
     ],
+    playerImage: playerImage,
+    mainFlag: flagImage,
     cupHistory: [
       "2021 - K10 FOOTBALL LEAGUE - K10 FOOTBALL FC",
       "2019 - K10 FOOTBALL CUP - K10 FOOTBALL FC",
@@ -238,7 +242,7 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
     return (
       <div
         className={cn(
-          "relative group w-full",
+          "relative group w-full h-full",
           canEdit ? "cursor-pointer" : ""
         )}
         onClick={() => canEdit && fileInputRef.current?.click()}
@@ -247,9 +251,7 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
           src={src}
           alt={alt}
           className={className}
-          width={width}
-          height={height}
-          fill={fill}
+          {...(!fill ? { width: width || 500, height: height || 500 } : { fill: true })}
         />
         {canEdit && (
           <>
@@ -335,7 +337,7 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
       <div className="container">
         <div className="grid grid-cols-12 gap-6">
           {/* LEFT COLUMN */}
-          <div className="col-span-3 h-fit space-y-6 bg-cardBg">
+          <div className="col-span-1 md:col-span-4 h-fit space-y-6 bg-cardBg">
             {/* Personal Information */}
             <div className=" p-6">
               <h2 className="text-lg text-center font-heading font-normal mb-4">
@@ -575,11 +577,16 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
           </div>
 
           {/* CENTER COLUMN - PLAYER IMAGE */}
-          <div className="col-span-6 flex flex-col items-center">
+          <div className="col-span-1 md:col-span-4 flex flex-col items-center">
             {/* Player Name */}
             <div className="text-center mb-8">
               <div className="flex items-center mb-8 justify-center gap-2">
-                <Image className="w-60" src={flagImage} alt="flag" />
+                <EditableImage
+                  src={coachData.mainFlag}
+                  alt="flag"
+                  className="w-60"
+                  field="mainFlag"
+                />
               </div>
 
               <h1 className="text-2xl font-bold font-heading mb-2">
@@ -601,10 +608,10 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
             </div>
 
             {/* Coach Image */}
-            <div className="relative w-full h-125 mb-8">
+            <div className="relative w-full h-[500px] mb-8 ">
               <EditableImage
-                src={playerImage}
-                alt="Marcus Silva"
+                src={coachData.playerImage}
+                alt={coachData.fullName}
                 fill
                 className="object-contain"
                 field="playerImage"
@@ -641,7 +648,7 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
           </div>
 
           {/* RIGHT COLUMN */}
-          <div className="col-span-3 space-y-6 bg-cardBg h-fit">
+          <div className="col-span-1 md:col-span-4 space-y-6 bg-cardBg h-fit">
             {/* Current Season Stats */}
             <div className="p-6">
               <h2 className="text-lg text-center font-heading font-normal mb-4">
@@ -739,7 +746,7 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
               <h2 className="text-lg text-center font-heading font-normal mb-4">
                 CUP PLAYED
               </h2>
-              <div className="space-y-2 text-xs text-gray-300">
+              <div className="space-y-2 text-xs text-gray-300 border-l border-green-500">
                 {coachData.cupHistory.map((cup, index) => (
                   <div key={index} className="flex gap-2 items-center">
                     <Image src={trophyIcon} alt="trophyImage" />

@@ -194,14 +194,14 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const playerStats = usePlayerStats();
     const [role, setRole] = useState<string>("player");
-  
+
 
     useEffect(() => {
       const currentRole = localStorage.getItem("userRole") || role || "player";
       setRole(currentRole);
     }, [role]);
 
-    const canUpload = (field === "playerImage" || field === "birthCountryFlag" || field === "dualNationalityFlag") 
+    const canUpload = (field === "playerImage" || field === "birthCountryFlag" || field === "dualNationalityFlag")
       ? (role === "player" || role === "parent")
       : canEditEvaluation;
 
@@ -326,7 +326,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
       <div className="container">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
           {/* LEFT COLUMN */}
-          <div className="col-span-1 md:col-span-3 h-fit space-y-6 bg-cardBg">
+          <div className="col-span-1 md:col-span-4 h-fit space-y-6 bg-cardBg">
             <div className=" p-6">
               <h2 className="text-lg text-center font-heading font-normal mb-4">
                 Personal Information
@@ -587,13 +587,13 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                 </button>
               </div>
               {
-                isPositionMap? <Image src={positionMap} alt="position map" /> : <Image src={positionMap} className="rotate-180" alt="position map" />
+                isPositionMap ? <Image src={positionMap} alt="position map" /> : <Image src={positionMap} className="rotate-180" alt="position map" />
               }
             </div>
           </div>
 
           {/* CENTER COLUMN - PLAYER IMAGE */}
-          <div className="col-span-1 md:col-span-6 flex flex-col items-center">
+          <div className="col-span-1 md:col-span-4 flex flex-col items-center">
             {/* Player Name */}
             <div className="text-center mb-8">
               <div className="flex items-center mb-8 justify-center gap-2">
@@ -687,37 +687,37 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                         <DialogHeader>
                           <DialogTitle>Select Player Styles (Max 3)</DialogTitle>
                         </DialogHeader>
-                      <div className="grid grid-cols-2 gap-4 py-4">
-                        {ALL_STYLES.map((style) => (
-                          <div
-                            key={style.id}
-                            className="flex items-center space-x-2"
-                          >
-                            <Checkbox
-                              id={style.id}
-                              checked={playerData.selectedStyleIds.includes(
-                                style.id
-                              )}
-                              onCheckedChange={() => toggleStyle(style.id)}
-                              disabled={
-                                !playerData.selectedStyleIds.includes(
-                                  style.id
-                                ) && playerData.selectedStyleIds.length >= 5
-                              }
-                            />
-                            <Label
-                              htmlFor={style.id}
-                              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        <div className="grid grid-cols-2 gap-4 py-4">
+                          {ALL_STYLES.map((style) => (
+                            <div
+                              key={style.id}
+                              className="flex items-center space-x-2"
                             >
-                              {style.label}
-                            </Label>
-                          </div>
-                        ))}
-                      </div>
-                    </DialogContent>
-                  </Dialog>
-                )}
-              </div>
+                              <Checkbox
+                                id={style.id}
+                                checked={playerData.selectedStyleIds.includes(
+                                  style.id
+                                )}
+                                onCheckedChange={() => toggleStyle(style.id)}
+                                disabled={
+                                  !playerData.selectedStyleIds.includes(
+                                    style.id
+                                  ) && playerData.selectedStyleIds.length >= 5
+                                }
+                              />
+                              <Label
+                                htmlFor={style.id}
+                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                              >
+                                {style.label}
+                              </Label>
+                            </div>
+                          ))}
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                  )}
+                </div>
 
                 <div className="space-y-4">
                   {orderedSelectedStyles.map((style, index) => (
@@ -738,7 +738,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
           </div>
 
           {/* RIGHT COLUMN */}
-          <div className="col-span-1 md:col-span-3 space-y-6 bg-cardBg">
+          <div className="col-span-1 md:col-span-4 space-y-6 bg-cardBg">
             <div className="p-6">
               <h2 className="text-lg text-center font-heading font-normal mb-4">
                 Strength

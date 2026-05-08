@@ -82,6 +82,7 @@ type CoachData = {
   cupHistory: string[];
   keySkills: string[];
   clubs: { name: string; period: string }[];
+  qualifications: { id: number; text: string }[];
 };
 
 const COACH_STYLE_GROUPS = [
@@ -179,7 +180,7 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
   const { role } = usePlayerStats();
   const [updateCoach] = useUpdateCoachProfileMutation();
 
-  const canEdit = editable && role === "coach";
+  const canEdit = !!(editable && role === "coach");
 
   const handleUpdate = async (field: string, value: unknown) => {
     setCoachData((prev) => {

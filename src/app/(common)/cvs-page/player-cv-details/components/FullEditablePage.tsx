@@ -78,9 +78,9 @@ const FullEditablePage = ({ editable = false }: { editable?: boolean }) => {
     const { role } = usePlayerStats() || { role: 'player' }; // Fallback if context not yet initialized
 
     // Logic for role-based editability
-    const canEditBio = editable && (role === "player" || role === "parent" || role === "admin");
-    const canEditEvaluations = editable && (role === "player" || role === "parent" || role === "coach" || role === "admin");
-    const canEditMedia = editable && (role === "player" || role === "parent" || role === "admin");
+    const canEditBio = editable && (role === "player" || role === "parent");
+    const canEditEvaluations = editable && (role === "player" || role === "parent" || role === "coach");
+    const canEditMedia = editable && (role === "player" || role === "parent");
 
     return (
         <>

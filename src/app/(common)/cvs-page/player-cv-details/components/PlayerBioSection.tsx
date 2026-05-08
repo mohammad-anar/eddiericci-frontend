@@ -1,22 +1,28 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import Image from "next/image";
-import playerImage from "@/assets/cvs-page/id/player-image.png";
-import flagImage from "@/assets/cvs-page/id/flag.png";
 import badge1 from "@/assets/cvs-page/id/badge-image1.png";
 import badge2 from "@/assets/cvs-page/id/badge-image2.png";
 import badge3 from "@/assets/cvs-page/id/badge-image3.png";
-import { Button } from "@/components/ui/button";
-import { IconShare } from "@tabler/icons-react";
-import leftLeg from "@/assets/cvs-page/id/left-leg-image.png";
-import right from "@/assets/cvs-page/id/right-legt-image.png";
-import positionMap from "@/assets/cvs-page/id/positionmap.png";
-import trofeeIcon from "@/assets/cvs-page/id/trofeeIcon.png";
 import flagFr from "@/assets/cvs-page/id/flag-fr.png";
 import flagIt from "@/assets/cvs-page/id/flag-itally.png";
-import { useState, useEffect, useRef } from "react";
-import { usePlayerStats } from "./FullEditablePage";
-import { toast } from "sonner";
+import flagImage from "@/assets/cvs-page/id/flag.png";
+import leftLeg from "@/assets/cvs-page/id/left-leg-image.png";
+import playerImage from "@/assets/cvs-page/id/player-image.png";
+import positionMap from "@/assets/cvs-page/id/positionmap.png";
+import right from "@/assets/cvs-page/id/right-legt-image.png";
+import trofeeIcon from "@/assets/cvs-page/id/trofeeIcon.png";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Progress } from "@/components/ui/progress";
 import {
   Select,
   SelectContent,
@@ -26,18 +32,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Progress } from "@/components/ui/progress";
+import { IconShare } from "@tabler/icons-react";
+import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
+import { usePlayerStats } from "./FullEditablePage";
 const ALL_STYLES = [
   { id: "technical", label: "Technical" },
   { id: "finesse-shot", label: "Finesse Shot" },

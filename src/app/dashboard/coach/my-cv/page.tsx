@@ -1,9 +1,11 @@
 "use client";
-import React from "react";
-import { MyCV } from "@/components/user-wise-dashboard/coach-dashboard/my-cv";
 
-const MyCVPage = () => {
-  return <MyCV />;
-};
+import GenerateCvCoach from "@/components/user-wise-dashboard/coach-dashboard/generate-cv";
 
-export default MyCVPage;
+export default function MyCV() {
+  return (
+    <div>
+      <GenerateCvCoach />
+    </div>
+  );
+}

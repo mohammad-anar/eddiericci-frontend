@@ -105,8 +105,8 @@ export default function TestimonialSection({ editable }: { editable?: boolean })
   )
 
   return (
-    <div className=" bg-black py-20">
-      <div className=" mx-auto">
+    <div className=" bg-black py-20 ">
+      <div className={`${editable? "container mx-auto" : ""}`}>
         {/* Title */}
         <h1 className="text-4xl font-heading text-white text-center mb-16 tracking-wide">
           TESTIMONIALS

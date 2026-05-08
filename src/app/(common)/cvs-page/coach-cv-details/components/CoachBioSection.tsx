@@ -73,6 +73,10 @@ type CoachData = {
   contractUntil: string;
   agent: string;
   agency: string;
+  majorTrophies: { name: string; count: number }[];
+  cupHistory: string[];
+  keySkills: string[];
+  clubs: { name: string; period: string }[];
 };
 
 const COACH_STYLES = [
@@ -118,6 +122,33 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
     contractUntil: "June, 2026",
     agent: "John Morrison",
     agency: "Elite Sports Mgmt",
+    majorTrophies: [
+      { name: "K10 FOOTBALL CHAMPIONSHIP", count: 3 },
+      { name: "K10 FOOTBALL CUP", count: 7 },
+      { name: "K10 FOOTBALL LEAGUE", count: 12 },
+      { name: "K10 FOOTBALL YOUTH CUP", count: 5 },
+      { name: "GBN CFN B", count: 2 },
+      { name: "GBN CFN B", count: 2 },
+      { name: "GBN CFN B", count: 4 },
+    ],
+    cupHistory: [
+      "2021 - K10 FOOTBALL LEAGUE - K10 FOOTBALL FC",
+      "2019 - K10 FOOTBALL CUP - K10 FOOTBALL FC",
+      "2018 - K10 FOOTBALL CUP - K10 FOOTBALL FC",
+      "2017 - K10 FOOTBALL CUP - K10 FOOTBALL FC",
+      "2016 - K10 FOOTBALL CUP - K10 FOOTBALL FC",
+    ],
+    keySkills: [
+      "Youth Development",
+      "Leadership",
+      "Adaptability",
+      "Constructive Feedback",
+    ],
+    clubs: [
+      { name: "Manchester City", period: "2020-present" },
+      { name: "Manchester City", period: "2020-present" },
+      { name: "Manchester City", period: "2020-present" },
+    ],
   });
   const [selectedStyleIds, setSelectedStyleIds] = useState<string[]>([
     "tactics",
@@ -212,37 +243,6 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
         </svg>
       ),
       text: "Five years of experience assistant coach at the college level",
-    },
-  ];
-
-  const tournaments = [
-    {
-      name: "K10 FOOTBALL CHAMPIONSHIP",
-      count: 3,
-    },
-    {
-      name: "K10 FOOTBALL CUP",
-      count: 7,
-    },
-    {
-      name: "K10 FOOTBALL LEAGUE",
-      count: 12,
-    },
-    {
-      name: "K10 FOOTBALL YOUTH CUP",
-      count: 5,
-    },
-    {
-      name: "GBN CFN B",
-      count: 2,
-    },
-    {
-      name: "GBN CFN B",
-      count: 2,
-    },
-    {
-      name: "GBN CFN B",
-      count: 4,
     },
   ];
 
@@ -455,18 +455,35 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
               </h2>
               <div className="">
                 <div className="space-y-4">
-                  {tournaments.map((tournament, index) => (
+                  {coachData.majorTrophies.map((tournament, index) => (
                     <div
                       key={index}
                       className="flex items-center justify-between py-3 px-4 border-b border-slate-800"
                     >
-                      <p className="text-white text-[12px] font-medium tracking-wide">
-                        {tournament.name}
-                      </p>
+                      {editable ? (
+                        <Input
+                          value={tournament.name}
+                          onChange={(e) => handleUpdate(`majorTrophies.${index}.name`, e.target.value)}
+                          className="text-white text-[12px] font-medium tracking-wide bg-transparent"
+                        />
+                      ) : (
+                        <p className="text-white text-[12px] font-medium tracking-wide">
+                          {tournament.name}
+                        </p>
+                      )}
                       <div className="flex items-center gap-3">
-                        <span className="text-white text-sm font-semibold">
-                          {tournament.count}
-                        </span>
+                        {editable ? (
+                          <Input
+                            type="number"
+                            value={tournament.count}
+                            onChange={(e) => handleUpdate(`majorTrophies.${index}.count`, parseInt(e.target.value))}
+                            className="text-sm font-semibold w-16 rounded bg-transparent text-white"
+                          />
+                        ) : (
+                          <span className="text-white text-sm font-semibold">
+                            {tournament.count}
+                          </span>
+                        )}
                         <IconTrophy />
                       </div>
                     </div>
@@ -709,26 +726,20 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
                 CUP PLAYED
               </h2>
               <div className="space-y-2 text-xs text-gray-300">
-                <div className="flex gap-2">
-                  <Image src={trophyIcon} alt="trophyImage" />
-                  <span>2021 - K10 FOOTBALL LEAGUE - K10 FOOTBALL FC</span>
-                </div>
-                <div className="flex gap-2">
-                  <Image src={trophyIcon} alt="trophyImage" />
-                  <span>2019 - K10 FOOTBALL CUP - K10 FOOTBALL FC</span>
-                </div>
-                <div className="flex gap-2">
-                  <Image src={trophyIcon} alt="trophyImage" />
-                  <span>2018 - K10 FOOTBALL CUP - K10 FOOTBALL FC</span>
-                </div>
-                <div className="flex gap-2">
-                  <Image src={trophyIcon} alt="trophyImage" />
-                  <span>2017 - K10 FOOTBALL CUP - K10 FOOTBALL FC</span>
-                </div>
-                <div className="flex gap-2">
-                  <Image src={trophyIcon} alt="trophyImage" />
-                  <span>2016 - K10 FOOTBALL CUP - K10 FOOTBALL FC</span>
-                </div>
+                {coachData.cupHistory.map((cup, index) => (
+                  <div key={index} className="flex gap-2 items-center">
+                    <Image src={trophyIcon} alt="trophyImage" />
+                    {editable ? (
+                      <Input
+                        value={cup}
+                        onChange={(e) => handleUpdate(`cupHistory.${index}`, e.target.value)}
+                        className="h-7 text-xs w-full bg-transparent"
+                      />
+                    ) : (
+                      <span>{cup}</span>
+                    )}
+                  </div>
+                ))}
               </div>
             </div>
 
@@ -738,14 +749,19 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
                 Key Skills
               </h2>
               <div className="space-y-4">
-                <h3 className="text-center border-b pb-3 ">
-                  Youth Development
-                </h3>
-                <h3 className="text-center border-b pb-3 ">Leadership</h3>
-                <h3 className="text-center border-b pb-3 ">Adaptability</h3>
-                <h3 className="text-center border-b pb-3 ">
-                  Constructive Feedback
-                </h3>
+                {coachData.keySkills.map((skill, index) => (
+                  <div key={index} className="text-center border-b pb-3">
+                    {editable ? (
+                      <Input
+                        value={skill}
+                        onChange={(e) => handleUpdate(`keySkills.${index}`, e.target.value)}
+                        className="h-8 text-xs bg-transparent w-full text-center"
+                      />
+                    ) : (
+                      <h3 className="text-center">{skill}</h3>
+                    )}
+                  </div>
+                ))}
               </div>
             </div>
             {/* Clubs */}
@@ -754,33 +770,33 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
                 Clubs
               </h2>
               <div className="space-y-4">
-                <Card className="p-5">
-                  <div className="flex items-center gap-3">
-                    <Image src={clubImage} className="w-12" alt="clubs image" />
-                    <div>
-                      <h3 className="font-bold">Manchester City</h3>
-                      <p className="text-[12px] text-gray-400">2020-present</p>
+                {coachData.clubs.map((club, index) => (
+                  <Card key={index} className="p-5">
+                    <div className="flex items-center gap-3">
+                      <Image src={clubImage} className="w-12" alt="clubs image" />
+                      <div className="w-full">
+                        {editable ? (
+                          <Input
+                            value={club.name}
+                            onChange={(e) => handleUpdate(`clubs.${index}.name`, e.target.value)}
+                            className="h-8 text-xs w-full bg-transparent"
+                          />
+                        ) : (
+                          <h3 className="font-bold">{club.name}</h3>
+                        )}
+                        {editable ? (
+                          <Input
+                            value={club.period}
+                            onChange={(e) => handleUpdate(`clubs.${index}.period`, e.target.value)}
+                            className="h-8 text-xs w-full bg-transparent mt-1"
+                          />
+                        ) : (
+                          <p className="text-[12px] text-gray-400">{club.period}</p>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                </Card>
-                <Card className="p-5">
-                  <div className="flex items-center gap-3">
-                    <Image src={clubImage} className="w-12" alt="clubs image" />
-                    <div>
-                      <h3 className="font-bold">Manchester City</h3>
-                      <p className="text-[12px] text-gray-400">2020-present</p>
-                    </div>
-                  </div>
-                </Card>
-                <Card className="p-5">
-                  <div className="flex items-center gap-3">
-                    <Image src={clubImage} className="w-12" alt="clubs image" />
-                    <div>
-                      <h3 className="font-bold">Manchester City</h3>
-                      <p className="text-[12px] text-gray-400">2020-present</p>
-                    </div>
-                  </div>
-                </Card>
+                  </Card>
+                ))}
               </div>
             </div>
           </div>

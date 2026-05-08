@@ -20,7 +20,7 @@ const FullEditableCv = ({ editable = true }: { editable?: boolean }) => {
       <ComplementaryCoursesSection editable={canEdit} />
       <Top3Formation editable={canEdit} />
       <TestimonialSection editable={canEdit} />
-      <DocSection editable={canEdit} />
+      {/* <DocSection editable={canEdit} /> */}
     </>
   );
 };

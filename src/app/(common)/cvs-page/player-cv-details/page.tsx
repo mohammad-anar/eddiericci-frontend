@@ -5,7 +5,7 @@ import FullEditablePage from "./components/FullEditablePage";
 const PlayerCvDetailsPage = () => {
   return (
     <>
-      <FullEditablePage />
+      <FullEditablePage editable={true} />
       <ImageCarousel />
       <StartJourneySection />
     </>

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -6,8 +7,10 @@ import playerImage from "@/assets/cvs-page/id/player-short-image.png";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import Image from "next/image";
-import { Input } from "@/components/ui/input";
 import { usePlayerStats } from "./FullEditablePage";
+import { useUpdatePlayerProfileMutation } from "@/lib/features/cv/cvApi";
+import { CMSField } from "@/components/shared/CMSField";
+import { toast } from "sonner";
 
 interface Attribute {
   name: string;
@@ -34,9 +37,15 @@ const getBadgeVariant = (status: string) => {
   }
 };
 
-export default function PlayerProfile({ editable = false }: { editable?: boolean }) {
-  const { bioRating, skillsAvg, metricsAvg, attributesAvg } = usePlayerStats();
-  
+export default function PlayerProfile({
+  editable = false,
+}: {
+  editable?: boolean;
+}) {
+  const { bioRating, skillsAvg, metricsAvg, attributesAvg, role } =
+    usePlayerStats();
+  const [updatePlayer] = useUpdatePlayerProfileMutation();
+
   const [playerInfo, setPlayerInfo] = useState({
     name: "Marcus Silva",
     country: "France",
@@ -58,26 +67,54 @@ export default function PlayerProfile({ editable = false }: { editable?: boolean
     { name: "Reactions", score: 80, status: "Good" },
   ]);
 
-  const overallRating = Math.round((bioRating + skillsAvg + metricsAvg + attributesAvg) / 4);
+  const overallRating = Math.round(
+    (bioRating + skillsAvg + metricsAvg + attributesAvg) / 4,
+  );
 
-  const handleUpdate = (idx: number, value: number) => {
-    setAttrData(prev => {
+  const handleUpdate = async (idx: number, value: number) => {
+    const attrName = attrData[idx].name;
+    setAttrData((prev) => {
       const newData = [...prev];
-      newData[idx].score = value;
-      newData[idx].status = getBadgeStatus(value);
+      newData[idx] = {
+        ...newData[idx],
+        score: value,
+        status: getBadgeStatus(value)
+      };
       return newData;
     });
+
+    try {
+      await updatePlayer({
+        id: "current-player",
+        data: { [`coefficients.${attrName}`]: value }
+      }).unwrap();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  const handleInfoChange = (field: string, value: any) => {
-    setPlayerInfo(prev => ({ ...prev, [field]: value }));
+  const handleInfoChange = async (field: string, value: any) => {
+    setPlayerInfo((prev) => ({ ...prev, [field]: value }));
+    try {
+      await updatePlayer({
+        id: "current-player",
+        data: { [field]: value }
+      }).unwrap();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
     <div className=" text-white p-8">
-      <div className="container grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="container mt-10">
+        <h1 className="text-3xl font-bold flex items-center justify-center font-heading text-white text-center lg:text-left">
+          POSITIONAL CO-EFFICIENTS
+        </h1>
+      </div>
+      <div className="container grid grid-cols-1 lg:grid-cols-3 gap-8 mt-10">
         {/* Left Section - Player Card */}
-        <div className="lg:col-span-1 mt-10 bg-cardBg h-fit rounded-xl overflow-hidden">
+        <div className="lg:col-span-1  bg-cardBg h-fit rounded-xl overflow-hidden">
           <div className=" overflow-hidden">
             {/* Player Image */}
             <div className="aspect-square bg-gradient-to-b from-[#2df168] to-[#39493b] flex items-center justify-center">
@@ -103,38 +140,32 @@ export default function PlayerProfile({ editable = false }: { editable?: boolean
 
             {/* Player Info */}
             <div className="text-center p-6 space-y-3">
-              {editable ? (
-                <div className="space-y-2">
-                  <Input 
-                    value={playerInfo.name} 
-                    onChange={(e) => handleInfoChange('name', e.target.value)}
-                    className="text-xl font-bold bg-transparent text-center h-8"
-                  />
-                  <Input 
-                    value={playerInfo.country} 
-                    onChange={(e) => handleInfoChange('country', e.target.value)}
-                    className="text-sm bg-transparent text-center h-6"
-                  />
-                  <Input 
-                    value={playerInfo.position} 
-                    onChange={(e) => handleInfoChange('position', e.target.value)}
-                    className="text-xs bg-transparent text-center h-6 text-gray-400"
-                  />
-                </div>
-              ) : (
-                <>
-                  <h2 className="text-2xl font-bold text-white font-heading">
-                    {playerInfo.name}
-                  </h2>
-                  <div className="flex items-center justify-center gap-2">
-                    <span className="text-base text-gray-300">{playerInfo.country}</span>
-                    <span className="text-xl">
-                      <Image className="w-10" src={flag} alt="flag" />
-                    </span>
-                  </div>
-                  <p className="text-sm text-gray-400">{playerInfo.position}</p>
-                </>
-              )}
+              <CMSField
+                value={playerInfo.name}
+                onUpdate={(val) => handleInfoChange("name", val)}
+                canEdit={editable}
+                className="text-2xl font-bold justify-center"
+                inputClassName="text-center"
+              />
+              <div className="flex items-center justify-center gap-2">
+                <CMSField
+                  value={playerInfo.country}
+                  onUpdate={(val) => handleInfoChange("country", val)}
+                  canEdit={editable}
+                  className="text-base text-gray-300"
+                  inputClassName="text-center"
+                />
+                <span className="text-xl">
+                  <Image className="w-10" src={flag} alt="flag" />
+                </span>
+              </div>
+              <CMSField
+                value={playerInfo.position}
+                onUpdate={(val) => handleInfoChange("position", val)}
+                canEdit={editable}
+                className="text-sm text-gray-400 justify-center"
+                inputClassName="text-center"
+              />
             </div>
           </div>
         </div>
@@ -142,10 +173,6 @@ export default function PlayerProfile({ editable = false }: { editable?: boolean
         {/* Right Section - Positional Co-Efficients */}
         <div className="lg:col-span-2">
           <div className="space-y-6">
-            <h1 className="text-3xl font-bold font-heading text-white text-center lg:text-left">
-              POSITIONAL CO-EFFICIENTS
-            </h1>
-
             <div className="space-y-4">
               {attrData.map((attr, idx) => (
                 <div
@@ -157,17 +184,22 @@ export default function PlayerProfile({ editable = false }: { editable?: boolean
                     <p className="text-sm text-gray-300">{attr.name}</p>
                   </div>
 
-                  {/* Progress Bar (shadcn/ui) */}
+                  {/* Progress Bar */}
                   <div className="flex-1 min-w-0 max-w-xs">
                     {editable ? (
-                      <input 
-                        type="range" 
-                        value={attr.score} 
-                        onChange={(e) => handleUpdate(idx, parseInt(e.target.value))}
+                      <input
+                        type="range"
+                        value={attr.score}
+                        onChange={(e) =>
+                          handleUpdate(idx, parseInt(e.target.value))
+                        }
                         className="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-primary"
                       />
                     ) : (
-                      <Progress value={attr.score} className="h-2 bg-[#2a2a2a]" />
+                      <Progress
+                        value={attr.score}
+                        className="h-2 bg-[#2a2a2a]"
+                      />
                     )}
                   </div>
 

@@ -35,8 +35,12 @@ import {
 import { IconShare } from "@tabler/icons-react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { usePlayerStats } from "./FullEditablePage";
+import { PencilIcon, ChevronDown } from "lucide-react";
+import { CMSField } from "@/components/shared/CMSField";
+import { useUpdatePlayerProfileMutation } from "@/lib/features/cv/cvApi";
 const ALL_STYLES = [
   { id: "technical", label: "Technical" },
   { id: "finesse-shot", label: "Finesse Shot" },
@@ -147,7 +151,11 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
     },
   });
 
-  const { setBioRating } = usePlayerStats();
+  const { setBioRating, role } = usePlayerStats();
+  const [updatePlayer] = useUpdatePlayerProfileMutation();
+
+  const canEditBio = editable && (role === "player" || role === "parent");
+  const canEditEvaluation = editable && (role === "player" || role === "parent" || role === "coach");
 
   useEffect(() => {
     setBioRating(playerData.rating);
@@ -186,13 +194,16 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const playerStats = usePlayerStats();
     const [role, setRole] = useState<string>("player");
+  
 
     useEffect(() => {
-      const currentRole = localStorage.getItem("userRole") || playerStats?.role || "player";
+      const currentRole = localStorage.getItem("userRole") || role || "player";
       setRole(currentRole);
-    }, [playerStats?.role]);
+    }, [role]);
 
-    const canUpload = role === "player";
+    const canUpload = (field === "playerImage" || field === "birthCountryFlag" || field === "dualNationalityFlag") 
+      ? (role === "player" || role === "parent")
+      : canEditEvaluation;
 
     const handleDrop = (e: React.DragEvent) => {
       e.preventDefault();
@@ -241,20 +252,32 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
     );
   };
 
-  const handleUpdate = (field: string, value: any) => {
+  const handleUpdate = async (field: string, value: any) => {
     setPlayerData((prev) => {
       const keys = field.split(".");
       if (keys.length === 1) return { ...prev, [field]: value };
 
-      const newState = { ...prev };
-      let current: any = newState;
+      const next = { ...prev } as any;
+      let current = next;
       for (let i = 0; i < keys.length - 1; i++) {
-        current[keys[i]] = { ...current[keys[i]] };
-        current = current[keys[i]];
+        const key = keys[i];
+        current[key] = Array.isArray(current[key])
+          ? [...current[key]]
+          : { ...current[key] };
+        current = current[key];
       }
       current[keys[keys.length - 1]] = value;
-      return newState;
+      return next;
     });
+
+    // Simulate API call
+    try {
+      await updatePlayer({ id: "current-player", data: { [field]: value } }).unwrap();
+      toast.success(`${field} updated successfully`);
+    } catch (error) {
+      // toast.error(`Failed to update ${field}`);
+      console.error(error);
+    }
   };
 
   const toggleStyle = (id: string) => {
@@ -269,29 +292,29 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
     }
   };
 
-  const handleShare = async () => {
-    const shareUrl = window.location.href;
-    const shareData = {
-      title: `${playerData.fullName}'s Professional Football CV`,
-      text: `Check out ${playerData.fullName}'s verified football profile on Eddie Ricci Management.`,
-      url: shareUrl,
-    };
+  // const handleShare = async () => {
+  //   const shareUrl = window.location.href;
+  //   const shareData = {
+  //     title: `${playerData.fullName}'s Professional Football CV`,
+  //     text: `Check out ${playerData.fullName}'s verified football profile on Eddie Ricci Management.`,
+  //     url: shareUrl,
+  //   };
 
-    try {
-      if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
-        await navigator.share(shareData);
-        toast.success("Shared successfully!");
-      } else {
-        await navigator.clipboard.writeText(shareUrl);
-        toast.success("Profile link copied to clipboard!");
-      }
-    } catch (err) {
-      if ((err as Error).name !== "AbortError") {
-        await navigator.clipboard.writeText(shareUrl);
-        toast.success("Profile link copied to clipboard!");
-      }
-    }
-  };
+  //   try {
+  //     if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+  //       await navigator.share(shareData);
+  //       toast.success("Shared successfully!");
+  //     } else {
+  //       await navigator.clipboard.writeText(shareUrl);
+  //       toast.success("Profile link copied to clipboard!");
+  //     }
+  //   } catch (err) {
+  //     if ((err as Error).name !== "AbortError") {
+  //       await navigator.clipboard.writeText(shareUrl);
+  //       toast.success("Profile link copied to clipboard!");
+  //     }
+  //   }
+  // };
 
   const orderedSelectedStyles = playerData.selectedStyleIds.map(
     (id) => ALL_STYLES.find((s) => s.id === id)!
@@ -301,14 +324,6 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
   return (
     <>
       <div className="container">
-        <div className="py-5 flex items-center justify-end">
-          <Button 
-            onClick={handleShare}
-            className="bg-gray-500/20 hover:bg-gray-500/30 transition-colors"
-          >
-            Share <IconShare className="ml-2" />
-          </Button>
-        </div>
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
           {/* LEFT COLUMN */}
           <div className="col-span-1 md:col-span-3 h-fit space-y-6 bg-cardBg">
@@ -319,54 +334,44 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between items-center">
                   <span className="text-gray-400">Full Name</span>
-                  {editable ? (
-                    <Input
-                      value={playerData.fullName}
-                      onChange={(e) => handleUpdate("fullName", e.target.value)}
-                      className="h-7 text-xs w-32"
-                    />
-                  ) : (
-                    <span>{playerData.fullName}</span>
-                  )}
+                  <CMSField
+                    value={playerData.fullName}
+                    onUpdate={(val) => handleUpdate("fullName", val)}
+                    canEdit={canEditBio}
+                    className="w-40 justify-end"
+                    inputClassName="text-right"
+                  />
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-400">Date of Birth</span>
-                  {editable ? (
-                    <Input
-                      value={playerData.dob}
-                      onChange={(e) => handleUpdate("dob", e.target.value)}
-                      className="h-7 text-xs w-32"
-                    />
-                  ) : (
-                    <span>{playerData.dob}</span>
-                  )}
+                  <CMSField
+                    value={playerData.dob}
+                    onUpdate={(val) => handleUpdate("dob", val)}
+                    canEdit={canEditBio}
+                    className="w-32 justify-end"
+                    inputClassName="text-right"
+                  />
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-400">Age</span>
-                  {editable ? (
-                    <Input
-                      value={playerData.age}
-                      onChange={(e) => handleUpdate("age", e.target.value)}
-                      className="h-7 text-xs w-32"
-                    />
-                  ) : (
-                    <span>{playerData.age} years</span>
-                  )}
+                  <CMSField
+                    value={playerData.age}
+                    onUpdate={(val) => handleUpdate("age", val)}
+                    canEdit={canEditBio}
+                    className="w-20 justify-end"
+                    inputClassName="text-right"
+                  />
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-400">Birth Country</span>
                   <div className="flex items-center gap-2">
-                    {editable ? (
-                      <Input
-                        value={playerData.birthCountry}
-                        onChange={(e) =>
-                          handleUpdate("birthCountry", e.target.value)
-                        }
-                        className="h-7 text-xs w-20"
-                      />
-                    ) : (
-                      <span>{playerData.birthCountry}</span>
-                    )}
+                    <CMSField
+                      value={playerData.birthCountry}
+                      onUpdate={(val) => handleUpdate("birthCountry", val)}
+                      canEdit={canEditBio}
+                      className="w-24 justify-end"
+                      inputClassName="text-right"
+                    />
                     <div className="relative w-5 h-4">
                       <EditableImage
                         src={playerData.birthCountryFlag}
@@ -379,17 +384,13 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                 <div className="flex justify-between items-center">
                   <span className="text-gray-400">Dual Nationality</span>
                   <div className="flex items-center gap-2">
-                    {editable ? (
-                      <Input
-                        value={playerData.dualNationality}
-                        onChange={(e) =>
-                          handleUpdate("dualNationality", e.target.value)
-                        }
-                        className="h-7 text-xs w-20"
-                      />
-                    ) : (
-                      <span>{playerData.dualNationality}</span>
-                    )}
+                    <CMSField
+                      value={playerData.dualNationality}
+                      onUpdate={(val) => handleUpdate("dualNationality", val)}
+                      canEdit={canEditBio}
+                      className="w-24 justify-end"
+                      inputClassName="text-right"
+                    />
                     <div className="relative w-5 h-4">
                       <EditableImage
                         src={playerData.dualNationalityFlag}
@@ -409,51 +410,39 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
               <div className="space-y-2 text-sm text-primary">
                 <div className="flex items-center gap-2">
                   <span>📧</span>
-                  {editable ? (
-                    <Input
-                      value={playerData.email}
-                      onChange={(e) => handleUpdate("email", e.target.value)}
-                      className="h-7 text-xs bg-transparent border-primary/30"
-                    />
-                  ) : (
-                    <span>{playerData.email}</span>
-                  )}
+                  <CMSField
+                    value={playerData.email}
+                    onUpdate={(val) => handleUpdate("email", val)}
+                    canEdit={canEditBio}
+                    className="flex-1"
+                  />
                 </div>
                 <div className="flex items-center gap-2">
                   <span>📱</span>
-                  {editable ? (
-                    <Input
-                      value={playerData.phone}
-                      onChange={(e) => handleUpdate("phone", e.target.value)}
-                      className="h-7 text-xs bg-transparent border-primary/30"
-                    />
-                  ) : (
-                    <span>{playerData.phone}</span>
-                  )}
+                  <CMSField
+                    value={playerData.phone}
+                    onUpdate={(val) => handleUpdate("phone", val)}
+                    canEdit={canEditBio}
+                    className="flex-1"
+                  />
                 </div>
                 <div className="flex items-center gap-2">
                   <span>📍</span>
-                  {editable ? (
-                    <Input
-                      value={playerData.location}
-                      onChange={(e) => handleUpdate("location", e.target.value)}
-                      className="h-7 text-xs bg-transparent border-primary/30"
-                    />
-                  ) : (
-                    <span>{playerData.location}</span>
-                  )}
+                  <CMSField
+                    value={playerData.location}
+                    onUpdate={(val) => handleUpdate("location", val)}
+                    canEdit={canEditBio}
+                    className="flex-1"
+                  />
                 </div>
                 <div className="flex items-center gap-2">
                   <span>🌐</span>
-                  {editable ? (
-                    <Input
-                      value={playerData.website}
-                      onChange={(e) => handleUpdate("website", e.target.value)}
-                      className="h-7 text-xs bg-transparent border-primary/30"
-                    />
-                  ) : (
-                    <span>{playerData.website}</span>
-                  )}
+                  <CMSField
+                    value={playerData.website}
+                    onUpdate={(val) => handleUpdate("website", val)}
+                    canEdit={canEditBio}
+                    className="flex-1"
+                  />
                 </div>
               </div>
             </div>
@@ -464,34 +453,25 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
               </h2>
               <div className="flex justify-around text-center mb-6">
                 <div>
-                  {editable ? (
-                    <Input
-                      type="number"
-                      step="0.01"
-                      value={playerData.height}
-                      onChange={(e) => handleUpdate("height", e.target.value)}
-                      className="h-8 text-center font-bold text-primary w-16 mb-1"
-                    />
-                  ) : (
-                    <div className="text-2xl font-bold text-primary">
-                      {playerData.height}
-                    </div>
-                  )}
+                  <CMSField
+                    value={playerData.height}
+                    onUpdate={(val) => handleUpdate("height", val)}
+                    canEdit={canEditBio}
+                    isNumeric
+                    className="text-2xl font-bold text-primary justify-center"
+                    inputClassName="text-center w-20"
+                  />
                   <div className="text-xs text-gray-400">HEIGHT (m)</div>
                 </div>
                 <div>
-                  {editable ? (
-                    <Input
-                      type="number"
-                      value={playerData.weight}
-                      onChange={(e) => handleUpdate("weight", e.target.value)}
-                      className="h-8 text-center font-bold text-primary w-16 mb-1"
-                    />
-                  ) : (
-                    <div className="text-2xl font-bold text-primary">
-                      {playerData.weight}
-                    </div>
-                  )}
+                  <CMSField
+                    value={playerData.weight}
+                    onUpdate={(val) => handleUpdate("weight", val)}
+                    canEdit={canEditBio}
+                    isNumeric
+                    className="text-2xl font-bold text-primary justify-center"
+                    inputClassName="text-center w-20"
+                  />
                   <div className="text-xs text-gray-400">WEIGHT (kg)</div>
                 </div>
               </div>
@@ -512,7 +492,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                       {playerData.leftLegUsage}%
                     </span>
                   </div>
-                  {editable ? (
+                  {canEditBio ? (
                     <input
                       type="range"
                       value={playerData.leftLegUsage}
@@ -540,7 +520,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                       {playerData.rightLegUsage}%
                     </span>
                   </div>
-                  {editable ? (
+                  {canEditBio ? (
                     <input
                       type="range"
                       value={playerData.rightLegUsage}
@@ -562,35 +542,28 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
               </h2>
               <div className="space-y-2 text-sm">
                 {playerData.languages.map((lang, idx) => (
-                  <div key={idx} className="flex justify-between items-center">
-                    {editable ? (
-                      <Input
-                        value={lang.name}
-                        onChange={(e) => {
-                          const newLangs = [...playerData.languages];
-                          newLangs[idx].name = e.target.value;
-                          handleUpdate("languages", newLangs);
-                        }}
-                        className="h-7 text-xs w-24 bg-transparent"
-                      />
-                    ) : (
-                      <span>{lang.name}</span>
-                    )}
-                    {editable ? (
-                      <Input
-                        value={lang.level}
-                        onChange={(e) => {
-                          const newLangs = [...playerData.languages];
-                          newLangs[idx].level = e.target.value;
-                          handleUpdate("languages", newLangs);
-                        }}
-                        className="h-7 text-xs w-24 bg-transparent text-right"
-                      />
-                    ) : (
-                      <span className={`${lang.color} text-xs`}>
-                        {lang.level}
-                      </span>
-                    )}
+                  <div key={idx} className="flex justify-between items-center gap-4">
+                    <CMSField
+                      value={lang.name}
+                      onUpdate={(val) => {
+                        const newLangs = [...playerData.languages];
+                        newLangs[idx] = { ...newLangs[idx], name: String(val) };
+                        handleUpdate("languages", newLangs);
+                      }}
+                      canEdit={canEditBio}
+                      className="flex-1"
+                    />
+                    <CMSField
+                      value={lang.level}
+                      onUpdate={(val) => {
+                        const newLangs = [...playerData.languages];
+                        newLangs[idx] = { ...newLangs[idx], level: String(val) };
+                        handleUpdate("languages", newLangs);
+                      }}
+                      canEdit={canEditBio}
+                      className="w-24 justify-end"
+                      inputClassName="text-right"
+                    />
                   </div>
                 ))}
               </div>
@@ -613,7 +586,9 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                   Futsal Map
                 </button>
               </div>
-              <Image src={positionMap} alt="position map" />
+              {
+                isPositionMap? <Image src={positionMap} alt="position map" /> : <Image src={positionMap} className="rotate-180" alt="position map" />
+              }
             </div>
           </div>
 
@@ -633,73 +608,53 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
               </div>
 
               <h1 className="text-2xl font-bold font-heading mb-2 flex items-center justify-center gap-2">
-                {editable ? (
-                  <>
-                    <Input
-                      value={playerData.fullName}
-                      onChange={(e) => handleUpdate("fullName", e.target.value)}
-                      className="h-9 text-xl font-bold text-center w-48"
-                    />
-                    <span className="text-primary flex items-center">
-                      [
-                      <Input
-                        type="number"
-                        value={playerData.rating}
-                        onChange={(e) =>
-                          handleUpdate("rating", parseInt(e.target.value))
-                        }
-                        className="h-7 w-12 p-1 text-center bg-transparent border-none text-primary font-bold"
-                      />
-                      ]
-                    </span>
-                  </>
-                ) : (
-                  <>
-                    {playerData.fullName}{" "}
-                    <span className="text-primary">[{playerData.rating}]</span>
-                  </>
-                )}
+                <CMSField
+                  value={playerData.fullName}
+                  onUpdate={(val) => handleUpdate("fullName", val)}
+                  canEdit={canEditBio}
+                  className="text-2xl font-bold font-heading"
+                />
+                <span className="text-primary flex items-center">
+                  [
+                  <CMSField
+                    value={playerData.rating}
+                    onUpdate={(val) => handleUpdate("rating", parseInt(String(val)))}
+                    canEdit={canEditEvaluation}
+                    isNumeric
+                    className="text-primary font-bold"
+                  />
+                  ]
+                </span>
               </h1>
             </div>
 
-            {/* Position Selector */}
             <div className="mb-8">
-              <Select
-                value={playerData.position}
-                onValueChange={(val) => handleUpdate("position", val)}
-              >
-                <SelectTrigger className="border-border px-4 py-2 rounded hover:bg-gray-900 bg-transparent text-foreground">
-                  <SelectValue placeholder="Select position" />
-                </SelectTrigger>
-                <SelectContent className="bg-cardBg border-border text-foreground">
-                  <SelectGroup className="mb-2">
-                    <SelectLabel className="text-gray-400 font-bold text-xs">Goalkeepers</SelectLabel>
-                    <SelectItem value="Goalkeeper">Goalkeeper</SelectItem>
-                  </SelectGroup>
-                  <SelectGroup className="mb-2">
-                    <SelectLabel className="text-gray-400 font-bold text-xs">Defenders</SelectLabel>
-                    <SelectItem value="Center Back">Center Back</SelectItem>
-                    <SelectItem value="Right Back">Right Back</SelectItem>
-                    <SelectItem value="Left Back">Left Back</SelectItem>
-                    <SelectItem value="Wing Back">Wing Back</SelectItem>
-                  </SelectGroup>
-                  <SelectGroup className="mb-2">
-                    <SelectLabel className="text-gray-400 font-bold text-xs">Midfielders</SelectLabel>
-                    <SelectItem value="Defensive Midfielder">Defensive Midfielder</SelectItem>
-                    <SelectItem value="Central Midfielder">Central Midfielder</SelectItem>
-                    <SelectItem value="Attacking Midfielder">Attacking Midfielder</SelectItem>
-                    <SelectItem value="Right Midfielder">Right Midfielder</SelectItem>
-                    <SelectItem value="Left Midfielder">Left Midfielder</SelectItem>
-                  </SelectGroup>
-                  <SelectGroup className="mb-2">
-                    <SelectLabel className="text-gray-400 font-bold text-xs">Forwards</SelectLabel>
-                    <SelectItem value="Right Winger">Right Winger</SelectItem>
-                    <SelectItem value="Left Winger">Left Winger</SelectItem>
-                    <SelectItem value="Center Forward">Center Forward</SelectItem>
-                    <SelectItem value="Striker">Striker</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+              <div className="flex items-center gap-2 border border-border px-4 py-2 rounded hover:bg-gray-900 bg-transparent text-foreground h-auto">
+                <CMSField
+                  value={playerData.position}
+                  onUpdate={(val) => handleUpdate("position", val)}
+                  canEdit={canEditBio}
+                  type="select"
+                  options={[
+                    "Goalkeeper",
+                    "Center Back",
+                    "Right Back",
+                    "Left Back",
+                    "Wing Back",
+                    "Defensive Midfielder",
+                    "Central Midfielder",
+                    "Attacking Midfielder",
+                    "Left Midfielder",
+                    "Right Midfielder",
+                    "Striker",
+                    "Center Forward",
+                    "Second Striker",
+                    "Left Winger",
+                    "Right Winger"
+                  ]}
+                />
+                <ChevronDown size={16} />
+              </div>
             </div>
 
             {/* Player Image */}
@@ -721,16 +676,17 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                   <h3 className="text-2xl font-bold font-heading">
                     Player Style
                   </h3>
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button variant="outline" size="sm" className="h-7 text-xs">
-                        Edit
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="bg-cardBg border-border text-foreground">
-                      <DialogHeader>
-                        <DialogTitle>Select Player Styles (Max 3)</DialogTitle>
-                      </DialogHeader>
+                  {canEditBio && (
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-7 w-7 text-primary hover:bg-primary/10">
+                          <PencilIcon className="h-4 w-4" />
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="bg-cardBg border-border text-foreground">
+                        <DialogHeader>
+                          <DialogTitle>Select Player Styles (Max 3)</DialogTitle>
+                        </DialogHeader>
                       <div className="grid grid-cols-2 gap-4 py-4">
                         {ALL_STYLES.map((style) => (
                           <div
@@ -760,7 +716,8 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                       </div>
                     </DialogContent>
                   </Dialog>
-                </div>
+                )}
+              </div>
 
                 <div className="space-y-4">
                   {orderedSelectedStyles.map((style, index) => (
@@ -793,7 +750,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                       <span>{key}</span>
                       <span className="text-primary">{value}</span>
                     </div>
-                    {editable ? (
+                    {canEditEvaluation ? (
                       <input
                         type="range"
                         value={value}
@@ -825,7 +782,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                         <span>{key.replace(/([A-Z])/g, " $1")}</span>
                         <span className="text-primary">{value}%</span>
                       </div>
-                      {editable ? (
+                      {canEditEvaluation ? (
                         <input
                           type="range"
                           value={value}
@@ -851,33 +808,21 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                 Market Value
               </h2>
               <div className="mb-4">
-                {editable ? (
-                  <Input
-                    value={playerData.marketValue}
-                    onChange={(e) =>
-                      handleUpdate("marketValue", e.target.value)
-                    }
-                    className="h-10 text-2xl font-bold text-primary mb-1 bg-transparent"
-                  />
-                ) : (
-                  <div className="text-3xl font-bold text-primary mb-1">
-                    ${playerData.marketValue}
-                  </div>
-                )}
+                <CMSField
+                  value={playerData.marketValue}
+                  onUpdate={(val) => handleUpdate("marketValue", val)}
+                  canEdit={canEditBio}
+                  className="text-3xl font-bold text-primary mb-1"
+                  inputClassName="text-3xl font-bold h-12"
+                />
                 <p className="text-xs text-gray-400">Current Market Value</p>
-                {editable ? (
-                  <Input
-                    value={playerData.marketTrend}
-                    onChange={(e) =>
-                      handleUpdate("marketTrend", e.target.value)
-                    }
-                    className="h-7 text-xs text-primary mt-2 bg-transparent"
-                  />
-                ) : (
-                  <p className="text-xs text-primary mt-2">
-                    📈 {playerData.marketTrend}
-                  </p>
-                )}
+                <CMSField
+                  value={playerData.marketTrend}
+                  onUpdate={(val) => handleUpdate("marketTrend", val)}
+                  canEdit={canEditBio}
+                  className="text-xs text-primary mt-2"
+                  inputClassName="h-7 text-xs"
+                />
               </div>
             </div>
 
@@ -893,41 +838,33 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between items-center">
                   <span className="text-gray-400">Contract Until</span>
-                  {editable ? (
-                    <Input
-                      value={playerData.contractUntil}
-                      onChange={(e) =>
-                        handleUpdate("contractUntil", e.target.value)
-                      }
-                      className="h-7 text-xs w-28 bg-transparent"
-                    />
-                  ) : (
-                    <span>{playerData.contractUntil}</span>
-                  )}
+                  <CMSField
+                    value={playerData.contractUntil}
+                    onUpdate={(val) => handleUpdate("contractUntil", val)}
+                    canEdit={canEditBio}
+                    className="w-28 justify-end"
+                    inputClassName="text-right"
+                  />
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-400">Agent</span>
-                  {editable ? (
-                    <Input
-                      value={playerData.agent}
-                      onChange={(e) => handleUpdate("agent", e.target.value)}
-                      className="h-7 text-xs w-28 bg-transparent"
-                    />
-                  ) : (
-                    <span>{playerData.agent}</span>
-                  )}
+                  <CMSField
+                    value={playerData.agent}
+                    onUpdate={(val) => handleUpdate("agent", val)}
+                    canEdit={canEditBio}
+                    className="w-28 justify-end"
+                    inputClassName="text-right"
+                  />
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-400">Agency</span>
-                  {editable ? (
-                    <Input
-                      value={playerData.agency}
-                      onChange={(e) => handleUpdate("agency", e.target.value)}
-                      className="h-7 text-xs w-28 bg-transparent"
-                    />
-                  ) : (
-                    <span>{playerData.agency}</span>
-                  )}
+                  <CMSField
+                    value={playerData.agency}
+                    onUpdate={(val) => handleUpdate("agency", val)}
+                    canEdit={canEditBio}
+                    className="w-28 justify-end"
+                    inputClassName="text-right"
+                  />
                 </div>
               </div>
             </div>
@@ -938,7 +875,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
               </h2>
               <div className="space-y-2 text-xs text-gray-300 border-l-2 border-green-600 pl-2">
                 {playerData.careerHighlights.map((highlight, idx) => (
-                  <div key={idx} className="flex gap-2 items-start">
+                  <div key={idx} className="flex gap-2 items-start mb-4">
                     <div className="relative w-8 h-8 mt-0.5 shrink-0">
                       <EditableImage
                         src={highlight.icon}
@@ -946,47 +883,38 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                         field={`careerHighlights.${idx}.icon`}
                       />
                     </div>
-                    {editable ? (
-                      <div className="flex flex-col gap-1 w-full">
-                        <Input
-                          value={highlight.year}
-                          onChange={(e) => {
-                            const newHighlights = [
-                              ...playerData.careerHighlights,
-                            ];
-                            newHighlights[idx].year = e.target.value;
-                            handleUpdate("careerHighlights", newHighlights);
-                          }}
-                          className="h-6 text-[10px] p-1 bg-transparent"
-                        />
-                        <Input
-                          value={highlight.title}
-                          onChange={(e) => {
-                            const newHighlights = [
-                              ...playerData.careerHighlights,
-                            ];
-                            newHighlights[idx].title = e.target.value;
-                            handleUpdate("careerHighlights", newHighlights);
-                          }}
-                          className="h-6 text-[10px] p-1 bg-transparent"
-                        />
-                        <Input
-                          value={highlight.club}
-                          onChange={(e) => {
-                            const newHighlights = [
-                              ...playerData.careerHighlights,
-                            ];
-                            newHighlights[idx].club = e.target.value;
-                            handleUpdate("careerHighlights", newHighlights);
-                          }}
-                          className="h-6 text-[10px] p-1 bg-transparent"
-                        />
-                      </div>
-                    ) : (
-                      <span>
-                        {highlight.year} - {highlight.title} - {highlight.club}
-                      </span>
-                    )}
+                    <div className="flex flex-col gap-1 w-full">
+                      <CMSField
+                        value={highlight.year}
+                        onUpdate={(val) => {
+                          const newHighlights = [...playerData.careerHighlights];
+                          newHighlights[idx] = { ...newHighlights[idx], year: String(val) };
+                          handleUpdate("careerHighlights", newHighlights);
+                        }}
+                        canEdit={canEditBio}
+                        className="text-[10px]"
+                      />
+                      <CMSField
+                        value={highlight.title}
+                        onUpdate={(val) => {
+                          const newHighlights = [...playerData.careerHighlights];
+                          newHighlights[idx] = { ...newHighlights[idx], title: String(val) };
+                          handleUpdate("careerHighlights", newHighlights);
+                        }}
+                        canEdit={canEditBio}
+                        className="text-[10px]"
+                      />
+                      <CMSField
+                        value={highlight.club}
+                        onUpdate={(val) => {
+                          const newHighlights = [...playerData.careerHighlights];
+                          newHighlights[idx] = { ...newHighlights[idx], club: String(val) };
+                          handleUpdate("careerHighlights", newHighlights);
+                        }}
+                        canEdit={canEditBio}
+                        className="text-[10px]"
+                      />
+                    </div>
                   </div>
                 ))}
               </div>
@@ -998,84 +926,43 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
               </h2>
               <div className="grid grid-cols-2 gap-4">
                 <div className="text-center">
-                  {editable ? (
-                    <Input
-                      type="number"
-                      value={playerData.seasonStats.matches}
-                      onChange={(e) =>
-                        handleUpdate(
-                          "seasonStats.matches",
-                          parseInt(e.target.value)
-                        )
-                      }
-                      className="h-8 text-center font-bold text-primary w-full bg-transparent"
-                    />
-                  ) : (
-                    <div className="text-3xl font-bold text-primary">
-                      {playerData.seasonStats.matches}
-                    </div>
-                  )}
+                  <CMSField
+                    value={playerData.seasonStats.matches}
+                    onUpdate={(val) => handleUpdate("seasonStats.matches", val)}
+                    canEdit={canEditEvaluation}
+                    isNumeric
+                    className="text-3xl font-bold text-primary justify-center"
+                  />
                   <div className="text-xs text-gray-400 mt-1">MATCHES</div>
                 </div>
                 <div className="text-center">
-                  {editable ? (
-                    <Input
-                      type="number"
-                      value={playerData.seasonStats.goals}
-                      onChange={(e) =>
-                        handleUpdate(
-                          "seasonStats.goals",
-                          parseInt(e.target.value)
-                        )
-                      }
-                      className="h-8 text-center font-bold text-primary w-full bg-transparent"
-                    />
-                  ) : (
-                    <div className="text-3xl font-bold text-primary">
-                      {playerData.seasonStats.goals}
-                    </div>
-                  )}
+                  <CMSField
+                    value={playerData.seasonStats.goals}
+                    onUpdate={(val) => handleUpdate("seasonStats.goals", val)}
+                    canEdit={canEditEvaluation}
+                    isNumeric
+                    className="text-3xl font-bold text-primary justify-center"
+                  />
                   <div className="text-xs text-gray-400 mt-1">GOALS</div>
                 </div>
                 <div className="text-center">
-                  {editable ? (
-                    <Input
-                      type="number"
-                      value={playerData.seasonStats.assists}
-                      onChange={(e) =>
-                        handleUpdate(
-                          "seasonStats.assists",
-                          parseInt(e.target.value)
-                        )
-                      }
-                      className="h-8 text-center font-bold text-primary w-full bg-transparent"
-                    />
-                  ) : (
-                    <div className="text-3xl font-bold text-primary">
-                      {playerData.seasonStats.assists}
-                    </div>
-                  )}
+                  <CMSField
+                    value={playerData.seasonStats.assists}
+                    onUpdate={(val) => handleUpdate("seasonStats.assists", val)}
+                    canEdit={canEditEvaluation}
+                    isNumeric
+                    className="text-3xl font-bold text-primary justify-center"
+                  />
                   <div className="text-xs text-gray-400 mt-1">ASSISTS</div>
                 </div>
                 <div className="text-center">
-                  {editable ? (
-                    <Input
-                      type="number"
-                      step="0.1"
-                      value={playerData.seasonStats.avgRating}
-                      onChange={(e) =>
-                        handleUpdate(
-                          "seasonStats.avgRating",
-                          parseFloat(e.target.value)
-                        )
-                      }
-                      className="h-8 text-center font-bold text-primary w-full bg-transparent"
-                    />
-                  ) : (
-                    <div className="text-3xl font-bold text-primary">
-                      {playerData.seasonStats.avgRating}
-                    </div>
-                  )}
+                  <CMSField
+                    value={playerData.seasonStats.avgRating}
+                    onUpdate={(val) => handleUpdate("seasonStats.avgRating", val)}
+                    canEdit={canEditEvaluation}
+                    isNumeric
+                    className="text-3xl font-bold text-primary justify-center"
+                  />
                   <div className="text-xs text-gray-400 mt-1">
                     AVERAGE RATING
                   </div>

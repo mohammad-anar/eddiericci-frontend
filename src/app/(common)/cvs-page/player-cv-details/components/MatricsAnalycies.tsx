@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -20,7 +21,9 @@ import {
 
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
-import { Input } from '@/components/ui/input'
+import { useUpdatePlayerProfileMutation } from '@/lib/features/cv/cvApi'
+import { CMSField } from '@/components/shared/CMSField'
+import { toast } from 'sonner'
 
 interface MetricRow {
   category: string
@@ -59,6 +62,7 @@ const getProgressColor = (grade: string) => {
 const METRIC_CATEGORIES = ['Perception', 'Vision', 'Intelligence']
 
 export function MetricsAnalysis({ editable = false }: { editable?: boolean }) {
+  const [updatePlayer] = useUpdatePlayerProfileMutation();
   const [activeTab, setActiveTab] = useState('Perception')
   const [metricsData, setMetricsData] = useState<Record<string, MetricRow[]>>({
     Perception: [
@@ -83,7 +87,7 @@ export function MetricsAnalysis({ editable = false }: { editable?: boolean }) {
     ],
   })
 
-  const { setMetricsAvg } = usePlayerStats();
+  const { setMetricsAvg, role } = usePlayerStats();
 
   useEffect(() => {
     const allRows = Object.values(metricsData).flat();
@@ -91,7 +95,9 @@ export function MetricsAnalysis({ editable = false }: { editable?: boolean }) {
     setMetricsAvg(Math.round(avg));
   }, [metricsData, setMetricsAvg]);
 
-  const handleUpdate = (tab: string, idx: number, field: keyof MetricRow, value: any) => {
+  const handleUpdate = async (tab: string, idx: number, field: keyof MetricRow, value: any) => {
+    const metricName = metricsData[tab][idx].category;
+    
     setMetricsData(prev => {
       const newData = { ...prev };
       const row = { ...newData[tab][idx] };
@@ -109,6 +115,15 @@ export function MetricsAnalysis({ editable = false }: { editable?: boolean }) {
       newData[tab][idx] = row;
       return newData;
     });
+
+    try {
+      await updatePlayer({
+        id: "current-player",
+        data: { [`metrics.${tab}.${metricName}.${field}`]: value }
+      }).unwrap();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -158,15 +173,12 @@ export function MetricsAnalysis({ editable = false }: { editable?: boolean }) {
                       className="border-b border-border hover:bg-[#262626] transition-colors"
                     >
                       <TableCell className="font-medium border-r border-border">
-                        {editable ? (
-                          <Input 
-                            value={metric.category} 
-                            onChange={(e) => handleUpdate(activeTab, idx, 'category', e.target.value)}
-                            className="h-7 text-xs bg-transparent border-none"
-                          />
-                        ) : (
-                          metric.category
-                        )}
+                        <CMSField
+                          value={metric.category}
+                          onUpdate={(val) => handleUpdate(activeTab, idx, 'category', val)}
+                          canEdit={editable}
+                          className="w-full"
+                        />
                       </TableCell>
 
                       <TableCell className="border-r border-border min-w-[200px]">
@@ -175,36 +187,29 @@ export function MetricsAnalysis({ editable = false }: { editable?: boolean }) {
                             value={metric.score} 
                             className={`w-32 h-1.5 ${getProgressColor(metric.grade)}`} 
                           />
-                          {editable ? (
-                            <Input 
-                              type="number" 
-                              min={0}
-                              max={100}
-                              value={metric.score} 
-                              onChange={(e) => handleUpdate(activeTab, idx, 'score', e.target.value)}
-                              className="h-7 w-16 text-xs bg-transparent"
-                            />
-                          ) : (
-                            <span className="font-medium text-sm min-w-[35px] text-right">
-                              {metric.score}
-                            </span>
-                          )}
+                          <CMSField
+                            value={metric.score}
+                            onUpdate={(val) => handleUpdate(activeTab, idx, 'score', val)}
+                            canEdit={editable}
+                            isNumeric
+                            className="font-medium text-sm min-w-[35px] justify-end"
+                            inputClassName="text-right w-16"
+                          />
                         </div>
                       </TableCell>
 
                       <TableCell className="text-center border-r border-border">
-                        {editable ? (
-                          <Input 
-                            type="number" 
-                            value={metric.trend} 
-                            onChange={(e) => handleUpdate(activeTab, idx, 'trend', e.target.value)}
-                            className="h-7 w-12 text-xs bg-transparent mx-auto"
+                        <div className="flex justify-center">
+                          <span className="text-primary font-medium text-sm">+</span>
+                          <CMSField
+                            value={metric.trend}
+                            onUpdate={(val) => handleUpdate(activeTab, idx, 'trend', val)}
+                            canEdit={editable}
+                            isNumeric
+                            className="text-primary font-medium text-sm"
+                            inputClassName="w-12 text-center"
                           />
-                        ) : (
-                          <span className="text-primary font-medium text-sm">
-                            +{metric.trend}
-                          </span>
-                        )}
+                        </div>
                       </TableCell>
 
                       <TableCell className="text-right">
@@ -224,4 +229,4 @@ export function MetricsAnalysis({ editable = false }: { editable?: boolean }) {
       </div>
     </div>
   )
-}
+}

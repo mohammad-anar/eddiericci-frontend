@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Progress } from "@/components/ui/progress";
 import { usePlayerStats } from "./FullEditablePage";
+import { useUpdatePlayerProfileMutation } from "@/lib/features/cv/cvApi";
+import { toast } from "sonner";
 
 interface Skill {
   name: string;
@@ -15,6 +17,7 @@ interface SkillCategory {
 }
 
 export function SkillsAttributes({ editable = false }: { editable?: boolean }) {
+  const [updatePlayer] = useUpdatePlayerProfileMutation();
   const [categories, setCategories] = useState<SkillCategory[]>([
     {
       category: "Technical",
@@ -74,13 +77,11 @@ export function SkillsAttributes({ editable = false }: { editable?: boolean }) {
         { name: "Determination", value: 88 },
         { name: "Flair", value: 85 },
         { name: "Influence", value: 82 },
-
-
       ],
     },
   ]);
 
-  const { setSkillsAvg } = usePlayerStats();
+  const { setSkillsAvg, role } = usePlayerStats();
 
   useEffect(() => {
     const allSkills = categories.flatMap(c => c.skills);
@@ -88,12 +89,31 @@ export function SkillsAttributes({ editable = false }: { editable?: boolean }) {
     setSkillsAvg(Math.round(avg));
   }, [categories, setSkillsAvg]);
 
-  const handleUpdate = (catIdx: number, skillIdx: number, value: number) => {
+  const handleUpdate = async (catIdx: number, skillIdx: number, value: number) => {
+    const skillName = categories[catIdx].skills[skillIdx].name;
+    
     setCategories((prev) => {
       const newCats = [...prev];
-      newCats[catIdx].skills[skillIdx].value = value;
+      newCats[catIdx] = {
+        ...newCats[catIdx],
+        skills: [...newCats[catIdx].skills]
+      };
+      newCats[catIdx].skills[skillIdx] = {
+        ...newCats[catIdx].skills[skillIdx],
+        value: value
+      };
       return newCats;
     });
+
+    try {
+      await updatePlayer({
+        id: "current-player",
+        data: { [`skills.${skillName}`]: value }
+      }).unwrap();
+      // toast.success(`${skillName} updated`);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (

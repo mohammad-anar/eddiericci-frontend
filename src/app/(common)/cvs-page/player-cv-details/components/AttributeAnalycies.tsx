@@ -1,9 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
 import React, { useState, useEffect } from 'react'
 import { PieChart, Pie, Cell, ResponsiveContainer, Label } from 'recharts'
-import { Input } from '@/components/ui/input'
 import { usePlayerStats } from './FullEditablePage'
+import { useUpdatePlayerProfileMutation } from '@/lib/features/cv/cvApi'
+import { CMSField } from '@/components/shared/CMSField'
+import { toast } from 'sonner'
 
 interface AttributeCard {
   title: string
@@ -49,7 +52,8 @@ const AttributeDonut = ({ score, color }: { score: number; color: string }) => {
 }
 
 const AttributesAnalysis = ({ editable = false }: { editable?: boolean }) => {
-  const { setAttributesAvg } = usePlayerStats();
+  const { setAttributesAvg, role } = usePlayerStats();
+  const [updatePlayer] = useUpdatePlayerProfileMutation();
   const [cards, setCards] = useState<AttributeCard[]>([
     {
       title: 'Technical Ability',
@@ -124,24 +128,42 @@ const AttributesAnalysis = ({ editable = false }: { editable?: boolean }) => {
     setAttributesAvg(Math.round(avg));
   }, [cards, setAttributesAvg]);
 
-  const handleUpdate = (cardIdx: number, attrIdx: number | null, value: any) => {
+  const handleUpdate = async (cardIdx: number, attrIdx: number | null, value: any) => {
+    const cardTitle = cards[cardIdx].title;
+    const field = attrIdx === null ? `analysis.${cardTitle}.score` : `analysis.${cardTitle}.${cards[cardIdx].attributes[attrIdx].name}`;
+
     setCards(prev => {
       const newCards = [...prev];
       if (attrIdx === null) {
-        (newCards[cardIdx] as any).score = parseInt(value);
+        newCards[cardIdx] = { ...newCards[cardIdx], score: parseInt(value) };
       } else {
-        newCards[cardIdx].attributes[attrIdx].value = parseInt(value);
+        const newAttrs = [...newCards[cardIdx].attributes];
+        newAttrs[attrIdx] = { ...newAttrs[attrIdx], value: parseInt(value) };
+        newCards[cardIdx] = { ...newCards[cardIdx], attributes: newAttrs };
       }
       return newCards;
     });
+
+    try {
+      await updatePlayer({ id: "current-player", data: { [field]: value } }).unwrap();
+      // toast.success("Attribute updated");
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  const handleTitleChange = (cardIdx: number, value: string) => {
+  const handleTitleChange = async (cardIdx: number, value: string) => {
     setCards(prev => {
       const newCards = [...prev];
-      newCards[cardIdx].title = value;
+      newCards[cardIdx] = { ...newCards[cardIdx], title: value };
       return newCards;
     });
+
+    try {
+      await updatePlayer({ id: "current-player", data: { [`analysis.${cards[cardIdx].title}.title`]: value } }).unwrap();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -149,7 +171,6 @@ const AttributesAnalysis = ({ editable = false }: { editable?: boolean }) => {
       <h1 className="text-4xl font-light text-center font-heading mb-12 text-foreground tracking-wide">
         ANALYSIS OF PLAYER ATTRIBUTES
       </h1>
-
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {cards.map((card, index) => (
           <div
@@ -157,31 +178,25 @@ const AttributesAnalysis = ({ editable = false }: { editable?: boolean }) => {
             className="border border-border bg-black/30 rounded-lg p-8 flex flex-col items-center"
           >
             {/* Title */}
-            {editable ? (
-              <Input 
-                value={card.title} 
-                onChange={(e) => handleTitleChange(index, e.target.value)}
-                className="text-lg font-light font-heading text-center mb-6 bg-transparent h-8"
-              />
-            ) : (
-              <h2 className="text-lg font-light font-heading text-center mb-6 text-foreground">
-                {card.title}
-              </h2>
-            )}
+            <CMSField
+              value={card.title}
+              onUpdate={(val) => handleTitleChange(index, String(val))}
+              canEdit={editable}
+              className="text-lg font-light font-heading text-center mb-6"
+              inputClassName="text-center"
+            />
 
             {/* Donut Chart */}
             <div className="flex flex-col items-center mb-8">
               <AttributeDonut score={card.score} color={card.color} />
-              {editable && (
-                <div className="mt-2 w-20">
-                  <Input 
-                    type="number" 
-                    value={card.score} 
-                    onChange={(e) => handleUpdate(index, null, e.target.value)}
-                    className="h-7 text-xs text-center"
-                  />
-                </div>
-              )}
+              <CMSField
+                value={card.score}
+                onUpdate={(val) => handleUpdate(index, null, val)}
+                canEdit={editable}
+                isNumeric
+                className="mt-2 text-xl font-bold justify-center"
+                inputClassName="text-center w-20"
+              />
             </div>
 
             {/* Score Text */}
@@ -195,16 +210,14 @@ const AttributesAnalysis = ({ editable = false }: { editable?: boolean }) => {
                   className="flex justify-between border-b pb-2 items-center text-sm"
                 >
                   <span className="text-gray-300">{attr.name}</span>
-                  {editable ? (
-                    <Input 
-                      type="number" 
-                      value={attr.value} 
-                      onChange={(e) => handleUpdate(index, attrIndex, e.target.value)}
-                      className="h-6 w-14 text-xs text-right bg-transparent border-none"
-                    />
-                  ) : (
-                    <span className="text-foreground font-medium">{attr.value}</span>
-                  )}
+                  <CMSField
+                    value={attr.value}
+                    onUpdate={(val) => handleUpdate(index, attrIndex, val)}
+                    canEdit={editable}
+                    isNumeric
+                    className="font-medium justify-end"
+                    inputClassName="text-right w-14"
+                  />
                 </div>
               ))}
             </div>
@@ -215,4 +228,4 @@ const AttributesAnalysis = ({ editable = false }: { editable?: boolean }) => {
   )
 }
 
-export default AttributesAnalysis
+export default AttributesAnalysis

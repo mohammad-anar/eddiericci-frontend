@@ -52,14 +52,12 @@ export const PlayerStatsProvider = ({ children }: { children: React.ReactNode })
     const [skillsAvg, setSkillsAvg] = useState(85);
     const [metricsAvg, setMetricsAvg] = useState(88);
     const [attributesAvg, setAttributesAvg] = useState(82);
-    const [role, setRole] = useState<UserRole>("player");
-
-    useEffect(() => {
-        const userRole = localStorage.getItem("userRole") as UserRole;
-        if (userRole) {
-            setRole(userRole);
+    const [role, setRole] = useState<UserRole>(() => {
+        if (typeof window === "undefined") {
+            return "player";
         }
-    }, []);
+        return (localStorage.getItem("userRole") as UserRole) || "player";
+    });
 
     return (
         <PlayerStatsContext.Provider value={{
@@ -75,26 +73,29 @@ export const PlayerStatsProvider = ({ children }: { children: React.ReactNode })
 };
 
 const FullEditablePage = ({ editable = false }: { editable?: boolean }) => {
-    const { role } = usePlayerStats() || { role: 'player' }; // Fallback if context not yet initialized
+    const { role } = usePlayerStats() || { role: 'player' }; 
 
     // Logic for role-based editability
+    // Player/Parent can edit bio, profile, and documents/media
     const canEditBio = editable && (role === "player" || role === "parent");
+    // Coach, Player, and Parent can edit evaluations
     const canEditEvaluations = editable && (role === "player" || role === "parent" || role === "coach");
+    // Player/Parent can edit media
     const canEditMedia = editable && (role === "player" || role === "parent");
 
     return (
         <>
-            <PlayerBioSection editable={canEditBio} />
+            <PlayerBioSection editable={editable} />
             <ClubSection />
             <SkillsAttributes editable={canEditEvaluations} />
             <PerformanceAnalytics />
             <AttributesAnalysis editable={canEditEvaluations} />
             <MetricsAnalysis editable={canEditEvaluations} />
-            <SportsAnalytics />
+            <SportsAnalytics editable={canEditEvaluations}/>
             <PlayerProfile editable={canEditBio} />
             <DocSection editable={canEditMedia} />
-            <MyImagesSection />
-            <MyVideosSection />
+            <MyImagesSection editable={canEditMedia} />
+            <MyVideosSection editable={canEditMedia} />
             <AdditionalNotesSection editable={canEditEvaluations} />
         </>
     );

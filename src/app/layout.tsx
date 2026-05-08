@@ -3,6 +3,7 @@ import { Inter, Audiowide, Orbitron } from "next/font/google";
 import "./globals.css";
 import AuthGuard from "@/providers/AuthGuard";
 import { Toaster } from "@/components/ui/sonner";
+import StoreProvider from "@/providers/StoreProvider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -53,11 +54,14 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         className={`${inter.variable} ${audiowide.variable} ${orbitron.variable} antialiased`}
+        suppressHydrationWarning
       >
-        <AuthGuard>
-          {children}
-          <Toaster />
-        </AuthGuard>
+        <StoreProvider>
+          <AuthGuard>
+            {children}
+            <Toaster />
+          </AuthGuard>
+        </StoreProvider>
       </body>
     </html>
   );

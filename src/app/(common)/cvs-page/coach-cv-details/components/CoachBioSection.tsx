@@ -11,9 +11,14 @@ import trophyIcon from "@/assets/cvs-page/id/trofeeIcon.png";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { IconTrophy } from "@tabler/icons-react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, PencilIcon } from "lucide-react";
 import Image, { type StaticImageData } from "next/image";
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { cn } from "@/lib/utils";
+import { CMSField } from "@/components/shared/CMSField";
+import { useUpdateCoachProfileMutation } from "@/lib/features/cv/cvApi";
+import { toast } from "sonner";
+import { usePlayerStats } from "../../player-cv-details/components/FullEditablePage";
 import {
   Dialog,
   DialogContent,
@@ -79,19 +84,24 @@ type CoachData = {
   clubs: { name: string; period: string }[];
 };
 
-const COACH_STYLES = [
-  { id: "tactics", label: "Tactics" },
-  { id: "leadership", label: "Leadership" },
-  { id: "discipline", label: "Discipline" },
-  { id: "motivation", label: "Motivation" },
-  { id: "analysis", label: "Match Analysis" },
-  { id: "fitness", label: "Fitness Training" },
-  { id: "youth-development", label: "Youth Development" },
-  { id: "scouting", label: "Scouting" },
-  { id: "set-pieces", label: "Set Piece Master" },
-  { id: "team-building", label: "Team Building" },
-  { id: "communication", label: "Communication" },
-  { id: "strategy", label: "Strategy" },
+const COACH_STYLE_GROUPS = [
+  {
+    label: "Tactical Philosophy",
+    styles: ["Tiki-Taka", "Gegenpressing", "Counter-Attack", "Park the Bus"],
+  },
+  {
+    label: "Man Management",
+    styles: ["Motivator", "Disciplinarian", "Holistic", "Player-Centric"],
+  },
+  {
+    label: "Strategic Focus",
+    styles: [
+      "Youth Development",
+      "Set-Piece Specialist",
+      "Defensive Solid",
+      "Attack Minded",
+    ],
+  },
 ];
 
 const CoachBioSection = ({ editable }: { editable?: boolean }) => {
@@ -149,101 +159,174 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
       { name: "Manchester City", period: "2020-present" },
       { name: "Manchester City", period: "2020-present" },
     ],
+    qualifications: [
+      {
+        id: 1,
+        text: "Strong communication skills, empathy and high expectations combine to create strong individuals and winning teams.",
+      },
+      {
+        id: 2,
+        text: "Highly skilled professional with 15 years of experience developing improvement programs for athletes of all age groups.",
+      },
+      {
+        id: 3,
+        text: "Five years of experience assistant coach at the college level",
+      },
+    ],
   });
-  const [selectedStyleIds, setSelectedStyleIds] = useState<string[]>([
-    "tactics",
-    "leadership",
-    "discipline",
-  ]);
-  const orderedSelectedStyles = selectedStyleIds.map(
-    (id) => COACH_STYLES.find((style) => style.id === id)!
-  );
+  const [coachStyle, setCoachStyle] = useState("Tactics");
   const styleBadges = [badge1, badge2, badge3];
-  const maxStyleSelections = 3;
+  const { role } = usePlayerStats();
+  const [updateCoach] = useUpdateCoachProfileMutation();
 
-  const handleUpdate = (field: string, value: unknown) => {
+  const canEdit = editable && role === "coach";
+
+  const handleUpdate = async (field: string, value: unknown) => {
     setCoachData((prev) => {
       const keys = field.split(".");
       if (keys.length === 1) return { ...prev, [field]: value };
 
-      const next = { ...prev } as Record<string, unknown>;
-      let current: Record<string, unknown> = next;
+      const next = { ...prev } as any;
+      let current = next;
       for (let i = 0; i < keys.length - 1; i++) {
         const key = keys[i];
-        const nextValue = current[key];
-        current[key] = Array.isArray(nextValue)
-          ? [...(nextValue as unknown[])]
-          : { ...(nextValue as Record<string, unknown>) };
-        current = current[key] as Record<string, unknown>;
+        current[key] = Array.isArray(current[key])
+          ? [...current[key]]
+          : { ...current[key] };
+        current = current[key];
       }
       current[keys[keys.length - 1]] = value;
-      return next as CoachData;
+      return next;
     });
+
+    try {
+      await updateCoach({ id: "current-coach", data: { [field]: value } }).unwrap();
+      toast.success(`${field} updated successfully`);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  const qualifications = [
-    {
-      icon: (
-        <svg
-          className="w-8 h-8 text-white"
-          fill="none"
+  const handleImageUpload = (file: File, field: string) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      handleUpdate(field, reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const EditableImage = ({
+    src,
+    alt,
+    className,
+    field,
+    width,
+    height,
+    fill,
+  }: {
+    src: any;
+    alt: string;
+    className?: string;
+    field: string;
+    width?: number;
+    height?: number;
+    fill?: boolean;
+  }) => {
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    return (
+      <div
+        className={cn(
+          "relative group w-full",
+          canEdit ? "cursor-pointer" : ""
+        )}
+        onClick={() => canEdit && fileInputRef.current?.click()}
+      >
+        <Image
+          src={src}
+          alt={alt}
+          className={className}
+          width={width}
+          height={height}
+          fill={fill}
+        />
+        {canEdit && (
+          <>
+            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity rounded">
+              <span className="text-[10px] text-white font-black uppercase tracking-widest">
+                Click to Change
+              </span>
+            </div>
+            <input
+              type="file"
+              ref={fileInputRef}
+              className="hidden"
+              accept="image/*"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) handleImageUpload(file, field);
+              }}
+            />
+          </>
+        )}
+      </div>
+    );
+  };
+
+  const qualificationsIcons = [
+    (
+      <svg
+        className="w-8 h-8 text-white"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <circle cx="12" cy="8" r="3" stroke="currentColor" strokeWidth="2" />
+        <path
+          d="M12 14c-4 0-6 2-6 2s0 3 6 3 6-3 6-3-2-2-6-2z"
           stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <circle cx="12" cy="8" r="3" stroke="currentColor" strokeWidth="2" />
-          <path
-            d="M12 14c-4 0-6 2-6 2s0 3 6 3 6-3 6-3-2-2-6-2z"
-            stroke="currentColor"
-            strokeWidth="2"
-          />
-          <path
-            d="M3 8c0-2 1-3 3-3m12 0c2 0 3 1 3 3"
-            stroke="currentColor"
-            strokeWidth="2"
-          />
-        </svg>
-      ),
-      text: "Strong communication skills, empathy and high expectations combine to create strong individuals and winning teams.",
-    },
-    {
-      icon: (
-        <svg
-          className="w-8 h-8 text-white"
-          fill="none"
+          strokeWidth="2"
+        />
+        <path
+          d="M3 8c0-2 1-3 3-3m12 0c2 0 3 1 3 3"
           stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            d="M12 2L15 8h6.5l-5.25 3.8 2 6.2L12 14.6 6.75 18l2-6.2L3.5 8H10l3-6z"
-            stroke="currentColor"
-            strokeWidth="2"
-          />
-        </svg>
-      ),
-      text: "Highly skilled professional with 15 years of experience developing improvement programs for athletes of all age groups.",
-    },
-    {
-      icon: (
-        <svg
-          className="w-8 h-8 text-white"
-          fill="none"
+          strokeWidth="2"
+        />
+      </svg>
+    ),
+    (
+      <svg
+        className="w-8 h-8 text-white"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          d="M12 2L15 8h6.5l-5.25 3.8 2 6.2L12 14.6 6.75 18l2-6.2L3.5 8H10l3-6z"
           stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            d="M12 1v6m0 6v10M7 7h10v10H7z"
-            stroke="currentColor"
-            strokeWidth="2"
-          />
-          <path
-            d="M3 10h2m12 0h2M5 19h14"
-            stroke="currentColor"
-            strokeWidth="2"
-          />
-        </svg>
-      ),
-      text: "Five years of experience assistant coach at the college level",
-    },
+          strokeWidth="2"
+        />
+      </svg>
+    ),
+    (
+      <svg
+        className="w-8 h-8 text-white"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          d="M12 1v6m0 6v10M7 7h10v10H7z"
+          stroke="currentColor"
+          strokeWidth="2"
+        />
+        <path
+          d="M3 10h2m12 0h2M5 19h14"
+          stroke="currentColor"
+          strokeWidth="2"
+        />
+      </svg>
+    ),
   ];
 
   return (
@@ -260,76 +343,74 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between items-center gap-4">
                   <span className="text-gray-400">Full Name</span>
-                  {editable ? (
-                    <Input
-                      value={coachData.fullName}
-                      onChange={(e) => handleUpdate("fullName", e.target.value)}
-                      className="h-8 text-xs w-40"
-                    />
-                  ) : (
-                    <span>{coachData.fullName}</span>
-                  )}
+                  <CMSField
+                    value={coachData.fullName}
+                    onUpdate={(val) => handleUpdate("fullName", val)}
+                    canEdit={canEdit}
+                    className="w-40 justify-end"
+                    inputClassName="text-right"
+                  />
                 </div>
                 <div className="flex justify-between items-center gap-4">
                   <span className="text-gray-400">Date of Birth</span>
-                  {editable ? (
-                    <Input
-                      value={coachData.dob}
-                      onChange={(e) => handleUpdate("dob", e.target.value)}
-                      className="h-8 text-xs w-32"
-                    />
-                  ) : (
-                    <span>{coachData.dob}</span>
-                  )}
+                  <CMSField
+                    value={coachData.dob}
+                    onUpdate={(val) => handleUpdate("dob", val)}
+                    canEdit={canEdit}
+                    className="w-32 justify-end"
+                    inputClassName="text-right"
+                  />
                 </div>
                 <div className="flex justify-between items-center gap-4">
                   <span className="text-gray-400">Age</span>
-                  {editable ? (
-                    <Input
-                      value={coachData.age}
-                      onChange={(e) => handleUpdate("age", e.target.value)}
-                      className="h-8 text-xs w-24"
-                    />
-                  ) : (
-                    <span>{coachData.age}</span>
-                  )}
+                  <CMSField
+                    value={coachData.age}
+                    onUpdate={(val) => handleUpdate("age", val)}
+                    canEdit={canEdit}
+                    className="w-24 justify-end"
+                    inputClassName="text-right"
+                  />
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-400">Birth Country</span>
                   <div className="flex items-center gap-2">
-                    {editable ? (
-                      <Input
-                        value={coachData.birthCountry}
-                        onChange={(e) => handleUpdate("birthCountry", e.target.value)}
-                        className="h-8 text-xs w-40"
-                      />
-                    ) : (
-                      <span>{coachData.birthCountry}</span>
-                    )}
-                    <Image
-                      src={coachData.birthCountryFlag}
-                      className="w-5 h-auto"
-                      alt="country flag"
+                    <CMSField
+                      value={coachData.birthCountry}
+                      onUpdate={(val) => handleUpdate("birthCountry", val)}
+                      canEdit={canEdit}
+                      className="w-24 justify-end"
+                      inputClassName="text-right"
                     />
+                    <div className="relative w-5 h-4">
+                      <EditableImage
+                        src={coachData.birthCountryFlag}
+                        alt="country flag"
+                        field="birthCountryFlag"
+                        width={20}
+                        height={16}
+                      />
+                    </div>
                   </div>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-400">Dual Nationality</span>
                   <div className="flex items-center gap-2">
-                    {editable ? (
-                      <Input
-                        value={coachData.dualNationality}
-                        onChange={(e) => handleUpdate("dualNationality", e.target.value)}
-                        className="h-8 text-xs w-40"
-                      />
-                    ) : (
-                      <span>{coachData.dualNationality}</span>
-                    )}
-                    <Image
-                      src={coachData.dualNationalityFlag}
-                      className="w-5 h-auto"
-                      alt="nationality flag"
+                    <CMSField
+                      value={coachData.dualNationality}
+                      onUpdate={(val) => handleUpdate("dualNationality", val)}
+                      canEdit={canEdit}
+                      className="w-24 justify-end"
+                      inputClassName="text-right"
                     />
+                    <div className="relative w-5 h-4">
+                      <EditableImage
+                        src={coachData.dualNationalityFlag}
+                        alt="nationality flag"
+                        field="dualNationalityFlag"
+                        width={20}
+                        height={16}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -343,51 +424,39 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
               <div className="space-y-2 text-sm text-primary">
                 <div className="flex items-center gap-2">
                   <span>📧</span>
-                  {editable ? (
-                    <Input
-                      value={coachData.email}
-                      onChange={(e) => handleUpdate("email", e.target.value)}
-                      className="h-8 text-xs w-full bg-transparent border-primary/30"
-                    />
-                  ) : (
-                    <span>{coachData.email}</span>
-                  )}
+                  <CMSField
+                    value={coachData.email}
+                    onUpdate={(val) => handleUpdate("email", val)}
+                    canEdit={canEdit}
+                    className="flex-1"
+                  />
                 </div>
                 <div className="flex items-center gap-2">
                   <span>📱</span>
-                  {editable ? (
-                    <Input
-                      value={coachData.phone}
-                      onChange={(e) => handleUpdate("phone", e.target.value)}
-                      className="h-8 text-xs w-full bg-transparent border-primary/30"
-                    />
-                  ) : (
-                    <span>{coachData.phone}</span>
-                  )}
+                  <CMSField
+                    value={coachData.phone}
+                    onUpdate={(val) => handleUpdate("phone", val)}
+                    canEdit={canEdit}
+                    className="flex-1"
+                  />
                 </div>
                 <div className="flex items-center gap-2">
                   <span>📍</span>
-                  {editable ? (
-                    <Input
-                      value={coachData.location}
-                      onChange={(e) => handleUpdate("location", e.target.value)}
-                      className="h-8 text-xs w-full bg-transparent border-primary/30"
-                    />
-                  ) : (
-                    <span>{coachData.location}</span>
-                  )}
+                  <CMSField
+                    value={coachData.location}
+                    onUpdate={(val) => handleUpdate("location", val)}
+                    canEdit={canEdit}
+                    className="flex-1"
+                  />
                 </div>
                 <div className="flex items-center gap-2">
                   <span>🌐</span>
-                  {editable ? (
-                    <Input
-                      value={coachData.website}
-                      onChange={(e) => handleUpdate("website", e.target.value)}
-                      className="h-8 text-xs w-full bg-transparent border-primary/30"
-                    />
-                  ) : (
-                    <span>{coachData.website}</span>
-                  )}
+                  <CMSField
+                    value={coachData.website}
+                    onUpdate={(val) => handleUpdate("website", val)}
+                    canEdit={canEdit}
+                    className="flex-1"
+                  />
                 </div>
               </div>
             </div>
@@ -399,16 +468,24 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
               </h2>
               <div className="max-w-2xl">
                 <div className="space-y-6">
-                  {qualifications.map((item, index) => (
+                  {coachData.qualifications.map((item, index) => (
                     <div
                       key={index}
                       className="flex gap-4 border rounded-xl p-3"
                     >
-                      <div className="shrink-0 pt-1">{item.icon}</div>
+                      <div className="shrink-0 pt-1">{qualificationsIcons[index]}</div>
                       <div className="flex-1">
-                        <p className="text-white text-[12px] leading-relaxed">
-                          {item.text}
-                        </p>
+                        <CMSField
+                          value={item.text}
+                          onUpdate={(val) => {
+                            const newQuals = [...coachData.qualifications];
+                            newQuals[index] = { ...newQuals[index], text: String(val) };
+                            handleUpdate("qualifications", newQuals);
+                          }}
+                          canEdit={canEdit}
+                          type="textarea"
+                          className="text-white text-[12px] leading-relaxed"
+                        />
                       </div>
                     </div>
                   ))}
@@ -423,27 +500,31 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
               </h2>
               <div className="space-y-2 text-sm">
                 {coachData.languages.map((lang, idx) => (
-                  <div key={idx} className="flex justify-between items-center border-b pb-2 gap-2">
-                    {editable ? (
-                      <Input
-                        value={lang.name}
-                        onChange={(e) => handleUpdate(`languages.${idx}.name`, e.target.value)}
-                        className="h-8 text-xs w-24 bg-transparent"
-                      />
-                    ) : (
-                      <span>{lang.name}</span>
-                    )}
-                    {editable ? (
-                      <Input
-                        value={lang.level}
-                        onChange={(e) => handleUpdate(`languages.${idx}.level`, e.target.value)}
-                        className="h-8 text-xs w-28 bg-transparent text-right"
-                      />
-                    ) : (
-                      <span className={`${lang.color} text-xs border p-2 rounded bg-opacity-20`}>
-                        {lang.level}
-                      </span>
-                    )}
+                  <div
+                    key={idx}
+                    className="flex justify-between items-center border-b pb-2 gap-2"
+                  >
+                    <CMSField
+                      value={lang.name}
+                      onUpdate={(val) => {
+                        const newLangs = [...coachData.languages];
+                        newLangs[idx] = { ...newLangs[idx], name: String(val) };
+                        handleUpdate("languages", newLangs);
+                      }}
+                      canEdit={canEdit}
+                      className="flex-1"
+                    />
+                    <CMSField
+                      value={lang.level}
+                      onUpdate={(val) => {
+                        const newLangs = [...coachData.languages];
+                        newLangs[idx] = { ...newLangs[idx], level: String(val) };
+                        handleUpdate("languages", newLangs);
+                      }}
+                      canEdit={canEdit}
+                      className="w-28 justify-end"
+                      inputClassName="text-right"
+                    />
                   </div>
                 ))}
               </div>
@@ -460,30 +541,29 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
                       key={index}
                       className="flex items-center justify-between py-3 px-4 border-b border-slate-800"
                     >
-                      {editable ? (
-                        <Input
-                          value={tournament.name}
-                          onChange={(e) => handleUpdate(`majorTrophies.${index}.name`, e.target.value)}
-                          className="text-white text-[12px] font-medium tracking-wide bg-transparent"
-                        />
-                      ) : (
-                        <p className="text-white text-[12px] font-medium tracking-wide">
-                          {tournament.name}
-                        </p>
-                      )}
+                      <CMSField
+                        value={tournament.name}
+                        onUpdate={(val) => {
+                          const newTrophies = [...coachData.majorTrophies];
+                          newTrophies[index] = { ...newTrophies[index], name: String(val) };
+                          handleUpdate("majorTrophies", newTrophies);
+                        }}
+                        canEdit={canEdit}
+                        className="text-white text-[12px] font-medium tracking-wide flex-1"
+                      />
                       <div className="flex items-center gap-3">
-                        {editable ? (
-                          <Input
-                            type="number"
-                            value={tournament.count}
-                            onChange={(e) => handleUpdate(`majorTrophies.${index}.count`, parseInt(e.target.value))}
-                            className="text-sm font-semibold w-16 rounded bg-transparent text-white"
-                          />
-                        ) : (
-                          <span className="text-white text-sm font-semibold">
-                            {tournament.count}
-                          </span>
-                        )}
+                        <CMSField
+                          value={tournament.count}
+                          onUpdate={(val) => {
+                            const newTrophies = [...coachData.majorTrophies];
+                            newTrophies[index] = { ...newTrophies[index], count: Number(val) };
+                            handleUpdate("majorTrophies", newTrophies);
+                          }}
+                          canEdit={canEdit}
+                          isNumeric
+                          className="text-white text-sm font-semibold w-12 justify-center"
+                          inputClassName="text-center"
+                        />
                         <IconTrophy />
                       </div>
                     </div>
@@ -507,108 +587,53 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
             </div>
 
             {/* Position Selector */}
-            <div className="mb-8">
-              {editable ? (
-                <Select value={coachType} onValueChange={setCoachType}>
-                  <SelectTrigger className="border-border px-4 py-2 rounded hover:bg-gray-900 bg-transparent text-foreground h-auto">
-                    <SelectValue placeholder="Select coach type" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-cardBg border-border text-foreground">
-                    <SelectGroup>
-                      <SelectLabel className="text-gray-400 font-bold text-xs">
-                        Coach Types
-                      </SelectLabel>
-                      {COACH_TYPES.map((type) => (
-                        <SelectItem key={type} value={type}>
-                          {type}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              ) : (
-                <button className="flex items-center gap-2 border border-border px-4 py-2 rounded hover:bg-gray-900">
-                  <span>{coachType}</span>
-                  <ChevronDown size={16} />
-                </button>
-              )}
+            <div className="mb-8 flex items-center justify-center">
+              <CMSField
+                value={coachType}
+                onUpdate={(val) => setCoachType(String(val))}
+                canEdit={canEdit}
+                type="select"
+                options={COACH_TYPES}
+                className="w-fit"
+                inputClassName="w-48"
+              />
             </div>
 
-            {/* Player Image */}
+            {/* Coach Image */}
             <div className="relative w-full h-125 mb-8">
-              <Image
+              <EditableImage
                 src={playerImage}
                 alt="Marcus Silva"
                 fill
                 className="object-contain"
-                priority
+                field="playerImage"
               />
             </div>
 
             {/* Coach Style Section */}
             <div className="w-full space-y-6">
               <div className="text-center">
-                <div className="flex items-center justify-center gap-4 mb-6">
-                  <h3 className="text-2xl font-bold font-heading">Coach Style</h3>
-                  {editable ? (
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button variant="outline" size="sm" className="h-7 text-xs">
-                          Edit
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="bg-cardBg border-border text-foreground">
-                        <DialogHeader>
-                          <DialogTitle>Select Coach Styles (Max 3)</DialogTitle>
-                        </DialogHeader>
-                        <div className="grid grid-cols-1 gap-3 py-4 sm:grid-cols-2">
-                          {COACH_STYLES.map((style) => (
-                            <div key={style.id} className="flex items-center space-x-2">
-                              <Checkbox
-                                id={style.id}
-                                checked={selectedStyleIds.includes(style.id)}
-                                onCheckedChange={() => {
-                                  const isSelected = selectedStyleIds.includes(style.id);
-                                  if (isSelected) {
-                                    setSelectedStyleIds(
-                                      selectedStyleIds.filter((item) => item !== style.id)
-                                    );
-                                  } else if (selectedStyleIds.length < maxStyleSelections) {
-                                    setSelectedStyleIds([...selectedStyleIds, style.id]);
-                                  }
-                                }}
-                                disabled={
-                                  !selectedStyleIds.includes(style.id) &&
-                                  selectedStyleIds.length >= maxStyleSelections
-                                }
-                              />
-                              <Label
-                                htmlFor={style.id}
-                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                              >
-                                {style.label}
-                              </Label>
-                            </div>
-                          ))}
-                        </div>
-                      </DialogContent>
-                    </Dialog>
-                  ) : null}
+                <h3 className="text-2xl font-bold font-heading mb-6">
+                  Coach Style
+                </h3>
+
+                <div className="mb-8 flex items-center justify-center">
+                  <CMSField
+                    value={coachStyle}
+                    onUpdate={(val) => setCoachStyle(String(val))}
+                    canEdit={canEdit}
+                    type="select"
+                    options={COACH_STYLE_GROUPS.flatMap(g => g.styles)}
+                    className="w-fit"
+                    inputClassName="w-48"
+                  />
                 </div>
 
                 <div className="space-y-4">
-                  {orderedSelectedStyles.map((style, index) => (
-                    <div key={style.id} className="space-y-4">
-                      <div className="flex justify-center">
-                        <Image
-                          src={styleBadges[index]}
-                          className="w-20 h-20"
-                          alt={style.label}
-                        />
-                      </div>
-                      <p className="text-lg font-heading">{style.label}</p>
-                    </div>
-                  ))}
+                  <div className="flex justify-center">
+                    <Image src={badge1} className="w-20 h-20" alt="badge" />
+                  </div>
+                  <p className="text-lg font-heading">{coachStyle}</p>
                 </div>
               </div>
             </div>
@@ -623,42 +648,36 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
               </h2>
               <div className="text-sm space-y-4">
                 <div className="border flex flex-col min-w-37.5 items-center justify-center p-3 rounded-xl w-fit mx-auto">
-                  {editable ? (
-                    <Input
-                      type="number"
-                      value={coachData.seasonStats.matches}
-                      onChange={(e) => handleUpdate("seasonStats.matches", parseInt(e.target.value))}
-                      className="text-2xl font-medium text-primary mb-2 text-center w-20"
-                    />
-                  ) : (
-                    <h2 className="text-2xl font-medium text-primary mb-2">{coachData.seasonStats.matches}</h2>
-                  )}
+                  <CMSField
+                    value={coachData.seasonStats.matches}
+                    onUpdate={(val) => handleUpdate("seasonStats.matches", val)}
+                    canEdit={canEdit}
+                    isNumeric
+                    className="text-2xl font-medium text-primary mb-2 justify-center"
+                    inputClassName="text-center w-20"
+                  />
                   <h3 className="text-[12px]">MATCHES COACHED</h3>
                 </div>
                 <div className="border flex flex-col min-w-37.5 items-center justify-center p-3 rounded-xl w-fit mx-auto">
-                  {editable ? (
-                    <Input
-                      type="number"
-                      value={coachData.seasonStats.wins}
-                      onChange={(e) => handleUpdate("seasonStats.wins", parseInt(e.target.value))}
-                      className="text-2xl font-medium text-primary mb-2 text-center w-20"
-                    />
-                  ) : (
-                    <h2 className="text-2xl font-medium text-primary mb-2">{coachData.seasonStats.wins}</h2>
-                  )}
+                  <CMSField
+                    value={coachData.seasonStats.wins}
+                    onUpdate={(val) => handleUpdate("seasonStats.wins", val)}
+                    canEdit={canEdit}
+                    isNumeric
+                    className="text-2xl font-medium text-primary mb-2 justify-center"
+                    inputClassName="text-center w-20"
+                  />
                   <h3 className="text-[12px]">Win</h3>
                 </div>
                 <div className="border flex flex-col min-w-37.5 items-center justify-center p-3 rounded-xl w-fit mx-auto">
-                  {editable ? (
-                    <Input
-                      type="number"
-                      value={coachData.seasonStats.cleanSheets}
-                      onChange={(e) => handleUpdate("seasonStats.cleanSheets", parseInt(e.target.value))}
-                      className="text-2xl font-medium text-primary mb-2 text-center w-20"
-                    />
-                  ) : (
-                    <h2 className="text-2xl font-medium text-primary mb-2">{coachData.seasonStats.cleanSheets}</h2>
-                  )}
+                  <CMSField
+                    value={coachData.seasonStats.cleanSheets}
+                    onUpdate={(val) => handleUpdate("seasonStats.cleanSheets", val)}
+                    canEdit={canEdit}
+                    isNumeric
+                    className="text-2xl font-medium text-primary mb-2 justify-center"
+                    inputClassName="text-center w-20"
+                  />
                   <h3 className="text-[12px]">CLEAN SHEETS</h3>
                 </div>
               </div>
@@ -683,39 +702,33 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
                 </div>
                 <div className="flex justify-between border-b pb-2">
                   <span className="text-gray-400">Contract Until</span>
-                  {editable ? (
-                    <Input
-                      value={coachData.contractUntil}
-                      onChange={(e) => handleUpdate("contractUntil", e.target.value)}
-                      className="h-8 text-xs w-28 bg-transparent"
-                    />
-                  ) : (
-                    <span>{coachData.contractUntil}</span>
-                  )}
+                  <CMSField
+                    value={coachData.contractUntil}
+                    onUpdate={(val) => handleUpdate("contractUntil", val)}
+                    canEdit={canEdit}
+                    className="w-28 justify-end"
+                    inputClassName="text-right"
+                  />
                 </div>
                 <div className="flex justify-between border-b pb-2">
                   <span className="text-gray-400">Agent</span>
-                  {editable ? (
-                    <Input
-                      value={coachData.agent}
-                      onChange={(e) => handleUpdate("agent", e.target.value)}
-                      className="h-8 text-xs w-28 bg-transparent"
-                    />
-                  ) : (
-                    <span>{coachData.agent}</span>
-                  )}
+                  <CMSField
+                    value={coachData.agent}
+                    onUpdate={(val) => handleUpdate("agent", val)}
+                    canEdit={canEdit}
+                    className="w-28 justify-end"
+                    inputClassName="text-right"
+                  />
                 </div>
                 <div className="flex justify-between border-b pb-2">
                   <span className="text-gray-400">Agency</span>
-                  {editable ? (
-                    <Input
-                      value={coachData.agency}
-                      onChange={(e) => handleUpdate("agency", e.target.value)}
-                      className="h-8 text-xs w-28 bg-transparent"
-                    />
-                  ) : (
-                    <span>{coachData.agency}</span>
-                  )}
+                  <CMSField
+                    value={coachData.agency}
+                    onUpdate={(val) => handleUpdate("agency", val)}
+                    canEdit={canEdit}
+                    className="w-28 justify-end"
+                    inputClassName="text-right"
+                  />
                 </div>
               </div>
             </div>
@@ -729,15 +742,16 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
                 {coachData.cupHistory.map((cup, index) => (
                   <div key={index} className="flex gap-2 items-center">
                     <Image src={trophyIcon} alt="trophyImage" />
-                    {editable ? (
-                      <Input
-                        value={cup}
-                        onChange={(e) => handleUpdate(`cupHistory.${index}`, e.target.value)}
-                        className="h-7 text-xs w-full bg-transparent"
-                      />
-                    ) : (
-                      <span>{cup}</span>
-                    )}
+                    <CMSField
+                      value={cup}
+                      onUpdate={(val) => {
+                        const newCups = [...coachData.cupHistory];
+                        newCups[index] = String(val);
+                        handleUpdate("cupHistory", newCups);
+                      }}
+                      canEdit={canEdit}
+                      className="flex-1"
+                    />
                   </div>
                 ))}
               </div>
@@ -751,15 +765,17 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
               <div className="space-y-4">
                 {coachData.keySkills.map((skill, index) => (
                   <div key={index} className="text-center border-b pb-3">
-                    {editable ? (
-                      <Input
-                        value={skill}
-                        onChange={(e) => handleUpdate(`keySkills.${index}`, e.target.value)}
-                        className="h-8 text-xs bg-transparent w-full text-center"
-                      />
-                    ) : (
-                      <h3 className="text-center">{skill}</h3>
-                    )}
+                    <CMSField
+                      value={skill}
+                      onUpdate={(val) => {
+                        const newSkills = [...coachData.keySkills];
+                        newSkills[index] = String(val);
+                        handleUpdate("keySkills", newSkills);
+                      }}
+                      canEdit={canEdit}
+                      className="justify-center"
+                      inputClassName="text-center"
+                    />
                   </div>
                 ))}
               </div>
@@ -775,24 +791,26 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
                     <div className="flex items-center gap-3">
                       <Image src={clubImage} className="w-12" alt="clubs image" />
                       <div className="w-full">
-                        {editable ? (
-                          <Input
-                            value={club.name}
-                            onChange={(e) => handleUpdate(`clubs.${index}.name`, e.target.value)}
-                            className="h-8 text-xs w-full bg-transparent"
-                          />
-                        ) : (
-                          <h3 className="font-bold">{club.name}</h3>
-                        )}
-                        {editable ? (
-                          <Input
-                            value={club.period}
-                            onChange={(e) => handleUpdate(`clubs.${index}.period`, e.target.value)}
-                            className="h-8 text-xs w-full bg-transparent mt-1"
-                          />
-                        ) : (
-                          <p className="text-[12px] text-gray-400">{club.period}</p>
-                        )}
+                        <CMSField
+                          value={club.name}
+                          onUpdate={(val) => {
+                            const newClubs = [...coachData.clubs];
+                            newClubs[index] = { ...newClubs[index], name: String(val) };
+                            handleUpdate("clubs", newClubs);
+                          }}
+                          canEdit={canEdit}
+                          className="font-bold"
+                        />
+                        <CMSField
+                          value={club.period}
+                          onUpdate={(val) => {
+                            const newClubs = [...coachData.clubs];
+                            newClubs[index] = { ...newClubs[index], period: String(val) };
+                            handleUpdate("clubs", newClubs);
+                          }}
+                          canEdit={canEdit}
+                          className="text-[12px] text-gray-400"
+                        />
                       </div>
                     </div>
                   </Card>

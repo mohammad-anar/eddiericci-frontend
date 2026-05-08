@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Eye, Heart, Upload } from "lucide-react";
 import Image from "next/image";
 import { usePlayerStats } from "./FullEditablePage";
+import { useUpdatePlayerProfileMutation } from "@/lib/features/cv/cvApi";
+import { CMSField } from "@/components/shared/CMSField";
+import { cn } from "@/lib/utils";
 
 interface ImageCard {
   id: string;
@@ -63,16 +66,9 @@ const SAMPLE_IMAGES: ImageCard[] = [
   },
 ];
 
-export default function MyImagesSection() {
-  const playerStats = usePlayerStats();
-  const [role, setRole] = useState<string>("player");
-
-  useEffect(() => {
-    // Check localStorage first for real role, then context
-    const currentRole = localStorage.getItem("userRole") || playerStats?.role || "player";
-    setRole(currentRole);
-  }, [playerStats?.role]);
-
+export default function MyImagesSection({ editable = false }: { editable?: boolean }) {
+  const { role } = usePlayerStats();
+  const [updatePlayer] = useUpdatePlayerProfileMutation();
   const [images, setImages] = useState<ImageCard[]>(SAMPLE_IMAGES);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -81,6 +77,8 @@ export default function MyImagesSection() {
     description: "",
     image: null as File | null,
   });
+
+  const canEdit = editable;
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -92,6 +90,21 @@ export default function MyImagesSection() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.[0]) {
       setFormData((prev) => ({ ...prev, image: e.target.files![0] }));
+    }
+  };
+
+  const handleUpdateImage = async (id: string, field: string, value: any) => {
+    setImages((prev) =>
+      prev.map((img) => (img.id === id ? { ...img, [field]: value } : img)),
+    );
+
+    try {
+      await updatePlayer({
+        id: "current-player",
+        data: { [`gallery.images.${id}.${field}`]: value },
+      }).unwrap();
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -109,7 +122,87 @@ export default function MyImagesSection() {
       setImages((prev) => [newImage, ...prev]);
       setFormData({ title: "", date: "", description: "", image: null });
       setIsModalOpen(false);
+      // In a real app, you'd call the API here to upload the image
     }
+  };
+
+  const EditableGalleryImage = ({ img }: { img: ImageCard }) => {
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const onFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          handleUpdateImage(img.id, "image", reader.result);
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+
+    return (
+      <Card
+        className="bg-gray-900 border-gray-800 overflow-hidden hover:border-gray-700 transition-colors"
+      >
+        <div 
+          className={cn(
+            "aspect-video overflow-hidden bg-gray-800 relative group",
+            canEdit && "cursor-pointer"
+          )}
+          onClick={() => canEdit && fileInputRef.current?.click()}
+        >
+          <Image
+            src={img.image}
+            alt={img.title}
+            width={500}
+            height={500}
+            className="w-full h-full object-cover hover:scale-105 transition-transform"
+            onContextMenu={(e) => e.preventDefault()}
+            draggable={false}
+          />
+          {canEdit && (
+            <>
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                <span className="text-xs text-white font-bold uppercase tracking-widest">
+                  Click to Change
+                </span>
+              </div>
+              <input
+                type="file"
+                ref={fileInputRef}
+                className="hidden"
+                accept="image/*"
+                onChange={onFileSelect}
+              />
+            </>
+          )}
+        </div>
+        <div className="p-4">
+          <CMSField
+            value={img.title}
+            onUpdate={(val) => handleUpdateImage(img.id, "title", val)}
+            canEdit={canEdit}
+            className="text-white font-semibold mb-1"
+          />
+          <CMSField
+            value={img.date}
+            onUpdate={(val) => handleUpdateImage(img.id, "date", val)}
+            canEdit={canEdit}
+            className="text-gray-400 text-sm mb-4"
+          />
+          <div className="flex items-center gap-4 text-gray-400 text-sm">
+            <div className="flex items-center gap-1">
+              <Eye className="w-4 h-4" />
+              <span>{img.views}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Heart className="w-4 h-4" />
+              <span>{img.likes}</span>
+            </div>
+          </div>
+        </div>
+      </Card>
+    );
   };
 
   return (
@@ -121,7 +214,7 @@ export default function MyImagesSection() {
             <h1 className="text-4xl text-white mb-2 font-heading">My Images</h1>
             <p className="text-gray-400">Match highlights & training</p>
           </div>
-          {role === "player" && (
+          {canEdit && (
             <Button
               onClick={() => setIsModalOpen(true)}
               className="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700"
@@ -136,36 +229,7 @@ export default function MyImagesSection() {
         {/* Image Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {images.map((img) => (
-            <Card
-              key={img.id}
-              className="bg-gray-900 border-gray-800 overflow-hidden hover:border-gray-700 transition-colors"
-            >
-              <div className="aspect-video overflow-hidden bg-gray-800">
-                <Image
-                  src={img.image}
-                  alt={img.title}
-                  width={500}
-                  height={500}
-                  className="w-full h-full object-cover hover:scale-105 transition-transform"
-                  onContextMenu={(e) => e.preventDefault()}
-                  draggable={false}
-                />
-              </div>
-              <div className="p-4">
-                <h3 className="text-white font-semibold mb-1">{img.title}</h3>
-                <p className="text-gray-400 text-sm mb-4">{img.date}</p>
-                <div className="flex items-center gap-4 text-gray-400 text-sm">
-                  <div className="flex items-center gap-1">
-                    <Eye className="w-4 h-4" />
-                    <span>{img.views}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Heart className="w-4 h-4" />
-                    <span>{img.likes}</span>
-                  </div>
-                </div>
-              </div>
-            </Card>
+            <EditableGalleryImage key={img.id} img={img} />
           ))}
         </div>
       </div>

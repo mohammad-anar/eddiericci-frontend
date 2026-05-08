@@ -40,7 +40,8 @@ import { toast } from "sonner";
 import { usePlayerStats } from "./FullEditablePage";
 import { PencilIcon, ChevronDown } from "lucide-react";
 import { CMSField } from "@/components/shared/CMSField";
-import { useUpdatePlayerProfileMutation } from "@/lib/features/cv/cvApi";
+import { usePlayer } from "@/lib/hooks/usePlayer";
+
 const ALL_STYLES = [
   { id: "technical", label: "Technical" },
   { id: "finesse-shot", label: "Finesse Shot" },
@@ -63,96 +64,9 @@ const ALL_STYLES = [
 ];
 
 const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
-  const [playerData, setPlayerData] = useState({
-    fullName: "Marcus Silva",
-    dob: "15/03/1996",
-    age: "24",
-    birthCountry: "France",
-    birthCountryFlag: flagFr,
-    dualNationality: "Italy",
-    dualNationalityFlag: flagIt,
-    email: "marcus.silva@email.com",
-    phone: "+351 912 345 678",
-    location: "France",
-    website: "www.k10football.com",
-    height: "1.82",
-    weight: "76",
-    leftLegUsage: 31,
-    rightLegUsage: 87,
-    leftLegImage: leftLeg,
-    rightLegImage: right,
-    languages: [
-      { name: "Portuguese", level: "NATIVE", color: "text-primary" },
-      { name: "English", level: "FLUENT", color: "text-yellow" },
-      { name: "Spanish", level: "INTERMEDIATE", color: "text-orange" },
-    ],
-    rating: 94,
-    playerImage: playerImage,
-    strengths: {
-      pace: 82,
-      shooting: 84,
-      passing: 89,
-      dribbling: 85,
-      defending: 78,
-      physical: 70,
-    },
-    performanceMetrics: {
-      passAccuracy: 92,
-      shootAccuracy: 78,
-      dribbleSuccess: 85,
-      tackleSuccess: 72,
-    },
-    marketValue: "45M",
-    marketTrend: "5 Mln last season",
-    transferStatus: "Active",
-    contractUntil: "June, 2026",
-    agent: "John Morrison",
-    agency: "Elite Sports Mgmt",
-    mainFlag: flagImage,
-    position: "Defensive Midfielder",
-    selectedStyleIds: ["technical", "finesse-shot", "incisive-pass"],
-    careerHighlights: [
-      {
-        year: "2019",
-        title: "BRAZILIAN CHAMPIONSHIP",
-        club: "FLAMENGO",
-        icon: trofeeIcon,
-      },
-      {
-        year: "2010",
-        title: "CAMPEONATA - PAULISTA",
-        club: "CORINTHIANS",
-        icon: trofeeIcon,
-      },
-      {
-        year: "2015",
-        title: "BRAZILIAN CHAMPIONSHIP",
-        club: "FLAMENGO FC",
-        icon: trofeeIcon,
-      },
-      {
-        year: "2014",
-        title: "PAULISTA CUP",
-        club: "SAO PAULO FC",
-        icon: trofeeIcon,
-      },
-      {
-        year: "2017/2020",
-        title: "CAMPEONATO CARIOCA",
-        club: "VASCO FC",
-        icon: trofeeIcon,
-      },
-    ],
-    seasonStats: {
-      matches: 28,
-      goals: 8,
-      assists: 16,
-      avgRating: 8.4,
-    },
-  });
+  const { playerData, handleUpdate } = usePlayer();
 
   const { setBioRating, role } = usePlayerStats();
-  const [updatePlayer] = useUpdatePlayerProfileMutation();
 
   const canEditBio = editable && (role === "player" || role === "parent");
   const canEditEvaluation = editable && (role === "player" || role === "parent" || role === "coach");
@@ -252,40 +166,12 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
     );
   };
 
-  const handleUpdate = async (field: string, value: any) => {
-    setPlayerData((prev) => {
-      const keys = field.split(".");
-      if (keys.length === 1) return { ...prev, [field]: value };
-
-      const next = { ...prev } as any;
-      let current = next;
-      for (let i = 0; i < keys.length - 1; i++) {
-        const key = keys[i];
-        current[key] = Array.isArray(current[key])
-          ? [...current[key]]
-          : { ...current[key] };
-        current = current[key];
-      }
-      current[keys[keys.length - 1]] = value;
-      return next;
-    });
-
-    // Simulate API call
-    try {
-      await updatePlayer({ id: "current-player", data: { [field]: value } }).unwrap();
-      toast.success(`${field} updated successfully`);
-    } catch (error) {
-      // toast.error(`Failed to update ${field}`);
-      console.error(error);
-    }
-  };
-
   const toggleStyle = (id: string) => {
     const currentStyles = playerData.selectedStyleIds;
     if (currentStyles.includes(id)) {
       handleUpdate(
         "selectedStyleIds",
-        currentStyles.filter((styleId) => styleId !== id)
+        currentStyles.filter((styleId: any) => styleId !== id)
       );
     } else if (currentStyles.length < 5) {
       handleUpdate("selectedStyleIds", [...currentStyles, id]);
@@ -317,16 +203,16 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
   // };
 
   const orderedSelectedStyles = playerData.selectedStyleIds.map(
-    (id) => ALL_STYLES.find((s) => s.id === id)!
+    (id: any) => ALL_STYLES.find((s: any) => s.id === id)!
   );
 
   const styleBadges = [badge1, badge2, badge3];
   return (
     <>
       <div className="container">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
           {/* LEFT COLUMN */}
-          <div className="col-span-1 md:col-span-4 h-fit space-y-6 bg-cardBg">
+          <div className="col-span-1 xl:col-span-4 h-fit space-y-6 bg-cardBg">
             <div className=" p-6">
               <h2 className="text-lg text-center font-heading font-normal mb-4">
                 Personal Information
@@ -541,7 +427,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                 Languages
               </h2>
               <div className="space-y-2 text-sm">
-                {playerData.languages.map((lang, idx) => (
+                {playerData.languages.map((lang: any, idx: number) => (
                   <div key={idx} className="flex justify-between items-center gap-4">
                     <CMSField
                       value={lang.name}
@@ -593,7 +479,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
           </div>
 
           {/* CENTER COLUMN - PLAYER IMAGE */}
-          <div className="col-span-1 md:col-span-4 flex flex-col items-center">
+          <div className="col-span-1 xl:col-span-4 flex flex-col items-center">
             {/* Player Name */}
             <div className="text-center mb-8">
               <div className="flex items-center mb-8 justify-center gap-2">
@@ -720,7 +606,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                 </div>
 
                 <div className="space-y-4">
-                  {orderedSelectedStyles.map((style, index) => (
+                  {orderedSelectedStyles.map((style: any, index: number) => (
                     <div key={style.id} className="space-y-4">
                       <div className="flex justify-center">
                         <Image
@@ -738,7 +624,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
           </div>
 
           {/* RIGHT COLUMN */}
-          <div className="col-span-1 md:col-span-4 space-y-6 bg-cardBg">
+          <div className="col-span-1 xl:col-span-4 space-y-6 bg-cardBg">
             <div className="p-6">
               <h2 className="text-lg text-center font-heading font-normal mb-4">
                 Strength
@@ -748,12 +634,12 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                   <div key={key}>
                     <div className="flex justify-between mb-1 capitalize">
                       <span>{key}</span>
-                      <span className="text-primary">{value}</span>
+                      <span className="text-primary">{value as any}</span>
                     </div>
                     {canEditEvaluation ? (
-                      <input
+                      <Input
                         type="range"
-                        value={value}
+                        value={value as any}
                         onChange={(e) =>
                           handleUpdate(
                             `strengths.${key}`,
@@ -763,7 +649,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                         className="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-primary"
                       />
                     ) : (
-                      <Progress value={value} />
+                      <Progress value={value as any} />
                     )}
                   </div>
                 ))}
@@ -780,12 +666,12 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                     <div key={key}>
                       <div className="flex justify-between mb-1 capitalize">
                         <span>{key.replace(/([A-Z])/g, " $1")}</span>
-                        <span className="text-primary">{value}%</span>
+                        <span className="text-primary">{value as any}%</span>
                       </div>
                       {canEditEvaluation ? (
-                        <input
+                        <Input
                           type="range"
-                          value={value}
+                          value={value as any}
                           onChange={(e) =>
                             handleUpdate(
                               `performanceMetrics.${key}`,
@@ -795,7 +681,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                           className="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-primary"
                         />
                       ) : (
-                        <Progress value={value} />
+                        <Progress value={value as any} />
                       )}
                     </div>
                   )
@@ -874,7 +760,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                 Career Highlights
               </h2>
               <div className="space-y-2 text-xs text-gray-300 border-l-2 border-green-600 pl-2">
-                {playerData.careerHighlights.map((highlight, idx) => (
+                {playerData.careerHighlights.map((highlight: any, idx: number) => (
                   <div key={idx} className="flex gap-2 items-start mb-4">
                     <div className="relative w-8 h-8 mt-0.5 shrink-0">
                       <EditableImage

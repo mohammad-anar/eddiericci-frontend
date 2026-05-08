@@ -70,8 +70,11 @@ const teamData = [
   { id: 4, name: "James Brown", position: "Goalkeeper", rating: 9.0, matches: 30, goals: 0, assists: 0, status: "Active", avatar: "https://i.pravatar.cc/150?u=4" },
 ];
 
+import { useCoach } from "@/lib/hooks/useCoach";
+
 export const CoachDashboard = () => {
   const { hasAcademy } = useContext(CoachContext);
+  const { coachData } = useCoach();
 
   const teamColumns: Column<typeof teamData[0]>[] = [
     {
@@ -141,21 +144,21 @@ export const CoachDashboard = () => {
           {/* Hero Section */}
           <DashboardHero 
             backgroundImage="/stadium-night.jpg"
-            rating={74}
-            badgeText="Active Coach"
-            title="John Doe"
-            subtitle="Head Coach"
+            rating={58} // In CoachBioSection it was [58]
+            badgeText={`${coachData.transferStatus} Coach`}
+            title={coachData.fullName}
+            subtitle={coachData.coachType}
             details={[
-              { text: "58 Years Old" },
-              { text: "Brazil" }
+              { text: coachData.age },
+              { text: coachData.birthCountry }
             ]}
             contacts={[
-              { type: "club", label: "Current Club", value: "Santos FC Academy" },
-              { type: "phone", label: "Contact", value: "+44 7700 900000" },
+              { type: "club", label: "Current Club", value: coachData.agency },
+              { type: "phone", label: "Contact", value: coachData.phone },
               { type: "license", label: "Validation Status", value: "UEFA A License" },
-              { type: "email", label: "Email", value: "john.doe@k10football.com" },
+              { type: "email", label: "Email", value: coachData.email },
             ]}
-            characterImage="/coach-image.png"
+            characterImage={coachData.coachImage}
           />
 
           {/* Analytics Section */}
@@ -174,7 +177,14 @@ export const CoachDashboard = () => {
               <div className="h-[300px]">
                 <h3 className="text-sm font-bold text-gray-400 mb-4 uppercase tracking-widest">Coach Profile Analysis</h3>
                 <ResponsiveContainer width="100%" height="100%">
-                  <RadarChart cx="50%" cy="50%" outerRadius="80%" data={profileAnalysisData}>
+                  <RadarChart cx="50%" cy="50%" outerRadius="80%" data={[
+                    { subject: 'Tactics', A: 97, fullMark: 100 },
+                    { subject: 'Leadership', A: 88, fullMark: 100 },
+                    { subject: 'Communication', A: 92, fullMark: 100 },
+                    { subject: 'Adaptability', A: 98, fullMark: 100 },
+                    { subject: 'Discipline', A: 87, fullMark: 100 },
+                    { subject: 'Development', A: 96, fullMark: 100 },
+                  ]}>
                     <PolarGrid stroke="#333" />
                     <PolarAngleAxis dataKey="subject" tick={{ fill: '#666', fontSize: 10 }} />
                     <Radar
@@ -192,7 +202,12 @@ export const CoachDashboard = () => {
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
-                      data={tournamentStatsData}
+                      data={[
+                        { name: 'Win', value: coachData.seasonStats.wins, color: '#A80000' },
+                        { name: 'Matches', value: coachData.seasonStats.matches, color: '#FF1A1A' },
+                        { name: 'Clean Sheets', value: coachData.seasonStats.cleanSheets, color: '#FF9999' },
+                        { name: 'Loss', value: coachData.seasonStats.matches - coachData.seasonStats.wins, color: '#FF4D4D' },
+                      ]}
                       cx="50%"
                       cy="50%"
                       outerRadius={100}
@@ -391,9 +406,9 @@ export const CoachDashboard = () => {
             <h2 className="text-sm font-bold text-white uppercase tracking-widest mb-6 italic">Quickk stats</h2>
             <div className="space-y-4">
                {[
-                 { label: "Profile Views", value: "127", color: "text-white" },
-                 { label: "Total Likes", value: "8", color: "text-red-500" },
-                 { label: "Reports", value: "12", color: "text-green-500" },
+                 { label: "Matches Coached", value: coachData.seasonStats.matches.toString(), color: "text-white" },
+                 { label: "Total Wins", value: coachData.seasonStats.wins.toString(), color: "text-red-500" },
+                 { label: "Clean Sheets", value: coachData.seasonStats.cleanSheets.toString(), color: "text-green-500" },
                ].map((stat) => (
                  <div key={stat.label} className="flex items-center justify-between">
                     <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">{stat.label}</span>

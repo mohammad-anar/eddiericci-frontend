@@ -7,7 +7,7 @@ import {
   fetchBaseQuery,
 } from "@reduxjs/toolkit/query/react";
 import type { RootState } from "../store";
-import { setAccessToken, logout } from "../features/auth";
+import { setAccessToken, logout, AuthState } from "../features/auth";
 import Cookies from "js-cookie";
 
 // 🔹 Base query WITH access token
@@ -15,7 +15,8 @@ const baseQueryWithAuth = fetchBaseQuery({
   baseUrl: process.env.NEXT_PUBLIC_API_BASE || "http://localhost:5000/api/v1",
   credentials: "include",
   prepareHeaders: (headers, { getState }) => {
-    const accessToken = (getState() as RootState).auth.accessToken;
+    const state = getState() as RootState;
+    const accessToken = (state?.auth as AuthState)?.accessToken;
 
     if (accessToken) {
       headers.set("Authorization", `Bearer ${accessToken}`);
@@ -42,7 +43,7 @@ const baseQueryWithReauth: BaseQueryFn<
   // 2️⃣ If access token expired
   if (result.error?.status === 401) {
     const state = api.getState() as RootState;
-    const refreshToken = state.auth.refreshToken;
+    const refreshToken = (state?.auth as AuthState)?.refreshToken;
 
     if (!refreshToken) {
       api.dispatch(logout());

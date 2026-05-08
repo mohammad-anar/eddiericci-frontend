@@ -16,8 +16,7 @@ import Image, { type StaticImageData } from "next/image";
 import { useState, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { CMSField } from "@/components/shared/CMSField";
-import { useUpdateCoachProfileMutation } from "@/lib/features/cv/cvApi";
-import { toast } from "sonner";
+import { useCoach } from "@/lib/hooks/useCoach";
 import { usePlayerStats } from "../../player-cv-details/components/FullEditablePage";
 import {
   Dialog,
@@ -108,109 +107,14 @@ const COACH_STYLE_GROUPS = [
 ];
 
 const CoachBioSection = ({ editable }: { editable?: boolean }) => {
-  const [coachType, setCoachType] = useState("Head Coach");
-  const [coachData, setCoachData] = useState<CoachData>({
-    fullName: "Marcus Silva",
-    dob: "15/03/1996",
-    age: "24 years",
-    birthCountry: "France",
-    birthCountryFlag: flagFr,
-    dualNationality: "Italy",
-    dualNationalityFlag: flagIt,
-    email: "marcus.silva@email.com",
-    phone: "+351 912 345 678",
-    location: "France",
-    website: "www.k10football.com",
-    languages: [
-      { name: "Portuguese", level: "NATIVE", color: "text-primary" },
-      { name: "English", level: "FLUENT", color: "text-yellow" },
-      { name: "Spanish", level: "INTERMEDIATE", color: "text-orange" },
-    ],
-    seasonStats: {
-      matches: 32,
-      wins: 21,
-      cleanSheets: 9,
-    },
-    transferStatus: "Active",
-    contractUntil: "June, 2026",
-    agent: "John Morrison",
-    agency: "Elite Sports Mgmt",
-    majorTrophies: [
-      { name: "K10 FOOTBALL CHAMPIONSHIP", count: 3 },
-      { name: "K10 FOOTBALL CUP", count: 7 },
-      { name: "K10 FOOTBALL LEAGUE", count: 12 },
-      { name: "K10 FOOTBALL YOUTH CUP", count: 5 },
-      { name: "GBN CFN B", count: 2 },
-      { name: "GBN CFN B", count: 2 },
-      { name: "GBN CFN B", count: 4 },
-    ],
-    playerImage: playerImage,
-    mainFlag: flagImage,
-    cupHistory: [
-      "2021 - K10 FOOTBALL LEAGUE - K10 FOOTBALL FC",
-      "2019 - K10 FOOTBALL CUP - K10 FOOTBALL FC",
-      "2018 - K10 FOOTBALL CUP - K10 FOOTBALL FC",
-      "2017 - K10 FOOTBALL CUP - K10 FOOTBALL FC",
-      "2016 - K10 FOOTBALL CUP - K10 FOOTBALL FC",
-    ],
-    keySkills: [
-      "Youth Development",
-      "Leadership",
-      "Adaptability",
-      "Constructive Feedback",
-    ],
-    clubs: [
-      { name: "Manchester City", period: "2020-present" },
-      { name: "Manchester City", period: "2020-present" },
-      { name: "Manchester City", period: "2020-present" },
-    ],
-    qualifications: [
-      {
-        id: 1,
-        text: "Strong communication skills, empathy and high expectations combine to create strong individuals and winning teams.",
-      },
-      {
-        id: 2,
-        text: "Highly skilled professional with 15 years of experience developing improvement programs for athletes of all age groups.",
-      },
-      {
-        id: 3,
-        text: "Five years of experience assistant coach at the college level",
-      },
-    ],
-  });
-  const [coachStyle, setCoachStyle] = useState("Tactics");
+  const { coachData, handleUpdate } = useCoach();
+
   const styleBadges = [badge1, badge2, badge3];
   const { role } = usePlayerStats();
-  const [updateCoach] = useUpdateCoachProfileMutation();
 
   const canEdit = !!(editable && role === "coach");
 
-  const handleUpdate = async (field: string, value: unknown) => {
-    setCoachData((prev) => {
-      const keys = field.split(".");
-      if (keys.length === 1) return { ...prev, [field]: value };
 
-      const next = { ...prev } as any;
-      let current = next;
-      for (let i = 0; i < keys.length - 1; i++) {
-        const key = keys[i];
-        current[key] = Array.isArray(current[key])
-          ? [...current[key]]
-          : { ...current[key] };
-        current = current[key];
-      }
-      current[keys[keys.length - 1]] = value;
-      return next;
-    });
-
-    try {
-      await updateCoach({ id: "current-coach", data: { [field]: value } }).unwrap();
-      toast.success(`${field} updated successfully`);
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   const handleImageUpload = (file: File, field: string) => {
     const reader = new FileReader();
@@ -335,9 +239,9 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
   return (
     <>
       <div className="container">
-        <div className="grid grid-cols-12 gap-6">
+        <div className="grid xl:grid-cols-12 gap-6">
           {/* LEFT COLUMN */}
-          <div className="col-span-1 md:col-span-4 h-fit space-y-6 bg-cardBg">
+          <div className="col-span-12 xl:col-span-4 h-fit space-y-6 bg-cardBg">
             {/* Personal Information */}
             <div className=" p-6">
               <h2 className="text-lg text-center font-heading font-normal mb-4">
@@ -577,7 +481,7 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
           </div>
 
           {/* CENTER COLUMN - PLAYER IMAGE */}
-          <div className="col-span-1 md:col-span-4 flex flex-col items-center">
+          <div className="col-span-12 xl:col-span-4 flex flex-col items-center">
             {/* Player Name */}
             <div className="text-center mb-8">
               <div className="flex items-center mb-8 justify-center gap-2">
@@ -597,8 +501,8 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
             {/* Position Selector */}
             <div className="mb-8 flex items-center justify-center">
               <CMSField
-                value={coachType}
-                onUpdate={(val) => setCoachType(String(val))}
+                value={coachData.coachType}
+                onUpdate={(val) => handleUpdate("coachType", String(val))}
                 canEdit={canEdit}
                 type="select"
                 options={COACH_TYPES}
@@ -610,11 +514,11 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
             {/* Coach Image */}
             <div className="relative w-full h-[500px] mb-8 ">
               <EditableImage
-                src={coachData.playerImage}
+                src={coachData.coachImage}
                 alt={coachData.fullName}
                 fill
                 className="object-contain"
-                field="playerImage"
+                field="coachImage"
               />
             </div>
 
@@ -627,8 +531,8 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
 
                 <div className="mb-8 flex items-center justify-center">
                   <CMSField
-                    value={coachStyle}
-                    onUpdate={(val) => setCoachStyle(String(val))}
+                    value={coachData.coachStyle}
+                    onUpdate={(val) => handleUpdate("coachStyle", String(val))}
                     canEdit={canEdit}
                     type="select"
                     options={COACH_STYLE_GROUPS.flatMap(g => g.styles)}
@@ -641,14 +545,14 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
                   <div className="flex justify-center">
                     <Image src={badge1} className="w-20 h-20" alt="badge" />
                   </div>
-                  <p className="text-lg font-heading">{coachStyle}</p>
+                  <p className="text-lg font-heading">{coachData.coachStyle}</p>
                 </div>
               </div>
             </div>
           </div>
 
           {/* RIGHT COLUMN */}
-          <div className="col-span-1 md:col-span-4 space-y-6 bg-cardBg h-fit">
+          <div className="col-span-12 xl:col-span-4 space-y-6 bg-cardBg h-fit">
             {/* Current Season Stats */}
             <div className="p-6">
               <h2 className="text-lg text-center font-heading font-normal mb-4">

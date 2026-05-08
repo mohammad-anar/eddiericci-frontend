@@ -8,6 +8,7 @@ import pinkCard from "@/assets/cvs-page/pink-card.png";
 import whiteCard from "@/assets/cvs-page/white-card.png";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { usePlayer } from "@/lib/hooks/usePlayer";
 
 interface Player {
   id: number;
@@ -182,6 +183,28 @@ const players: Player[] = [
 
 export default function Players() {
   const router = useRouter();
+  const { playerData } = usePlayer();
+
+  // Map Redux data to the SILVA player card
+  const displayPlayers = players.map(p => {
+    if (p.name === "SILVA") {
+      return {
+        ...p,
+        name: playerData.fullName.split(" ")[1]?.toUpperCase() || playerData.fullName.toUpperCase(),
+        rating: playerData.rating,
+        stats: {
+          pac: playerData.strengths.pace,
+          sho: playerData.strengths.shooting,
+          pas: playerData.strengths.passing,
+          dri: playerData.strengths.dribbling,
+          def: playerData.strengths.defending,
+          phy: playerData.strengths.physical,
+        }
+      }
+    }
+    return p;
+  });
+
   return (
     <div className="container mt=20 bg-black p-8">
       <h1
@@ -192,8 +215,8 @@ export default function Players() {
       </h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-        {players.map((player) => (
-          <div onClick={() => router.push("/cvs-page/player-cv-details")} key={player.id} className="flex min-w-60 justify-center">
+        {displayPlayers.map((player) => (
+          <div onClick={() => router.push("/cvs-page/player-cv-details")} key={player.id} className="flex min-w-60 justify-center cursor-pointer">
             <div className="relative min-h-50 hover:scale-110 duration-300">
               <Image
                 className=" h-full w-full min-w-60 z-10"
@@ -208,8 +231,8 @@ export default function Players() {
               />
               {/* top values */}
               <div className="absolute top-[15%] left-7 text-black">
-                <h2 className="text-3xl font-semibold">74</h2>
-                <h2 className="text-lg">LM</h2>
+                <h2 className="text-3xl font-semibold">{player.rating}</h2>
+                <h2 className="text-lg">{player.position}</h2>
                 <Image src={flag1} className="w-6 mt-2" alt="flag image"/>
                 <Image src={club1} className="w-6 mt-2" alt="club image image"/>
               </div>

@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface AuthSate {
+export interface AuthState {
   user: any;
   accessToken: string | null;
   refreshToken: string | null;
 }
 
-const initialState: AuthSate = {
+const initialState: AuthState = {
   user: null,
   accessToken: null,
   refreshToken: null,

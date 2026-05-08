@@ -2,26 +2,30 @@
 
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from 'recharts'
 
+import { usePlayer } from "@/lib/hooks/usePlayer";
+
 export default function PerformanceChart() {
+  const { playerData } = usePlayer();
+
   const radarData = [
-    { subject: 'Vision', value: 98 },
-    { subject: 'Strength', value: 88 },
-    { subject: 'Pace', value: 92 },
-    { subject: 'Passing', value: 90 },
-    { subject: 'Shooting', value: 78 },
-    { subject: 'Stamina', value: 97 }
+    { subject: 'Vision', value: playerData.strengths.passing },
+    { subject: 'Strength', value: playerData.strengths.physical },
+    { subject: 'Pace', value: playerData.strengths.pace },
+    { subject: 'Passing', value: playerData.strengths.passing },
+    { subject: 'Shooting', value: playerData.strengths.shooting },
+    { subject: 'Dribbling', value: playerData.strengths.dribbling }
   ]
 
   const stats = [
-    { label: 'Goals', value: '24' },
-    { label: 'Assists', value: '18' },
-    { label: 'Matches', value: '42' }
+    { label: 'Goals', value: playerData.seasonStats.goals.toString() },
+    { label: 'Assists', value: playerData.seasonStats.assists.toString() },
+    { label: 'Matches', value: playerData.seasonStats.matches.toString() }
   ]
 
   const accuracyMetrics = [
-    { label: 'Pass Accuracy', value: 87 },
-    { label: 'Shot Accuracy', value: 73 },
-    { label: 'Defensive Actions', value: 91 }
+    { label: 'Pass Accuracy', value: playerData.performanceMetrics.passAccuracy },
+    { label: 'Shot Accuracy', value: playerData.performanceMetrics.shootAccuracy },
+    { label: 'Dribble Success', value: playerData.performanceMetrics.dribbleSuccess }
   ]
 
   return (

@@ -7,6 +7,7 @@ import pinkCard from "@/assets/cvs-page/pink-card.png";
 import whiteCard from "@/assets/cvs-page/white-card.png";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useCoach } from "@/lib/hooks/useCoach";
 
 interface Coach {
   id: number;
@@ -181,6 +182,28 @@ const coaches: Coach[] = [
 
 export default function Coaches() {
   const router = useRouter();
+  const { coachData } = useCoach();
+
+  // Map Redux data to the SILVA coach card (if it exists) or replace one
+  const displayCoaches = coaches.map(c => {
+    // Let's assume SILVA is the coach we want to sync
+    if (c.name === "SAM KERR" || c.name === "SILVA") {
+      return {
+        ...c,
+        name: coachData.fullName.split(" ")[1]?.toUpperCase() || coachData.fullName.toUpperCase(),
+        rating: 58, // Fixed rating from bio
+        stats: {
+          att: coachData.seasonStats.wins,
+          tac: coachData.seasonStats.matches,
+          def: coachData.seasonStats.cleanSheets,
+          imp: 85,
+          exp: 90,
+          lea: 95,
+        }
+      }
+    }
+    return c;
+  });
 
 
   return (
@@ -193,7 +216,7 @@ export default function Coaches() {
       </h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-        {coaches.map((coach) => (
+        {displayCoaches.map((coach) => (
           <div onClick={() => router.push("/cvs-page/coach-cv-details")} key={coach.id} className="flex justify-center">
             <div className="relative min-h-50 cursor-pointer hover:scale-110 min-w-60 duration-300">
               <Image
@@ -209,8 +232,8 @@ export default function Coaches() {
               />
               {/* top values */}
               <div className="absolute top-[15%] left-7 text-black">
-                <h2 className="text-3xl font-semibold">74</h2>
-                <h2 className="text-lg">LM</h2>
+                <h2 className="text-3xl font-semibold">{coach.rating}</h2>
+                <h2 className="text-lg">{coach.position}</h2>
                 <Image src={flag1} className="w-6 mt-2" alt="flag image"/>
                 <Image src={club1} className="w-6 mt-2" alt="club image image"/>
               </div>

@@ -327,13 +327,9 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-400">Age</span>
-                  <CMSField
-                    value={playerData.age}
-                    onUpdate={() => { }}
-                    canEdit={false}
-                    className="w-20 justify-end"
-                    inputClassName="text-right"
-                  />
+                  <div className="flex items-center gap-1">
+                    <span>{playerData.age || 0}</span> <span className="text-gray-400 text-sm">Years</span>
+                  </div>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-400">Birth Country</span>
@@ -787,14 +783,14 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                         className="w-full h-1 rounded-lg appearance-none cursor-pointer accent-green-500"
                       />
                     ) : (
-                      <div 
-                        onDoubleClick={() => canEditEvaluation && setEditingField(`strengths.${key}`)} 
+                      <div
+                        onDoubleClick={() => canEditEvaluation && setEditingField(`strengths.${key}`)}
                         className={cn(canEditEvaluation ? "cursor-pointer" : "")}
                       >
-                        <Progress 
-                          value={value as any} 
+                        <Progress
+                          value={value as any}
                           className="h-2 bg-transparent"
-                          indicatorClassName="bg-green-500" 
+                          indicatorClassName="bg-green-500"
                         />
                       </div>
                     )}
@@ -843,14 +839,14 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                           className="w-full h-1 rounded-lg appearance-none cursor-pointer accent-green-500"
                         />
                       ) : (
-                        <div 
-                          onDoubleClick={() => canEditEvaluation && setEditingField(`performanceMetrics.${key}`)} 
+                        <div
+                          onDoubleClick={() => canEditEvaluation && setEditingField(`performanceMetrics.${key}`)}
                           className={cn(canEditEvaluation ? "cursor-pointer" : "")}
                         >
-                          <Progress 
-                            value={value as any} 
+                          <Progress
+                            value={value as any}
                             className="h-2 bg-transparent"
-                            indicatorClassName="bg-green-500" 
+                            indicatorClassName="bg-green-500"
                           />
                         </div>
                       )}

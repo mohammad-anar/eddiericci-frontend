@@ -1,9 +1,8 @@
 'use client'
 
-import { Shield, Phone, Clock, Mail } from 'lucide-react'
-import Image from 'next/image'
-import playerImage from "@/assets/cvs-page/id/player-image.png";
-import backgroundImage from "@/assets/player-dashboard/backgroundImage.png"
+import backgroundImage from "@/assets/player-dashboard/backgroundImage.png";
+import { Clock, Mail, Phone, Shield } from 'lucide-react';
+import Image from 'next/image';
 
 import { usePlayer } from "@/lib/hooks/usePlayer";
 

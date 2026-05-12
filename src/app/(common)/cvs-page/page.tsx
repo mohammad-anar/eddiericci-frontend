@@ -9,12 +9,12 @@ import Coaches from './components/CoatchesSection'
 const CVSPage = () => {
   return (
     <div>
-      <SearchBar/>
-      <AnalyciesSection/>
-      <Players/>
-      <Coaches/>
-      <ImageCarousel/>
-      <StartJourneySection/>
+      <SearchBar />
+      <AnalyciesSection />
+      <Players />
+      <Coaches />
+      <ImageCarousel />
+      <StartJourneySection />
     </div>
   )
 }

@@ -3,7 +3,7 @@ import { ChevronDown, Search } from 'lucide-react';
 import { useState } from 'react';
 
 const SearchBar = () => {
-      const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
   const [selectedGenre, setSelectedGenre] = useState('');
   const [selectedAgeGroup, setSelectedAgeGroup] = useState('');
   const [selectedPosition, setSelectedPosition] = useState('');

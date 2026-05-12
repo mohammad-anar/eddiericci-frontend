@@ -3,9 +3,20 @@
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from 'recharts'
 
 import { usePlayer } from "@/lib/hooks/usePlayer";
+import { SHARED_REPORTS_DATA } from "@/lib/constants/reports";
 
 export default function PerformanceChart() {
   const { playerData } = usePlayer();
+
+  const paidReports = SHARED_REPORTS_DATA.filter(r => r.status === "Paid");
+  
+  const totalGoals = paidReports.reduce((sum, r) => sum + r.goals, 0);
+  const totalAssists = paidReports.reduce((sum, r) => sum + r.assists, 0);
+  const totalMatches = paidReports.length;
+
+  const avgPassAccuracy = totalMatches > 0 
+    ? Math.round(paidReports.reduce((sum, r) => sum + r.passAccuracy, 0) / totalMatches)
+    : 0;
 
   const radarData = [
     { subject: 'Vision', value: playerData.strengths.passing },
@@ -17,13 +28,13 @@ export default function PerformanceChart() {
   ]
 
   const stats = [
-    { label: 'Goals', value: playerData.seasonStats.goals.toString() },
-    { label: 'Assists', value: playerData.seasonStats.assists.toString() },
-    { label: 'Matches', value: playerData.seasonStats.matches.toString() }
+    { label: 'Goals', value: totalGoals.toString() },
+    { label: 'Assists', value: totalAssists.toString() },
+    { label: 'Matches', value: totalMatches.toString() }
   ]
 
   const accuracyMetrics = [
-    { label: 'Pass Accuracy', value: playerData.performanceMetrics.passAccuracy },
+    { label: 'Pass Accuracy', value: avgPassAccuracy },
     { label: 'Shot Accuracy', value: playerData.performanceMetrics.shootAccuracy },
     { label: 'Dribble Success', value: playerData.performanceMetrics.dribbleSuccess }
   ]

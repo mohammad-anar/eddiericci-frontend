@@ -8,7 +8,7 @@ export default function CVSection() {
     { name: 'Physical Stats', completed: true },
     { name: 'Skills & Attributes', completed: true },
     { name: 'Match History', completed: true },
-    { name: 'References', completed: true }
+    { name: 'References', completed: false }
   ]
 
   return (

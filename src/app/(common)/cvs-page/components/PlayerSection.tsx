@@ -233,8 +233,8 @@ export default function Players() {
               <div className="absolute top-[15%] left-7 text-black">
                 <h2 className="text-3xl font-semibold">{player.rating}</h2>
                 <h2 className="text-lg">{player.position}</h2>
-                <Image src={flag1} className="w-6 mt-2" alt="flag image"/>
-                <Image src={club1} className="w-6 mt-2" alt="club image image"/>
+                <Image src={flag1} className="w-6 mt-2" alt="flag image" />
+                <Image src={club1} className="w-6 mt-2" alt="club image image" />
               </div>
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className=" relative w-[90%] h-[90%] ">
@@ -244,16 +244,15 @@ export default function Players() {
                     src={playerImage}
                     alt="player Image"
                   />
-                  
+
                   {/* shadow */}
                   <div
-                    className={`w-full h-40 absolute top-[35%] left-0 ${
-                      player.cardType === "gold"
+                    className={`w-full h-40 absolute top-[35%] left-0 ${player.cardType === "gold"
                         ? "bg-linear-to-t from-transparent via-[#F9E07F] to-transparent"
                         : player.cardType === "white"
                           ? "bg-linear-to-t from-transparent via-[#E5E5E7] to-transparent"
                           : "bg-linear-to-t from-transparent via-[#F5DCCE] to-transparent"
-                    }`}
+                      }`}
                   ></div>
                   {/* name */}
                   <div
@@ -265,7 +264,7 @@ export default function Players() {
                   <div className="text-black relative z-10 mt-2">
                     {/*  */}
                     <div className="flex items-center justify-between gap-4 p-3">
-                        {/* left */}
+                      {/* left */}
                       <div className="flex-1">
                         {/* 1 */}
                         <div className="flex justify-between">

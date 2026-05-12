@@ -4,12 +4,17 @@ import { FileText, Heart } from 'lucide-react'
 import Image from 'next/image'
 import clubLogo from "@/assets/cvs-page/club1.png"
 
+import { SHARED_REPORTS_DATA } from "@/lib/constants/reports";
+
 export default function RightSideContent() {
-  const gameReports = [
-    { id: 1, opponent: 'vs Chelsea U19', rating: 9.2 },
-    { id: 2, opponent: 'vs Chelsea U19', rating: 8.8 },
-    { id: 3, opponent: 'vs Liverpool U19', rating: 8.5 }
-  ]
+  const gameReports = SHARED_REPORTS_DATA
+    .filter(r => r.status === "Paid")
+    .slice(0, 3)
+    .map(r => ({
+      id: r.id,
+      opponent: `vs ${r.team2}`,
+      rating: r.rating
+    }));
 
   const clubsInterested = [
     {

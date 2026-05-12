@@ -2,13 +2,10 @@
 
 import { FileText, Eye, Plus, CheckCircle, Clock } from 'lucide-react'
 
+import { SHARED_REPORTS_DATA } from "@/lib/constants/reports";
+
 export default function GameReportSection() {
-  const reports = [
-    { id: 1, opponent: 'vs Chelsea U19', rating: 8.5, amount: '$6.99', date: '2024-01-15', status: 'Paid' },
-    { id: 2, opponent: 'vs Chelsea U19', rating: 7.8, amount: '$6.99', date: '2024-02-01', status: 'Paid' },
-    { id: 3, opponent: 'vs Liverpool U19', rating: '00', amount: '$6.99', date: '2023-12-01', status: 'Pending' },
-    { id: 4, opponent: 'vs City U19', rating: 8.2, amount: '$6.99', date: '2024-03-10', status: 'Paid' }
-  ]
+  const reports = SHARED_REPORTS_DATA;
 
   return (
     <div className="py-20">
@@ -46,7 +43,7 @@ export default function GameReportSection() {
                     <td className="px-4 py-6 text-sm">
                       <div className="flex items-center gap-3">
                         <FileText className="w-5 h-5 text-red-600 shrink-0" />
-                        <span className="text-red-600 font-semibold">{report.opponent}</span>
+                        <span className="text-red-600 font-semibold">vs {report.team2}</span>
                       </div>
                     </td>
                     <td className="px-4 py-6 text-sm text-gray-300">{report.rating}</td>

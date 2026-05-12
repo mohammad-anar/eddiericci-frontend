@@ -37,11 +37,11 @@ const AttributeDonut = ({ score, color }: { score: number; color: string }) => {
   )
 }
 
-const AttributesAnalysis = () => {
+const AttributesAnalysis = ({ editable = false }: { editable?: boolean }) => {
   const { setAttributesAvg } = usePlayerStats();
   const { playerData } = usePlayer();
 
-  const getSkillValue = (name: string) => {
+  const getSkillValue = (name: string): number => {
     if (!playerData.skillsCategories) return 0;
     for (const cat of playerData.skillsCategories) {
       const skill = cat.skills.find(s => s.name.toLowerCase() === name.toLowerCase());

@@ -17,7 +17,7 @@ interface CMSFieldProps {
   value: string | number;
   onUpdate: (newValue: string | number) => void;
   canEdit: boolean;
-  type?: "text" | "number" | "textarea" | "select";
+  type?: "text" | "number" | "textarea" | "select" | "date";
   options?: string[];
   className?: string;
   inputClassName?: string;
@@ -99,8 +99,18 @@ export const CMSField = ({
         ) : (
           <Input
             type={type}
-            value={tempValue}
-            onChange={(e) => setTempValue(e.target.value)}
+            value={
+              type === "date" && String(tempValue).includes("/")
+                ? String(tempValue).split("/").reverse().join("-")
+                : tempValue
+            }
+            onChange={(e) => {
+              let val = e.target.value;
+              if (type === "date" && val.includes("-")) {
+                val = val.split("-").reverse().join("/");
+              }
+              setTempValue(val);
+            }}
             className={cn("h-8 text-xs bg-gray-800 border-primary/30", inputClassName)}
             autoFocus
             onKeyDown={(e) => {

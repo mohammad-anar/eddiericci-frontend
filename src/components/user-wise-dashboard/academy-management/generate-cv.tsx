@@ -291,60 +291,7 @@ const GenerateCv = () => {
         </Button>
       </div>
 
-      {/* Top Squares - As requested by client doc */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-full">
-        {/* Completion Status */}
-        <div className="bg-[#111111] rounded-3xl border border-white/10 p-8 flex flex-col gap-6">
-          <h3 className="text-sm font-black text-white font-orbitron uppercase tracking-widest">Completion Status</h3>
-          <div className="space-y-4">
-            <div className="flex justify-between items-end">
-              <span className="text-5xl font-black text-[#E31B23] font-orbitron">85%</span>
-            </div>
-            <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden">
-              <div className="h-full bg-[#E31B23] rounded-full" style={{ width: "85%" }} />
-            </div>
-            <p className="text-[10px] text-white/40 font-bold leading-relaxed uppercase tracking-wider">
-              Complete all sections to unlock Gold tier status
-            </p>
-          </div>
-        </div>
 
-        {/* Tier Status */}
-        <div className="bg-[#111111] rounded-3xl border border-white/10 p-8 flex flex-col gap-6 relative overflow-hidden">
-          <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#FBBF24]/10 blur-3xl rounded-full" />
-          <div className="flex flex-col">
-            <h3 className="text-3xl font-black text-[#FBBF24] font-orbitron italic tracking-tighter leading-none">GOLD</h3>
-            <div className="w-full h-1 bg-[#FBBF24] mt-2 opacity-50" />
-          </div>
-          <p className="text-[10px] text-white/60 font-bold leading-relaxed uppercase tracking-wider mt-2">
-            Your CV meets Gold standards and is ready to share with top clubs and agents.
-          </p>
-          <Button className="bg-white/5 hover:bg-white/10 text-white border border-white/10 gap-2 w-full py-4 rounded-xl font-black uppercase tracking-widest text-[10px] h-auto mt-4">
-            <IconShare size={18} className="text-white/40" /> Request Re-validation
-          </Button>
-        </div>
-
-        {/* Career Journey / Last Evaluated */}
-        <div className="bg-[#111111] h-fit rounded-3xl border border-white/10 p-8 flex flex-col gap-6">
-          <div className="flex items-center gap-2">
-            <div className="p-2 bg-[#E31B23]/10 rounded-lg text-[#E31B23]">
-              <IconShare size={18} />
-            </div>
-            <h3 className="text-sm font-black text-white font-orbitron uppercase tracking-widest">
-              {role === "coach" ? "Last Player Evaluated" : "Career Journey"}
-            </h3>
-          </div>
-          <div className="flex flex-col gap-4">
-            <div className="h-32 overflow-y-auto pr-3 flex flex-col gap-3">
-              <CareerItem logo="/Manchester-City-F.C-Transparent-File 1.png" name="Manchester City" role="U8, U10" years="2005-2008" type="Free Transfer" />
-              <CareerItem logo="/pngegg.png" name="Liverpool FC" role="U11-U12" years="2007-2010" type="Loan Transfer" />
-            </div>
-            <Button className="w-full bg-white/5 hover:bg-white/10 text-white/40 border border-white/10 py-4 rounded-xl font-bold uppercase tracking-widest text-[10px] h-auto gap-2">
-              <IconPlus size={16} /> Add
-            </Button>
-          </div>
-        </div>
-      </div>
 
       {/* Main Content */}
       <div className="flex flex-col gap-6">
@@ -421,6 +368,61 @@ const GenerateCv = () => {
             </div>
           </div>
         </section>
+
+        {/* Top Squares - As requested by client doc */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-full">
+          {/* Completion Status */}
+          <div className="bg-[#111111] rounded-3xl border border-white/10 p-8 flex flex-col gap-6">
+            <h3 className="text-sm font-black text-white font-orbitron uppercase tracking-widest">Completion Status</h3>
+            <div className="space-y-4">
+              <div className="flex justify-between items-end">
+                <span className="text-5xl font-black text-[#E31B23] font-orbitron">85%</span>
+              </div>
+              <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden">
+                <div className="h-full bg-[#E31B23] rounded-full" style={{ width: "85%" }} />
+              </div>
+              <p className="text-[10px] text-white/40 font-bold leading-relaxed uppercase tracking-wider">
+                Complete all sections to unlock Gold tier status
+              </p>
+            </div>
+          </div>
+
+          {/* Tier Status */}
+          <div className="bg-[#111111] rounded-3xl border border-white/10 p-8 flex flex-col gap-6 relative overflow-hidden">
+            <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#FBBF24]/10 blur-3xl rounded-full" />
+            <div className="flex flex-col">
+              <h3 className="text-3xl font-black text-[#FBBF24] font-orbitron italic tracking-tighter leading-none">GOLD</h3>
+              <div className="w-full h-1 bg-[#FBBF24] mt-2 opacity-50" />
+            </div>
+            <p className="text-[10px] text-white/60 font-bold leading-relaxed uppercase tracking-wider mt-2">
+              Your CV meets Gold standards and is ready to share with top clubs and agents.
+            </p>
+            <Button className="bg-white/5 hover:bg-white/10 text-white border border-white/10 gap-2 w-full py-4 rounded-xl font-black uppercase tracking-widest text-[10px] h-auto mt-4">
+              <IconShare size={18} className="text-white/40" /> Request Re-validation
+            </Button>
+          </div>
+
+          {/* Career Journey / Last Evaluated */}
+          <div className="bg-[#111111] h-fit rounded-3xl border border-white/10 p-8 flex flex-col gap-6">
+            <div className="flex items-center gap-2">
+              <div className="p-2 bg-[#E31B23]/10 rounded-lg text-[#E31B23]">
+                <IconShare size={18} />
+              </div>
+              <h3 className="text-sm font-black text-white font-orbitron uppercase tracking-widest">
+                {role === "coach" ? "Last Player Evaluated" : "Career Journey"}
+              </h3>
+            </div>
+            <div className="flex flex-col gap-4">
+              <div className="h-32 overflow-y-auto pr-3 flex flex-col gap-3">
+                <CareerItem logo="/Manchester-City-F.C-Transparent-File 1.png" name="Manchester City" role="U8, U10" years="2005-2008" type="Free Transfer" />
+                <CareerItem logo="/pngegg.png" name="Liverpool FC" role="U11-U12" years="2007-2010" type="Loan Transfer" />
+              </div>
+              <Button className="w-full bg-white/5 hover:bg-white/10 text-white/40 border border-white/10 py-4 rounded-xl font-bold uppercase tracking-widest text-[10px] h-auto gap-2">
+                <IconPlus size={16} /> Add
+              </Button>
+            </div>
+          </div>
+        </div>
         <FullEditablePage editable={true} />
       </div>
       <style jsx global>{`

@@ -206,6 +206,27 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
     (id: any) => ALL_STYLES.find((s: any) => s.id === id)!
   );
 
+  const calculateAge = (dobString: string) => {
+    if (!dobString) return "";
+    let birthDate: Date;
+
+    if (dobString.includes("/")) {
+      const [day, month, year] = dobString.split("/");
+      birthDate = new Date(`${year}-${month}-${day}`);
+    } else {
+      birthDate = new Date(dobString);
+    }
+
+    if (isNaN(birthDate.getTime())) return "";
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    return age;
+  };
+
   const styleBadges = [badge1, badge2, badge3];
   return (
     <>
@@ -232,7 +253,14 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                   <span className="text-gray-400">Date of Birth</span>
                   <CMSField
                     value={playerData.dob}
-                    onUpdate={(val) => handleUpdate("dob", val)}
+                    type="date"
+                    onUpdate={(val) => {
+                      handleUpdate("dob", val);
+                      const newAge = calculateAge(String(val));
+                      if (newAge !== "") {
+                        handleUpdate("age", newAge);
+                      }
+                    }}
                     canEdit={canEditBio}
                     className="w-32 justify-end"
                     inputClassName="text-right"
@@ -242,8 +270,8 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                   <span className="text-gray-400">Age</span>
                   <CMSField
                     value={playerData.age}
-                    onUpdate={(val) => handleUpdate("age", val)}
-                    canEdit={canEditBio}
+                    onUpdate={() => {}}
+                    canEdit={false}
                     className="w-20 justify-end"
                     inputClassName="text-right"
                   />
@@ -500,17 +528,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                   canEdit={canEditBio}
                   className="text-2xl font-bold font-heading"
                 />
-                <span className="text-primary flex items-center">
-                  [
-                  <CMSField
-                    value={playerData.rating}
-                    onUpdate={(val) => handleUpdate("rating", parseInt(String(val)))}
-                    canEdit={canEditEvaluation}
-                    isNumeric
-                    className="text-primary font-bold"
-                  />
-                  ]
-                </span>
+                <span className="text-green-500 ">[{playerData.age}]</span>
               </h1>
             </div>
 

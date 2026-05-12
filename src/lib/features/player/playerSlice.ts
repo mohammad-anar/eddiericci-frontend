@@ -10,6 +10,17 @@ import right from "@/assets/cvs-page/id/right-legt-image.png";
 import playerImage from "@/assets/cvs-page/id/player-image.png";
 import trofeeIcon from "@/assets/cvs-page/id/trofeeIcon.png";
 
+export interface Club {
+  id: string;
+  name: string;
+  from: string;
+  to: string;
+  logo: string;
+  color: string;
+  shortName: string;
+  category?: string;
+}
+
 export interface PlayerData {
   fullName: string;
   dob: string;
@@ -66,6 +77,20 @@ export interface PlayerData {
     assists: number;
     avgRating: number;
   };
+  clubs: Club[];
+  skillsCategories: SkillCategory[];
+}
+
+export interface Skill {
+  name: string;
+  value: number;
+}
+
+export interface SkillCategory {
+  category: string;
+  color: string;
+  skills: Skill[];
+  borderColor: string;
 }
 
 const initialState: PlayerData = {
@@ -154,6 +179,98 @@ const initialState: PlayerData = {
     assists: 16,
     avgRating: 8.4,
   },
+  clubs: [
+    {
+      id: "1",
+      name: "Manchester City",
+      from: "2020",
+      to: "Present",
+      logo: "bg-blue-600",
+      color: "border-blue-400",
+      shortName: "MC",
+    },
+    {
+      id: "2",
+      name: "Liverpool FC",
+      from: "2016",
+      to: "2020",
+      logo: "bg-red-700",
+      color: "border-red-500",
+      shortName: "LFC",
+      category: "U-10 to U-14",
+    },
+    {
+      id: "3",
+      name: "Chelsea FC",
+      from: "2020",
+      to: "Present",
+      logo: "bg-blue-700",
+      color: "border-blue-500",
+      shortName: "CFC",
+    },
+  ],
+  skillsCategories: [
+    {
+      category: "Technical",
+      color: "#0077FF",
+      borderColor: "border-l-blue-500",
+      skills: [
+        { name: "Ball Control", value: 90 },
+        { name: "Dribbling", value: 85 },
+        { name: "Short Passing", value: 92 },
+        { name: "Long Passing", value: 88 },
+        { name: "Crossing", value: 82 },
+        { name: "Shooting", value: 78 },
+        { name: "Finishing", value: 75 },
+        { name: "Long Shots", value: 80 },
+      ],
+    },
+    {
+      category: "Tactical",
+      color: "#00FF62",
+      borderColor: "border-l-green-500",
+      skills: [
+        { name: "Positioning", value: 88 },
+        { name: "Vision", value: 91 },
+        { name: "Anticipation", value: 86 },
+        { name: "Composition", value: 84 },
+        { name: "Teamwork", value: 89 },
+        { name: "Work Rate", value: 87 },
+        { name: "Decisions", value: 85 },
+        { name: "Att. Position", value: 83 },
+      ],
+    },
+    {
+      category: "Physical",
+      color: "#FF1010",
+      borderColor: "border-l-red-500",
+      skills: [
+        { name: "Acceleration", value: 78 },
+        { name: "Sprint Speed", value: 76 },
+        { name: "Stamina", value: 85 },
+        { name: "Strength", value: 72 },
+        { name: "Balance", value: 83 },
+        { name: "Agility", value: 81 },
+        { name: "Reactions", value: 86 },
+        { name: "Jumping", value: 70 },
+      ],
+    },
+    {
+      category: "Mental",
+      color: "#ffffff",
+      borderColor: "border-l-yellow-500",
+      skills: [
+        { name: "Aggression", value: 65 },
+        { name: "Interceptions", value: 74 },
+        { name: "Marking", value: 87 },
+        { name: "Leadership", value: 79 },
+        { name: "Bravery", value: 73 },
+        { name: "Determination", value: 88 },
+        { name: "Flair", value: 85 },
+        { name: "Influence", value: 82 },
+      ],
+    },
+  ],
 };
 
 export const playerSlice = createSlice({

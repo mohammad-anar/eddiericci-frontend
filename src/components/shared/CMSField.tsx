@@ -23,6 +23,8 @@ interface CMSFieldProps {
   inputClassName?: string;
   label?: string;
   isNumeric?: boolean;
+  editTrigger?: "click" | "doubleClick";
+  hideIcon?: boolean;
 }
 
 export const CMSField = ({
@@ -34,6 +36,8 @@ export const CMSField = ({
   className,
   inputClassName,
   isNumeric = false,
+  editTrigger = "click",
+  hideIcon = false,
 }: CMSFieldProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [tempValue, setTempValue] = useState(value);
@@ -194,10 +198,11 @@ export const CMSField = ({
         canEdit && "cursor-pointer hover:bg-white/5 rounded px-1 -mx-1",
         className
       )}
-      onClick={() => canEdit && setIsEditing(true)}
+      onClick={() => canEdit && editTrigger === "click" && setIsEditing(true)}
+      onDoubleClick={() => canEdit && editTrigger === "doubleClick" && setIsEditing(true)}
     >
       <span className={cn("truncate", type === "textarea" && "whitespace-pre-wrap truncate-none")}>{value}</span>
-      {canEdit && (
+      {canEdit && !hideIcon && (
         <PencilIcon className="h-3 w-3 opacity-0 group-hover:opacity-100 text-primary transition-opacity" />
       )}
     </div>

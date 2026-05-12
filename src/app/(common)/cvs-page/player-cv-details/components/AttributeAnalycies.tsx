@@ -1,22 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-'use client'
-
-import React, { useState, useEffect } from 'react'
-import { PieChart, Pie, Cell, ResponsiveContainer, Label } from 'recharts'
-import { usePlayerStats } from './FullEditablePage'
-import { useUpdatePlayerProfileMutation } from '@/lib/features/cv/cvApi'
-import { CMSField } from '@/components/shared/CMSField'
-import { toast } from 'sonner'
-
-interface AttributeCard {
-  title: string
-  score: number
-  color: string
-  attributes: Array<{
-    name: string
-    value: number
-  }>
-}
+"use client";
+import React, { useEffect } from 'react';
+import { PieChart, Pie, Cell, ResponsiveContainer, Label } from 'recharts';
+import { usePlayerStats } from './FullEditablePage';
+import { usePlayer } from '@/lib/hooks/usePlayer';
 
 const AttributeDonut = ({ score, color }: { score: number; color: string }) => {
   const data = [
@@ -51,120 +37,70 @@ const AttributeDonut = ({ score, color }: { score: number; color: string }) => {
   )
 }
 
-const AttributesAnalysis = ({ editable = false }: { editable?: boolean }) => {
-  const { setAttributesAvg, role } = usePlayerStats();
-  const [updatePlayer] = useUpdatePlayerProfileMutation();
-  const [cards, setCards] = useState<AttributeCard[]>([
+const AttributesAnalysis = () => {
+  const { setAttributesAvg } = usePlayerStats();
+  const { playerData } = usePlayer();
+
+  const getSkillValue = (name: string) => {
+    if (!playerData.skillsCategories) return 0;
+    for (const cat of playerData.skillsCategories) {
+      const skill = cat.skills.find(s => s.name.toLowerCase() === name.toLowerCase());
+      if (skill) return skill.value;
+    }
+    // Fallbacks for similar names
+    if (name === "Passing") return (getSkillValue("Short Passing") + getSkillValue("Long Passing")) / 2;
+    if (name === "Speed") return getSkillValue("Sprint Speed");
+    if (name === "Decision Making") return getSkillValue("Decisions");
+    if (name === "First Touch") return getSkillValue("Ball Control"); // Approximate
+    if (name === "Composure") return getSkillValue("Composition");
+    if (name === "Tackling") return 70; // Placeholder if missing
+    return 0;
+  };
+
+  const cards = [
     {
       title: 'Technical Ability',
-      score: 82,
       color: '#00FF62',
-      attributes: [
-        { name: 'Ball Control', value: 90 },
-        { name: 'Passing', value: 92 },
-        { name: 'Dribbling', value: 85 },
-        { name: 'First Touch', value: 88 },
-      ],
+      attributes: ['Ball Control', 'Passing', 'Dribbling', 'First Touch'],
     },
     {
       title: 'Reaction Skills',
-      score: 88,
       color: '#0077FF',
-      attributes: [
-        { name: 'Positioning', value: 88 },
-        { name: 'Vision', value: 91 },
-        { name: 'Decision Making', value: 85 },
-        { name: 'Teamwork', value: 89 },
-      ],
+      attributes: ['Positioning', 'Vision', 'Decision Making', 'Teamwork'],
     },
     {
       title: 'Physical Attributes',
-      score: 78,
       color: '#FF1010',
-      attributes: [
-        { name: 'Speed', value: 77 },
-        { name: 'Stamina', value: 85 },
-        { name: 'Strength', value: 72 },
-        { name: 'Agility', value: 81 },
-      ],
+      attributes: ['Speed', 'Stamina', 'Strength', 'Agility'],
     },
     {
       title: 'Mental Strength',
-      score: 82,
       color: '#FDC700',
-      attributes: [
-        { name: 'Composure', value: 84 },
-        { name: 'Determination', value: 88 },
-        { name: 'Leadership', value: 79 },
-        { name: 'Bravery', value: 73 },
-      ],
+      attributes: ['Composure', 'Determination', 'Leadership', 'Bravery'],
     },
     {
       title: 'Attacking Skills',
-      score: 84,
       color: '#F200FF',
-      attributes: [
-        { name: 'Shooting', value: 78 },
-        { name: 'Finishing', value: 75 },
-        { name: 'Long Shots', value: 80 },
-        { name: 'Att. Position', value: 87 },
-      ],
+      attributes: ['Shooting', 'Finishing', 'Long Shots', 'Att. Position'],
     },
     {
       title: 'Defensive Skills',
-      score: 72,
       color: '#FF8010',
-      attributes: [
-        { name: 'Tackling', value: 68 },
-        { name: 'Interceptions', value: 74 },
-        { name: 'Marking', value: 70 },
-        { name: 'Heading', value: 72 },
-      ],
+      attributes: ['Tackling', 'Interceptions', 'Marking', 'Heading'],
     },
-  ])
+  ].map(card => {
+    const attrs = card.attributes.map(name => ({
+      name,
+      value: Math.round(getSkillValue(name))
+    }));
+    const score = Math.round(attrs.reduce((sum, a) => sum + a.value, 0) / attrs.length);
+    return { ...card, attributes: attrs, score };
+  });
 
   useEffect(() => {
-    const avg = cards.reduce((sum, c) => sum + c.score, 0) / cards.length;
-    setAttributesAvg(Math.round(avg));
+    const avg = Math.round(cards.reduce((sum, c) => sum + c.score, 0) / cards.length);
+    setAttributesAvg(avg);
   }, [cards, setAttributesAvg]);
-
-  const handleUpdate = async (cardIdx: number, attrIdx: number | null, value: any) => {
-    const cardTitle = cards[cardIdx].title;
-    const field = attrIdx === null ? `analysis.${cardTitle}.score` : `analysis.${cardTitle}.${cards[cardIdx].attributes[attrIdx].name}`;
-
-    setCards(prev => {
-      const newCards = [...prev];
-      if (attrIdx === null) {
-        newCards[cardIdx] = { ...newCards[cardIdx], score: parseInt(value) };
-      } else {
-        const newAttrs = [...newCards[cardIdx].attributes];
-        newAttrs[attrIdx] = { ...newAttrs[attrIdx], value: parseInt(value) };
-        newCards[cardIdx] = { ...newCards[cardIdx], attributes: newAttrs };
-      }
-      return newCards;
-    });
-
-    try {
-      await updatePlayer({ id: "current-player", data: { [field]: value } }).unwrap();
-      // toast.success("Attribute updated");
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const handleTitleChange = async (cardIdx: number, value: string) => {
-    setCards(prev => {
-      const newCards = [...prev];
-      newCards[cardIdx] = { ...newCards[cardIdx], title: value };
-      return newCards;
-    });
-
-    try {
-      await updatePlayer({ id: "current-player", data: { [`analysis.${cards[cardIdx].title}.title`]: value } }).unwrap();
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   return (
     <div className="container my-20">
@@ -178,25 +114,16 @@ const AttributesAnalysis = ({ editable = false }: { editable?: boolean }) => {
             className="border border-border bg-black/30 rounded-lg p-8 flex flex-col items-center"
           >
             {/* Title */}
-            <CMSField
-              value={card.title}
-              onUpdate={(val) => handleTitleChange(index, String(val))}
-              canEdit={editable}
-              className="text-lg font-light font-heading text-center mb-6"
-              inputClassName="text-center"
-            />
+            <h3 className="text-lg font-light font-heading text-center mb-6">
+              {card.title}
+            </h3>
 
             {/* Donut Chart */}
             <div className="flex flex-col items-center mb-8">
               <AttributeDonut score={card.score} color={card.color} />
-              <CMSField
-                value={card.score}
-                onUpdate={(val) => handleUpdate(index, null, val)}
-                canEdit={editable}
-                isNumeric
-                className="mt-2 text-xl font-bold justify-center"
-                inputClassName="text-center w-20"
-              />
+              <span className="mt-2 text-xl font-bold text-white">
+                {card.score}
+              </span>
             </div>
 
             {/* Score Text */}
@@ -207,17 +134,10 @@ const AttributesAnalysis = ({ editable = false }: { editable?: boolean }) => {
               {card.attributes.map((attr, attrIndex) => (
                 <div
                   key={attrIndex}
-                  className="flex justify-between border-b pb-2 items-center text-sm"
+                  className="flex justify-between border-b border-white/10 pb-2 items-center text-sm"
                 >
                   <span className="text-gray-300">{attr.name}</span>
-                  <CMSField
-                    value={attr.value}
-                    onUpdate={(val) => handleUpdate(index, attrIndex, val)}
-                    canEdit={editable}
-                    isNumeric
-                    className="font-medium justify-end"
-                    inputClassName="text-right w-14"
-                  />
+                  <span className="font-medium text-white">{attr.value}</span>
                 </div>
               ))}
             </div>
@@ -228,4 +148,4 @@ const AttributesAnalysis = ({ editable = false }: { editable?: boolean }) => {
   )
 }
 
-export default AttributesAnalysis
+export default AttributesAnalysis;

@@ -1,8 +1,10 @@
+"use client";
 import React, { useState, useEffect } from "react";
 import { Progress } from "@/components/ui/progress";
 import { usePlayerStats } from "./FullEditablePage";
-import { useUpdatePlayerProfileMutation } from "@/lib/features/cv/cvApi";
-import { toast } from "sonner";
+import { usePlayer } from "@/lib/hooks/usePlayer";
+import { CMSField } from "@/components/shared/CMSField";
+import { Input } from "@/components/ui/input";
 
 interface Skill {
   name: string;
@@ -17,8 +19,11 @@ interface SkillCategory {
 }
 
 export function SkillsAttributes({ editable = false }: { editable?: boolean }) {
-  const [updatePlayer] = useUpdatePlayerProfileMutation();
-  const [categories, setCategories] = useState<SkillCategory[]>([
+  const { playerData, handleUpdate: syncToRedux } = usePlayer();
+  const [editingField, setEditingField] = useState<string | null>(null);
+  
+  // Local state initialized from Redux or original defaults
+  const [categories, setCategories] = useState<SkillCategory[]>(playerData.skillsCategories || [
     {
       category: "Technical",
       color: "#0077FF",
@@ -71,7 +76,7 @@ export function SkillsAttributes({ editable = false }: { editable?: boolean }) {
       skills: [
         { name: "Aggression", value: 65 },
         { name: "Interceptions", value: 74 },
-        { name: "Att. Position", value: 87 },
+        { name: "Marking", value: 87 },
         { name: "Leadership", value: 79 },
         { name: "Bravery", value: 73 },
         { name: "Determination", value: 88 },
@@ -81,17 +86,19 @@ export function SkillsAttributes({ editable = false }: { editable?: boolean }) {
     },
   ]);
 
-  const { setSkillsAvg, role } = usePlayerStats();
+  const { setSkillsAvg } = usePlayerStats();
 
+  // Sync with Redux and calculate average
   useEffect(() => {
     const allSkills = categories.flatMap(c => c.skills);
     const avg = allSkills.reduce((sum, s) => sum + s.value, 0) / allSkills.length;
     setSkillsAvg(Math.round(avg));
+    
+    // Sync to Redux so Analysis can see it
+    syncToRedux("skillsCategories", categories);
   }, [categories, setSkillsAvg]);
 
-  const handleUpdate = async (catIdx: number, skillIdx: number, value: number) => {
-    const skillName = categories[catIdx].skills[skillIdx].name;
-    
+  const handleUpdate = (catIdx: number, skillIdx: number, value: number) => {
     setCategories((prev) => {
       const newCats = [...prev];
       newCats[catIdx] = {
@@ -104,17 +111,29 @@ export function SkillsAttributes({ editable = false }: { editable?: boolean }) {
       };
       return newCats;
     });
+  };
 
-    try {
-      await updatePlayer({
-        id: "current-player",
-        data: { [`skills.${skillName}`]: value }
-      }).unwrap();
-      // toast.success(`${skillName} updated`);
-    } catch (error) {
-      console.error(error);
+  const getIndicatorColor = (category: string) => {
+    switch (category) {
+      case "Technical": return "bg-blue";
+      case "Physical": return "bg-red";
+      case "Tactical": return "bg-primary";
+      case "Mental": return "bg-yellow";
+      default: return "bg-primary";
     }
   };
+
+  const getHexColor = (category: string) => {
+    switch (category) {
+      case "Technical": return "#0077FF";
+      case "Physical": return "#FF1010";
+      case "Tactical": return "#22c55e"; // match primary
+      case "Mental": return "#eab308"; // match yellow-500
+      default: return "#22c55e";
+    }
+  };
+
+  if (!playerData.skillsCategories) return null;
 
   return (
     <div className="container mt-20">
@@ -123,54 +142,71 @@ export function SkillsAttributes({ editable = false }: { editable?: boolean }) {
       </h1>
 
       <div className="border border-border bg-cardBg rounded-2xl p-8">
-        <div className="grid grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {categories.map((category, catIdx) => (
             <div key={category.category} className={`space-y-4 pl-6`}>
-              <h2 className={`text-xl border-l-4 font-heading ${category.category === "Technical"
-                ? "border-blue"
-                : category.category === "Physical"
-                  ? "border-red"
-                  : category.category === "Tactical"
-                    ? "border-primary"
-                    : "border-yellow"
-                } pl-4  text-foreground`}>
+              <h2 className={`text-xl border-l-4 font-heading ${
+                category.category === "Technical" ? "border-blue" : 
+                category.category === "Physical" ? "border-red" : 
+                category.category === "Tactical" ? "border-primary" : 
+                "border-yellow"
+                } pl-4 text-foreground`}>
                 {category.category}
               </h2>
 
               <div className="space-y-4">
-                {category.skills.map((skill, skillIdx) => (
-                  <div key={skill.name} className="space-y-1">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-300">
-                        {skill.name}
-                      </span>
-                      <span className="text-sm font-semibold text-gray-300">
-                        {skill.value}
-                      </span>
+                {category.skills.map((skill, skillIdx) => {
+                  const fieldId = `${category.category}.${skill.name}`;
+                  const color = getHexColor(category.category);
+                  
+                  return (
+                    <div key={skill.name} className="space-y-1">
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="text-sm text-gray-300">
+                          {skill.name}
+                        </span>
+                        <CMSField
+                          value={skill.value}
+                          onUpdate={(val) => handleUpdate(catIdx, skillIdx, parseInt(String(val)))}
+                          canEdit={editable}
+                          type="number"
+                          editTrigger="doubleClick"
+                          className="text-primary justify-end w-32"
+                          inputClassName="text-right h-6 w-full"
+                          hideIcon={true}
+                        />
+                      </div>
+                      {editingField === fieldId ? (
+                        <Input
+                          type="range"
+                          value={skill.value}
+                          onChange={(e) => handleUpdate(catIdx, skillIdx, parseInt(e.target.value))}
+                          onBlur={() => setEditingField(null)}
+                          autoFocus
+                          style={{
+                            backgroundSize: `${skill.value}% 100%`,
+                            backgroundImage: `linear-gradient(${color}, ${color})`,
+                            backgroundRepeat: 'no-repeat',
+                            backgroundColor: '#374151'
+                          }}
+                          className="w-full h-1 rounded-lg appearance-none cursor-pointer accent-primary"
+                        />
+                      ) : (
+                        <div 
+                          onDoubleClick={() => editable && setEditingField(fieldId)} 
+                          className="cursor-pointer"
+                        >
+                          <Progress
+                            value={skill.value}
+                            indicatorClassName={getIndicatorColor(category.category)}
+                            className="h-2"
+                            style={{ background: "#ffffff" }}
+                          />
+                        </div>
+                      )}
                     </div>
-                    {editable ? (
-                      <input
-                        type="range"
-                        value={skill.value}
-                        onChange={(e) => handleUpdate(catIdx, skillIdx, parseInt(e.target.value))}
-                        className="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-primary"
-                      />
-                    ) : (
-                      <Progress
-                        value={skill.value}
-                        className={`h-2 ${category.category === "Technical"
-                          ? "[&>div]:bg-blue"
-                          : category.category === "Physical"
-                            ? "[&>div]:bg-red"
-                            : category.category === "Tactical"
-                              ? "[&>div]:bg-primary"
-                              : "[&>div]:bg-yellow"
-                          }`}
-                        style={{ background: "#ffffff" }}
-                      />
-                    )}
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           ))}

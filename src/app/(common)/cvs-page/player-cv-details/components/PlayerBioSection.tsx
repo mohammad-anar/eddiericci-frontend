@@ -118,6 +118,8 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
 
   const { setBioRating, role } = usePlayerStats();
 
+  const [editingField, setEditingField] = useState<string | null>(null);
+
   const canEditBio = editable && (role === "player" || role === "parent" || role === "coach");
   const canEditEvaluation = editable && (role === "player" || role === "parent" || role === "coach");
 
@@ -327,7 +329,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                   <span className="text-gray-400">Age</span>
                   <CMSField
                     value={playerData.age}
-                    onUpdate={() => {}}
+                    onUpdate={() => { }}
                     canEdit={false}
                     className="w-20 justify-end"
                     inputClassName="text-right"
@@ -465,21 +467,37 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                   </div>
                   <div className="flex justify-between text-sm mb-1">
                     <span>Left</span>
-                    <span className="text-primary">
-                      {playerData.leftLegUsage}%
-                    </span>
+                    <CMSField
+                      value={playerData.leftLegUsage}
+                      onUpdate={(val) => handleUpdate("leftLegUsage", parseInt(String(val)))}
+                      canEdit={canEditBio}
+                      type="number"
+                      editTrigger="doubleClick"
+                      className="text-primary justify-end w-32"
+                      inputClassName="text-right h-6 w-full"
+                    />
                   </div>
-                  {canEditBio ? (
+                  {editingField === "leftLegUsage" ? (
                     <input
                       type="range"
                       value={playerData.leftLegUsage}
                       onChange={(e) =>
                         handleUpdate("leftLegUsage", parseInt(e.target.value))
                       }
-                      className="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-primary"
+                      onBlur={() => setEditingField(null)}
+                      autoFocus
+                      style={{
+                        backgroundSize: `${playerData.leftLegUsage}% 100%`,
+                        backgroundImage: `linear-gradient(#22c55e, #22c55e)`,
+                        backgroundRepeat: 'no-repeat',
+                        backgroundColor: '#374151'
+                      }}
+                      className="w-full h-1 rounded-lg appearance-none cursor-pointer accent-green-500"
                     />
                   ) : (
-                    <Progress value={playerData.leftLegUsage} />
+                    <div onDoubleClick={() => canEditBio && setEditingField("leftLegUsage")} className="cursor-pointer">
+                      <Progress value={playerData.leftLegUsage} indicatorClassName="bg-green-500" />
+                    </div>
                   )}
                 </div>
                 <div className="border-2 bg-gray-600/30 p-3 rounded-xl">
@@ -493,21 +511,37 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                   </div>
                   <div className="flex justify-between text-sm mb-1">
                     <span>Right</span>
-                    <span className="text-primary">
-                      {playerData.rightLegUsage}%
-                    </span>
+                    <CMSField
+                      value={playerData.rightLegUsage}
+                      onUpdate={(val) => handleUpdate("rightLegUsage", parseInt(String(val)))}
+                      canEdit={canEditBio}
+                      type="number"
+                      editTrigger="doubleClick"
+                      className="text-primary justify-end w-32"
+                      inputClassName="text-right h-6 w-full"
+                    />
                   </div>
-                  {canEditBio ? (
+                  {editingField === "rightLegUsage" ? (
                     <input
                       type="range"
                       value={playerData.rightLegUsage}
                       onChange={(e) =>
                         handleUpdate("rightLegUsage", parseInt(e.target.value))
                       }
-                      className="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-primary"
+                      onBlur={() => setEditingField(null)}
+                      autoFocus
+                      style={{
+                        backgroundSize: `${playerData.rightLegUsage}% 100%`,
+                        backgroundImage: `linear-gradient(#22c55e, #22c55e)`,
+                        backgroundRepeat: 'no-repeat',
+                        backgroundColor: '#374151'
+                      }}
+                      className="w-full h-1 rounded-lg appearance-none cursor-pointer accent-green-500"
                     />
                   ) : (
-                    <Progress value={playerData.rightLegUsage} />
+                    <div onDoubleClick={() => canEditBio && setEditingField("rightLegUsage")} className="cursor-pointer">
+                      <Progress value={playerData.rightLegUsage} indicatorClassName="bg-green-500" />
+                    </div>
                   )}
                 </div>
               </div>
@@ -606,32 +640,30 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
             </div>
 
             <div className="mb-8">
-              <div className="flex items-center gap-2 border border-border px-4 py-2 rounded hover:bg-gray-900 bg-transparent text-foreground h-auto">
-                <CMSField
-                  value={playerData.position}
-                  onUpdate={(val) => handleUpdate("position", val)}
-                  canEdit={canEditBio}
-                  type="select"
-                  options={[
-                    "Goalkeeper",
-                    "Center Back",
-                    "Right Back",
-                    "Left Back",
-                    "Wing Back",
-                    "Defensive Midfielder",
-                    "Central Midfielder",
-                    "Attacking Midfielder",
-                    "Left Midfielder",
-                    "Right Midfielder",
-                    "Striker",
-                    "Center Forward",
-                    "Second Striker",
-                    "Left Winger",
-                    "Right Winger"
-                  ]}
-                />
-                <ChevronDown size={16} />
-              </div>
+              <CMSField
+                value={playerData.position}
+                onUpdate={(val) => handleUpdate("position", val)}
+                canEdit={canEditBio}
+                type="combobox"
+                options={[
+                  "Goalkeeper",
+                  "Center Back",
+                  "Right Back",
+                  "Left Back",
+                  "Wing Back",
+                  "Defensive Midfielder",
+                  "Central Midfielder",
+                  "Attacking Midfielder",
+                  "Left Midfielder",
+                  "Right Midfielder",
+                  "Striker",
+                  "Center Forward",
+                  "Second Striker",
+                  "Left Winger",
+                  "Right Winger"
+                ]}
+                className="flex items-center gap-2 border border-border px-4 py-2 rounded hover:bg-gray-900 bg-transparent text-foreground h-auto w-fit mx-auto"
+              />
             </div>
 
             {/* Player Image */}
@@ -725,9 +757,17 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                   <div key={key}>
                     <div className="flex justify-between mb-1 capitalize">
                       <span>{key}</span>
-                      <span className="text-primary">{value as any}</span>
+                      <CMSField
+                        value={value as any}
+                        onUpdate={(val) => handleUpdate(`strengths.${key}`, parseInt(String(val)))}
+                        canEdit={canEditEvaluation}
+                        type="number"
+                        editTrigger="doubleClick"
+                        className="text-primary justify-end w-32"
+                        inputClassName="text-right h-6 w-full"
+                      />
                     </div>
-                    {canEditEvaluation ? (
+                    {editingField === `strengths.${key}` ? (
                       <Input
                         type="range"
                         value={value as any}
@@ -737,10 +777,20 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                             parseInt(e.target.value)
                           )
                         }
-                        className="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-primary"
+                        onBlur={() => setEditingField(null)}
+                        autoFocus
+                        style={{
+                          backgroundSize: `${value}% 100%`,
+                          backgroundImage: `linear-gradient(#22c55e, #22c55e)`,
+                          backgroundRepeat: 'no-repeat',
+                          backgroundColor: '#374151'
+                        }}
+                        className="w-full h-1 rounded-lg appearance-none cursor-pointer accent-green-500"
                       />
                     ) : (
-                      <Progress value={value as any} />
+                      <div onDoubleClick={() => canEditEvaluation && setEditingField(`strengths.${key}`)} className="cursor-pointer">
+                        <Progress value={value as any} indicatorClassName="bg-green-500" />
+                      </div>
                     )}
                   </div>
                 ))}
@@ -757,9 +807,17 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                     <div key={key}>
                       <div className="flex justify-between mb-1 capitalize">
                         <span>{key.replace(/([A-Z])/g, " $1")}</span>
-                        <span className="text-primary">{value as any}%</span>
+                        <CMSField
+                          value={value as any}
+                          onUpdate={(val) => handleUpdate(`performanceMetrics.${key}`, parseInt(String(val)))}
+                          canEdit={canEditEvaluation}
+                          type="number"
+                          editTrigger="doubleClick"
+                          className="text-primary justify-end w-32"
+                          inputClassName="text-right h-6 w-full"
+                        />
                       </div>
-                      {canEditEvaluation ? (
+                      {editingField === `performanceMetrics.${key}` ? (
                         <Input
                           type="range"
                           value={value as any}
@@ -769,10 +827,20 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                               parseInt(e.target.value)
                             )
                           }
-                          className="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-primary"
+                          onBlur={() => setEditingField(null)}
+                          autoFocus
+                          style={{
+                            backgroundSize: `${value}% 100%`,
+                            backgroundImage: `linear-gradient(#22c55e, #22c55e)`,
+                            backgroundRepeat: 'no-repeat',
+                            backgroundColor: '#374151'
+                          }}
+                          className="w-full h-1 rounded-lg appearance-none cursor-pointer accent-green-500"
                         />
                       ) : (
-                        <Progress value={value as any} />
+                        <div onDoubleClick={() => canEditEvaluation && setEditingField(`performanceMetrics.${key}`)} className="cursor-pointer">
+                          <Progress value={value as any} indicatorClassName="bg-green-500" />
+                        </div>
                       )}
                     </div>
                   )

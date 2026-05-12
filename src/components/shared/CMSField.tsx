@@ -17,7 +17,7 @@ interface CMSFieldProps {
   value: string | number;
   onUpdate: (newValue: string | number) => void;
   canEdit: boolean;
-  type?: "text" | "number" | "textarea" | "select" | "date";
+  type?: "text" | "number" | "textarea" | "select" | "date" | "combobox";
   options?: string[];
   className?: string;
   inputClassName?: string;
@@ -37,6 +37,7 @@ export const CMSField = ({
 }: CMSFieldProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [tempValue, setTempValue] = useState(value);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     setTempValue(value);
@@ -46,14 +47,59 @@ export const CMSField = ({
     const finalVal = val !== undefined ? val : tempValue;
     onUpdate(isNumeric ? Number(finalVal) : finalVal);
     setIsEditing(false);
+    setSearchTerm("");
   };
 
   const handleCancel = () => {
     setTempValue(value);
     setIsEditing(false);
+    setSearchTerm("");
   };
 
+  const filteredOptions = options.filter((opt) =>
+    opt.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   if (isEditing && canEdit) {
+    if (type === "combobox") {
+      return (
+        <div className={cn("relative flex flex-col gap-1 w-full z-50", className)}>
+          <div className="flex items-center gap-2">
+            <Input
+              value={searchTerm || String(tempValue)}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search..."
+              className={cn("h-8 text-xs bg-gray-800 border-primary/30", inputClassName)}
+              autoFocus
+            />
+            <Button
+              size="icon"
+              variant="ghost"
+              className="h-7 w-7 text-red-500 hover:text-red-400 hover:bg-red-500/10"
+              onClick={handleCancel}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+          <div className="absolute top-9 left-0 w-full max-h-40 overflow-y-auto bg-gray-900 border border-gray-800 rounded shadow-xl z-[100]">
+            {filteredOptions.length > 0 ? (
+              filteredOptions.map((opt) => (
+                <div
+                  key={opt}
+                  className="px-3 py-2 text-xs hover:bg-primary/20 cursor-pointer text-white"
+                  onClick={() => handleSave(opt)}
+                >
+                  {opt}
+                </div>
+              ))
+            ) : (
+              <div className="px-3 py-2 text-xs text-gray-500">No results</div>
+            )}
+          </div>
+        </div>
+      );
+    }
+
     if (type === "select") {
       return (
         <div className={cn("flex items-center gap-2 w-full", className)}>

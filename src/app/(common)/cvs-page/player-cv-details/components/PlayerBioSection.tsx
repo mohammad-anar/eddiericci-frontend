@@ -63,6 +63,56 @@ const ALL_STYLES = [
   { id: "whipped-cross", label: "Whipped Cross" },
 ];
 
+const COUNTRY_CODES: Record<string, string> = {
+  "afghanistan": "af", "albania": "al", "algeria": "dz", "andorra": "ad", "angola": "ao",
+  "antigua and barbuda": "ag", "argentina": "ar", "armenia": "am", "australia": "au",
+  "austria": "at", "azerbaijan": "az", "bahamas": "bs", "bahrain": "bh", "bangladesh": "bd",
+  "barbados": "bb", "belarus": "by", "belgium": "be", "belize": "bz", "benin": "bj",
+  "bhutan": "bt", "bolivia": "bo", "bosnia and herzegovina": "ba", "botswana": "bw",
+  "brazil": "br", "brunei": "bn", "bulgaria": "bg", "burkina faso": "bf", "burundi": "bi",
+  "cambodia": "kh", "cameroon": "cm", "canada": "ca", "cape verde": "cv",
+  "central african republic": "cf", "chad": "td", "chile": "cl", "china": "cn",
+  "colombia": "co", "comoros": "km", "congo": "cg", "costa rica": "cr", "croatia": "hr",
+  "cuba": "cu", "cyprus": "cy", "czech republic": "cz", "denmark": "dk", "djibouti": "dj",
+  "dominica": "dm", "dominican republic": "do", "ecuador": "ec", "egypt": "eg",
+  "el salvador": "sv", "equatorial guinea": "gq", "eritrea": "er", "estonia": "ee",
+  "ethiopia": "et", "fiji": "fj", "finland": "fi", "france": "fr", "gabon": "ga",
+  "gambia": "gm", "georgia": "ge", "germany": "de", "ghana": "gh", "greece": "gr",
+  "grenada": "gd", "guatemala": "gt", "guinea": "gn", "guinea-bissau": "gw",
+  "guyana": "gy", "haiti": "ht", "honduras": "hn", "hungary": "hu", "iceland": "is",
+  "india": "in", "indonesia": "id", "iran": "ir", "iraq": "iq", "ireland": "ie",
+  "israel": "il", "italy": "it", "jamaica": "jm", "japan": "jp", "jordan": "jo",
+  "kazakhstan": "kz", "kenya": "ke", "kiribati": "ki", "korea, north": "kp",
+  "korea, south": "kr", "kuwait": "kw", "kyrgyzstan": "kg", "laos": "la", "latvia": "lv",
+  "lebanon": "lb", "lesotho": "ls", "liberia": "lr", "libya": "ly", "liechtenstein": "li",
+  "lithuania": "lt", "luxembourg": "lu", "macedonia": "mk", "madagascar": "mg",
+  "malawi": "mw", "malaysia": "my", "maldives": "mv", "mali": "ml", "malta": "mt",
+  "marshall islands": "mh", "mauritania": "mr", "mauritius": "mu", "mexico": "mx",
+  "micronesia": "fm", "moldova": "md", "monaco": "mc", "mongolia": "mn", "montenegro": "me",
+  "morocco": "ma", "mozambique": "mz", "myanmar": "mm", "namibia": "na", "nauru": "nr",
+  "nepal": "np", "netherlands": "nl", "new zealand": "nz", "nicaragua": "ni",
+  "niger": "ne", "nigeria": "ng", "norway": "no", "oman": "om", "pakistan": "pk",
+  "palau": "pw", "panama": "pa", "papua new guinea": "pg", "paraguay": "py", "peru": "pe",
+  "philippines": "ph", "poland": "pl", "portugal": "pt", "qatar": "qa", "romania": "ro",
+  "russia": "ru", "rwanda": "rw", "saint kitts and nevis": "kn", "saint lucia": "lc",
+  "saint vincent and the grenadines": "vc", "samoa": "ws", "san marino": "sm",
+  "sao tome and principe": "st", "saudi arabia": "sa", "senegal": "sn", "serbia": "rs",
+  "seychelles": "sc", "sierra leone": "sl", "singapore": "sg", "slovakia": "sk",
+  "slovenia": "si", "solomon islands": "sb", "somalia": "so", "south africa": "za",
+  "spain": "es", "sri lanka": "lk", "sudan": "sd", "suriname": "sr", "swaziland": "sz",
+  "sweden": "se", "switzerland": "ch", "syria": "sy", "taiwan": "tw", "tajikistan": "tj",
+  "tanzania": "tz", "thailand": "th", "timor-leste": "tl", "togo": "tg", "tonga": "to",
+  "trinidad and tobago": "tt", "tunisia": "tn", "turkey": "tr", "turkmenistan": "tm",
+  "tuvalu": "tv", "uganda": "ug", "ukraine": "ua", "united arab emirates": "ae",
+  "united kingdom": "gb", "united states": "us", "uruguay": "uy", "uzbekistan": "uz",
+  "vanuatu": "vu", "vatican city": "va", "venezuela": "ve", "vietnam": "vn", "yemen": "ye",
+  "zambia": "zm", "zimbabwe": "zw"
+};
+
+const ALL_COUNTRIES = Object.keys(COUNTRY_CODES).map(c =>
+  c.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
+).sort();
+
 const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
   const { playerData, handleUpdate } = usePlayer();
 
@@ -227,6 +277,13 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
     return age;
   };
 
+  const getFlagUrl = (countryName: string) => {
+    if (!countryName) return "";
+    const code = COUNTRY_CODES[countryName.toLowerCase()];
+    if (!code) return "";
+    return `https://flagcdn.com/w160/${code}.png`;
+  };
+
   const styleBadges = [badge1, badge2, badge3];
   return (
     <>
@@ -283,14 +340,17 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                       value={playerData.birthCountry}
                       onUpdate={(val) => handleUpdate("birthCountry", val)}
                       canEdit={canEditBio}
+                      type="combobox"
+                      options={ALL_COUNTRIES}
                       className="w-24 justify-end"
                       inputClassName="text-right"
                     />
-                    <div className="relative w-5 h-4">
-                      <EditableImage
-                        src={playerData.birthCountryFlag}
+                    <div className="relative w-6 h-4 overflow-hidden rounded-sm border border-border">
+                      <Image
+                        src={getFlagUrl(playerData.birthCountry)}
                         alt="birth country flag"
-                        field="birthCountryFlag"
+                        layout="fill"
+                        className="object-cover"
                       />
                     </div>
                   </div>
@@ -302,14 +362,17 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                       value={playerData.dualNationality}
                       onUpdate={(val) => handleUpdate("dualNationality", val)}
                       canEdit={canEditBio}
+                      type="combobox"
+                      options={ALL_COUNTRIES}
                       className="w-24 justify-end"
                       inputClassName="text-right"
                     />
-                    <div className="relative w-5 h-4">
-                      <EditableImage
-                        src={playerData.dualNationalityFlag}
+                    <div className="relative w-6 h-4 overflow-hidden rounded-sm border border-border">
+                      <Image
+                        src={getFlagUrl(playerData.dualNationality)}
                         alt="dual nationality flag"
-                        field="dualNationalityFlag"
+                        layout="fill"
+                        className="object-cover"
                       />
                     </div>
                   </div>
@@ -510,14 +573,24 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
           <div className="col-span-1 xl:col-span-4 flex flex-col items-center">
             {/* Player Name */}
             <div className="text-center mb-8">
-              <div className="flex items-center mb-8 justify-center gap-2">
-                <div className="relative w-28 h-20">
-                  <EditableImage
-                    src={playerData.mainFlag}
-                    className="w-full h-full"
-                    alt="flag"
-                    field="mainFlag"
+              <div className="flex items-center mb-8 justify-center">
+                <div className="relative w-32 h-20">
+                  <Image
+                    src={getFlagUrl(playerData.birthCountry)}
+                    alt="Birth Country"
+                    layout="fill"
+                    className="object-cover rounded shadow-lg border border-border"
                   />
+                  {playerData.dualNationality && (
+                    <div className="absolute -bottom-2 -right-2 w-12 h-8 border-2 border-white rounded shadow-md overflow-hidden">
+                      <Image
+                        src={getFlagUrl(playerData.dualNationality)}
+                        alt="Dual Nationality"
+                        layout="fill"
+                        className="object-cover"
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
 

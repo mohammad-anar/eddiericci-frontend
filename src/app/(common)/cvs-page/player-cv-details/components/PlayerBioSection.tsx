@@ -492,7 +492,11 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                     />
                   ) : (
                     <div onDoubleClick={() => canEditBio && setEditingField("leftLegUsage")} className="cursor-pointer">
-                      <Progress value={playerData.leftLegUsage} indicatorClassName="bg-green-500" />
+                      <Progress 
+                        value={playerData.leftLegUsage} 
+                        style={{ backgroundColor: '#d1d5db' }}
+                        indicatorClassName="bg-green-500" 
+                      />
                     </div>
                   )}
                 </div>
@@ -536,7 +540,11 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                     />
                   ) : (
                     <div onDoubleClick={() => canEditBio && setEditingField("rightLegUsage")} className="cursor-pointer">
-                      <Progress value={playerData.rightLegUsage} indicatorClassName="bg-green-500" />
+                      <Progress 
+                        value={playerData.rightLegUsage} 
+                        style={{ backgroundColor: '#d1d5db' }}
+                        indicatorClassName="bg-green-500" 
+                      />
                     </div>
                   )}
                 </div>
@@ -779,6 +787,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                           backgroundSize: `${value}% 100%`,
                           backgroundImage: `linear-gradient(#22c55e, #22c55e)`,
                           backgroundRepeat: 'no-repeat',
+                          backgroundColor: '#d1d5db'
                         }}
                         className="w-full h-1 rounded-lg appearance-none cursor-pointer accent-green-500"
                       />
@@ -789,7 +798,8 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                       >
                         <Progress
                           value={value as any}
-                          className="h-2 bg-transparent"
+                          className="h-2"
+                          style={{ backgroundColor: '#d1d5db' }}
                           indicatorClassName="bg-green-500"
                         />
                       </div>
@@ -835,6 +845,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                             backgroundSize: `${value}% 100%`,
                             backgroundImage: `linear-gradient(#22c55e, #22c55e)`,
                             backgroundRepeat: 'no-repeat',
+                            backgroundColor: '#d1d5db'
                           }}
                           className="w-full h-1 rounded-lg appearance-none cursor-pointer accent-green-500"
                         />
@@ -845,7 +856,8 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                         >
                           <Progress
                             value={value as any}
-                            className="h-2 bg-transparent"
+                            className="h-2"
+                            style={{ backgroundColor: '#d1d5db' }}
                             indicatorClassName="bg-green-500"
                           />
                         </div>

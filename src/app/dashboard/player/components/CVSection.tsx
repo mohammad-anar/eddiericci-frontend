@@ -35,7 +35,7 @@ export default function CVSection() {
             <div className="border rounded-lg p-6  min-w-fit">
               <p className="text-gray-400 text-sm mb-4">Profile Completion</p>
               <p className="text-red-600 text-3xl font-bold mb-4">85%</p>
-              <div className="w-48 bg-gray-700 rounded-full h-2 overflow-hidden">
+              <div className="w-48 rounded-full h-2 overflow-hidden" style={{ backgroundColor: '#d1d5db' }}>
                 <div className="bg-red-600 h-full rounded-full" style={{ width: '85%' }} />
               </div>
             </div>

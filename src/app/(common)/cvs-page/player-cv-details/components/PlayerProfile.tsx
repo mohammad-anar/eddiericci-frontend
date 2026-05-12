@@ -199,6 +199,7 @@ export default function PlayerProfile({
                           backgroundSize: `${attr.score}% 100%`,
                           backgroundImage: `linear-gradient(#22c55e, #22c55e)`,
                           backgroundRepeat: "no-repeat",
+                          backgroundColor: "#d1d5db",
                         }}
                         className="w-full h-1 rounded-lg appearance-none cursor-pointer accent-green-500"
                       />
@@ -209,7 +210,8 @@ export default function PlayerProfile({
                       >
                         <Progress
                           value={attr.score}
-                          className="h-2 bg-transparent"
+                          className="h-2"
+                          style={{ backgroundColor: '#d1d5db' }}
                           indicatorClassName="bg-green-500"
                         />
                       </div>

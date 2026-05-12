@@ -185,7 +185,9 @@ export function MetricsAnalysis({ editable = false }: { editable?: boolean }) {
                         <div className="flex items-center justify-center gap-3">
                           <Progress 
                             value={metric.score} 
-                            className={`w-32 h-1.5 ${getProgressColor(metric.grade)}`} 
+                            className="w-32 h-1.5"
+                            style={{ backgroundColor: '#d1d5db' }}
+                            indicatorClassName={getProgressColor(metric.grade)} 
                           />
                           <CMSField
                             value={metric.score}

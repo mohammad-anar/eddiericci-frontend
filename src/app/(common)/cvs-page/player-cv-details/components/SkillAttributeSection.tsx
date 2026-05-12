@@ -188,6 +188,7 @@ export function SkillsAttributes({ editable = false }: { editable?: boolean }) {
                             backgroundSize: `${skill.value}% 100%`,
                             backgroundImage: `linear-gradient(${color}, ${color})`,
                             backgroundRepeat: 'no-repeat',
+                            backgroundColor: '#d1d5db'
                           }}
                           className="w-full h-1 rounded-lg appearance-none cursor-pointer accent-primary"
                         />
@@ -199,7 +200,8 @@ export function SkillsAttributes({ editable = false }: { editable?: boolean }) {
                           <Progress
                             value={skill.value}
                             indicatorClassName={getIndicatorColor(category.category)}
-                            className="h-2 bg-transparent"
+                            className="h-2"
+                            style={{ backgroundColor: '#d1d5db' }}
                           />
                         </div>
                       )}

@@ -768,7 +768,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                       />
                     </div>
                     {editingField === `strengths.${key}` ? (
-                      <Input
+                      <input
                         type="range"
                         value={value as any}
                         onChange={(e) =>
@@ -783,13 +783,19 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                           backgroundSize: `${value}% 100%`,
                           backgroundImage: `linear-gradient(#22c55e, #22c55e)`,
                           backgroundRepeat: 'no-repeat',
-                          backgroundColor: '#374151'
                         }}
                         className="w-full h-1 rounded-lg appearance-none cursor-pointer accent-green-500"
                       />
                     ) : (
-                      <div onDoubleClick={() => canEditEvaluation && setEditingField(`strengths.${key}`)} className="cursor-pointer">
-                        <Progress value={value as any} indicatorClassName="bg-green-500" />
+                      <div 
+                        onDoubleClick={() => canEditEvaluation && setEditingField(`strengths.${key}`)} 
+                        className={cn(canEditEvaluation ? "cursor-pointer" : "")}
+                      >
+                        <Progress 
+                          value={value as any} 
+                          className="h-2 bg-transparent"
+                          indicatorClassName="bg-green-500" 
+                        />
                       </div>
                     )}
                   </div>
@@ -818,7 +824,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                         />
                       </div>
                       {editingField === `performanceMetrics.${key}` ? (
-                        <Input
+                        <input
                           type="range"
                           value={value as any}
                           onChange={(e) =>
@@ -833,13 +839,19 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                             backgroundSize: `${value}% 100%`,
                             backgroundImage: `linear-gradient(#22c55e, #22c55e)`,
                             backgroundRepeat: 'no-repeat',
-                            backgroundColor: '#374151'
                           }}
                           className="w-full h-1 rounded-lg appearance-none cursor-pointer accent-green-500"
                         />
                       ) : (
-                        <div onDoubleClick={() => canEditEvaluation && setEditingField(`performanceMetrics.${key}`)} className="cursor-pointer">
-                          <Progress value={value as any} indicatorClassName="bg-green-500" />
+                        <div 
+                          onDoubleClick={() => canEditEvaluation && setEditingField(`performanceMetrics.${key}`)} 
+                          className={cn(canEditEvaluation ? "cursor-pointer" : "")}
+                        >
+                          <Progress 
+                            value={value as any} 
+                            className="h-2 bg-transparent"
+                            indicatorClassName="bg-green-500" 
+                          />
                         </div>
                       )}
                     </div>

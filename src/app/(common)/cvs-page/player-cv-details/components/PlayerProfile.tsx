@@ -11,6 +11,7 @@ import { usePlayerStats } from "./FullEditablePage";
 import { useUpdatePlayerProfileMutation } from "@/lib/features/cv/cvApi";
 import { CMSField } from "@/components/shared/CMSField";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 interface Attribute {
   name: string;
@@ -71,17 +72,16 @@ export default function PlayerProfile({
     (bioRating + skillsAvg + metricsAvg + attributesAvg) / 4,
   );
 
-  const handleUpdate = async (idx: number, value: number) => {
-    const attrName = attrData[idx].name;
-    setAttrData((prev) => {
-      const newData = [...prev];
-      newData[idx] = {
-        ...newData[idx],
-        score: value,
-        status: getBadgeStatus(value)
-      };
-      return newData;
-    });
+  const [editingField, setEditingField] = useState<string | null>(null);
+
+  const handleUpdate = async (attrName: string, value: number) => {
+    setAttrData((prev) =>
+      prev.map((attr) =>
+        attr.name === attrName
+          ? { ...attr, score: value, status: getBadgeStatus(value) }
+          : attr
+      )
+    );
 
     try {
       await updatePlayer({
@@ -184,30 +184,49 @@ export default function PlayerProfile({
                     <p className="text-sm text-gray-300">{attr.name}</p>
                   </div>
 
-                  {/* Progress Bar */}
+                  {/* Progress Bar / Slider */}
                   <div className="flex-1 min-w-0 max-w-xs">
-                    {editable ? (
+                    {editingField === attr.name ? (
                       <input
                         type="range"
                         value={attr.score}
                         onChange={(e) =>
-                          handleUpdate(idx, parseInt(e.target.value))
+                          handleUpdate(attr.name, parseInt(e.target.value))
                         }
-                        className="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-primary"
+                        onBlur={() => setEditingField(null)}
+                        autoFocus
+                        style={{
+                          backgroundSize: `${attr.score}% 100%`,
+                          backgroundImage: `linear-gradient(#22c55e, #22c55e)`,
+                          backgroundRepeat: "no-repeat",
+                        }}
+                        className="w-full h-1 rounded-lg appearance-none cursor-pointer accent-green-500"
                       />
                     ) : (
-                      <Progress
-                        value={attr.score}
-                        className="h-2 bg-[#2a2a2a]"
-                      />
+                      <div
+                        onDoubleClick={() => editable && setEditingField(attr.name)}
+                        className={cn(editable ? "cursor-pointer" : "")}
+                      >
+                        <Progress
+                          value={attr.score}
+                          className="h-2 bg-transparent"
+                          indicatorClassName="bg-green-500"
+                        />
+                      </div>
                     )}
                   </div>
 
                   {/* Score */}
                   <div className="w-12 text-right">
-                    <span className="text-base font-semibold text-white">
-                      {attr.score}
-                    </span>
+                    <CMSField
+                      value={attr.score}
+                      onUpdate={(val) => handleUpdate(attr.name, parseInt(String(val)))}
+                      canEdit={editable}
+                      type="number"
+                      editTrigger="doubleClick"
+                      className="text-base font-semibold text-white justify-end"
+                      inputClassName="text-right h-6 w-12"
+                    />
                   </div>
 
                   {/* Status Badge */}

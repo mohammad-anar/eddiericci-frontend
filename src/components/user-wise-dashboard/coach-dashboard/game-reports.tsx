@@ -1,12 +1,13 @@
 "use client";
-import React from "react";
-import { 
-  IconFileText, 
-  IconCircleCheck, 
+import React, { useState } from "react";
+import {
+  IconFileText,
+  IconCircleCheck,
   IconClock,
   IconCalendar,
   IconPlus,
 } from "@tabler/icons-react";
+import { useRouter } from "next/navigation";
 import { DashboardTable, Column } from "@/components/dashboard/dashboard-table";
 import { TableActionButtons } from "@/components/dashboard/table-action-buttons";
 
@@ -25,6 +26,8 @@ const reportData = [
 ];
 
 export const GameReports = () => {
+  const router = useRouter();
+
   const columns: Column<typeof reportData[0]>[] = [
     {
       header: "Name",
@@ -54,9 +57,8 @@ export const GameReports = () => {
       header: "Status",
       key: "status",
       render: (player) => (
-        <span className={`px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${
-          player.status === 'Completed' ? 'bg-green-500/10 text-green-500' : 'bg-orange-500/10 text-orange-500'
-        }`}>
+        <span className={`px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${player.status === 'Completed' ? 'bg-green-500/10 text-green-500' : 'bg-orange-500/10 text-orange-500'
+          }`}>
           {player.status}
         </span>
       ),
@@ -66,8 +68,8 @@ export const GameReports = () => {
       key: "actions",
       align: "right",
       render: () => (
-        <TableActionButtons 
-          onView={() => console.log("View report")} 
+        <TableActionButtons
+          onView={() => console.log("View report")}
           viewColor="text-[#E31B23] hover:text-white border-[#E31B23]/20 hover:border-[#E31B23] bg-[#E31B23]/5 hover:bg-[#E31B23]"
         />
       ),
@@ -75,13 +77,16 @@ export const GameReports = () => {
   ];
 
   return (
-    <div className="space-y-8 pb-12">
+    <div className="space-y-8 pb-12 animate-in fade-in duration-500">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-4xl font-black text-white italic tracking-tighter uppercase">Game Reports</h1>
           <p className="text-gray-500 text-sm mt-1">Professional performance analysis</p>
         </div>
-        <button className="px-5 py-2.5 rounded-xl bg-white/10 border border-white/20 text-xs font-bold text-white hover:bg-white/20 transition-all flex items-center gap-2">
+        <button
+          onClick={() => router.push("/dashboard/player/game-reports/create")}
+          className="px-5 py-2.5 rounded-xl bg-white/10 border border-white/20 text-xs font-bold text-white hover:bg-white/20 transition-all flex items-center gap-2"
+        >
           <IconPlus size={16} /> Create New Report
         </button>
       </div>

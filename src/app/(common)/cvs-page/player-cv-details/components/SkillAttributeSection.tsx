@@ -5,6 +5,7 @@ import { usePlayerStats } from "./FullEditablePage";
 import { usePlayer } from "@/lib/hooks/usePlayer";
 import { CMSField } from "@/components/shared/CMSField";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 interface Skill {
   name: string;
@@ -177,7 +178,7 @@ export function SkillsAttributes({ editable = false }: { editable?: boolean }) {
                         />
                       </div>
                       {editingField === fieldId ? (
-                        <Input
+                        <input
                           type="range"
                           value={skill.value}
                           onChange={(e) => handleUpdate(catIdx, skillIdx, parseInt(e.target.value))}
@@ -187,20 +188,18 @@ export function SkillsAttributes({ editable = false }: { editable?: boolean }) {
                             backgroundSize: `${skill.value}% 100%`,
                             backgroundImage: `linear-gradient(${color}, ${color})`,
                             backgroundRepeat: 'no-repeat',
-                            backgroundColor: '#374151'
                           }}
                           className="w-full h-1 rounded-lg appearance-none cursor-pointer accent-primary"
                         />
                       ) : (
                         <div 
                           onDoubleClick={() => editable && setEditingField(fieldId)} 
-                          className="cursor-pointer"
+                          className={cn(editable ? "cursor-pointer" : "")}
                         >
                           <Progress
                             value={skill.value}
                             indicatorClassName={getIndicatorColor(category.category)}
-                            className="h-2"
-                            style={{ background: "#ffffff" }}
+                            className="h-2 bg-transparent"
                           />
                         </div>
                       )}

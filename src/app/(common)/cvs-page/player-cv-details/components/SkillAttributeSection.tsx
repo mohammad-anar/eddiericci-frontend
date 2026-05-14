@@ -114,24 +114,16 @@ export function SkillsAttributes({ editable = false }: { editable?: boolean }) {
     });
   };
 
-  const getIndicatorColor = (category: string) => {
-    switch (category) {
-      case "Technical": return "bg-blue";
-      case "Physical": return "bg-red";
-      case "Tactical": return "bg-primary";
-      case "Mental": return "bg-yellow";
-      default: return "bg-primary";
-    }
+  const getIndicatorColor = (val: number) => {
+    if (val >= 80) return "bg-green-500";
+    if (val >= 60) return "bg-yellow-500";
+    return "bg-red-500";
   };
 
-  const getHexColor = (category: string) => {
-    switch (category) {
-      case "Technical": return "#0077FF";
-      case "Physical": return "#FF1010";
-      case "Tactical": return "#22c55e"; // match primary
-      case "Mental": return "#eab308"; // match yellow-500
-      default: return "#22c55e";
-    }
+  const getHexColor = (val: number) => {
+    if (val >= 80) return "#22c55e";
+    if (val >= 60) return "#eab308";
+    return "#ef4444";
   };
 
   if (!playerData.skillsCategories) return null;
@@ -158,7 +150,7 @@ export function SkillsAttributes({ editable = false }: { editable?: boolean }) {
               <div className="space-y-4">
                 {category.skills.map((skill, skillIdx) => {
                   const fieldId = `${category.category}.${skill.name}`;
-                  const color = getHexColor(category.category);
+                  const color = getHexColor(skill.value);
                   
                   return (
                     <div key={skill.name} className="grid grid-cols-[85px_1fr_auto] items-center gap-2 p-1.5 bg-[#1a1a1a]/40 border border-border/40 rounded-lg group/skill transition-colors hover:bg-[#1a1a1a]/60">
@@ -173,7 +165,7 @@ export function SkillsAttributes({ editable = false }: { editable?: boolean }) {
                           <div className="relative flex items-center h-2 group">
                             <div className="w-full h-1.5 bg-[#333] rounded-full overflow-hidden relative">
                               <div 
-                                className={cn("h-full transition-all duration-300 ease-out", getIndicatorColor(category.category))}
+                                className={cn("h-full transition-all duration-300 ease-out", getIndicatorColor(skill.value))}
                                 style={{ width: `${skill.value}%` }}
                               />
                             </div>
@@ -185,15 +177,9 @@ export function SkillsAttributes({ editable = false }: { editable?: boolean }) {
                               value={skill.value}
                               onChange={(e) => handleUpdate(catIdx, skillIdx, parseInt(e.target.value))}
                               style={{
-                                background: `linear-gradient(to right, ${getHexColor(category.category)} ${skill.value}%, #333 ${skill.value}%)`,
+                                background: `linear-gradient(to right, ${color} ${skill.value}%, #333 ${skill.value}%)`,
                               }}
-                              className={cn(
-                                "w-full h-1.5 rounded-full appearance-none cursor-pointer transition-all absolute inset-0 z-10 opacity-0 group-hover:opacity-100",
-                                category.category === "Technical" ? "accent-blue" : 
-                                category.category === "Physical" ? "accent-red" : 
-                                category.category === "Tactical" ? "accent-primary" : 
-                                "accent-yellow"
-                              )}
+                              className="w-full h-1.5 rounded-full appearance-none cursor-pointer transition-all absolute inset-0 z-10 opacity-0 group-hover:opacity-100 accent-primary"
                             />
 
                             <input
@@ -208,7 +194,7 @@ export function SkillsAttributes({ editable = false }: { editable?: boolean }) {
                         ) : (
                           <Progress
                             value={skill.value}
-                            indicatorClassName={getIndicatorColor(category.category)}
+                            indicatorClassName={getIndicatorColor(skill.value)}
                             className="h-1.5"
                             style={{ backgroundColor: '#333' }}
                           />

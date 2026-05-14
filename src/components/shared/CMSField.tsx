@@ -25,6 +25,7 @@ interface CMSFieldProps {
   isNumeric?: boolean;
   editTrigger?: "click" | "doubleClick";
   hideIcon?: boolean;
+  style?: React.CSSProperties;
 }
 
 export const CMSField = ({
@@ -38,6 +39,7 @@ export const CMSField = ({
   isNumeric = false,
   editTrigger = "click",
   hideIcon = false,
+  style,
 }: CMSFieldProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [tempValue, setTempValue] = useState(value);
@@ -67,7 +69,7 @@ export const CMSField = ({
   if (isEditing && canEdit) {
     if (type === "combobox") {
       return (
-        <div className={cn("relative flex flex-col gap-1 w-full z-50", className)}>
+        <div className={cn("relative flex flex-col gap-1 w-full z-50", className)} style={style}>
           <div className="flex items-center gap-2">
             <Input
               value={searchTerm || String(tempValue)}
@@ -135,7 +137,7 @@ export const CMSField = ({
     }
 
     return (
-      <div className={cn("flex items-center gap-2 w-full", className)}>
+      <div className={cn("flex items-center gap-2 w-full", className)} style={style}>
         {type === "textarea" ? (
           <Textarea
             value={tempValue}
@@ -198,6 +200,7 @@ export const CMSField = ({
         canEdit && "cursor-pointer hover:bg-white/5 rounded px-1 -mx-1",
         className
       )}
+      style={style}
       onClick={() => canEdit && editTrigger === "click" && setIsEditing(true)}
       onDoubleClick={() => canEdit && editTrigger === "doubleClick" && setIsEditing(true)}
     >

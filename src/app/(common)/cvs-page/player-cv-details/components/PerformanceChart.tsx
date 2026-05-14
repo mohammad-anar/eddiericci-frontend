@@ -2,6 +2,7 @@
 'use client'
 
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Label } from 'recharts'
+import { usePlayer } from '@/lib/hooks/usePlayer'
 
 interface ChartDataItem {
   name: string
@@ -75,25 +76,51 @@ const PerformanceChart = ({ title, percentage, data }: PerformanceChartProps) =>
   )
 }
 
+const getHexColor = (val: number) => {
+  if (val >= 80) return "#22c55e";
+  if (val >= 60) return "#eab308";
+  return "#ef4444";
+};
+
 export function PerformanceAnalytics() {
-  const skillData = [
-    { name: 'Tactical', value: 30, color: '#00FF62' },
-    { name: 'Technical', value: 35, color: '#0077FF' },
-    { name: 'Physical', value: 20, color: '#FF1010' },
-    { name: 'Mental', value: 15, color: '#FDC700' },
-  ]
+  const { playerData } = usePlayer();
+
+  const skillData = (playerData.skillsCategories || []).map((cat: any) => {
+    const avg = Math.round(cat.skills.reduce((sum: number, s: any) => sum + s.value, 0) / cat.skills.length);
+    return {
+      name: cat.category,
+      value: avg,
+      color: getHexColor(avg)
+    };
+  });
+
+  const skillsAvg = skillData.length > 0 
+    ? Math.round(skillData.reduce((sum, d) => sum + d.value, 0) / skillData.length)
+    : 0;
+
+  const footData = [
+    { name: 'Right Foot', value: playerData.rightLegUsage || 0, color: getHexColor(playerData.rightLegUsage || 0) },
+    { name: 'Left Foot', value: playerData.leftLegUsage || 0, color: getHexColor(playerData.leftLegUsage || 0) },
+  ];
+
+  // Derive head from skills if available
+  const headingSkill = (playerData.skillsCategories || [])
+    .flatMap((c: any) => c.skills)
+    .find((s: any) => s.name === "Heading" || s.name === "Jumping");
+  
+  if (headingSkill) {
+    footData.push({ name: 'Heading', value: headingSkill.value, color: getHexColor(headingSkill.value) });
+  }
+
+  const footAvg = footData.length > 0 
+    ? Math.round(footData.reduce((sum, d) => sum + d.value, 0) / footData.length)
+    : 0;
 
   const roleData = [
     { name: 'Midfield', value: 45, color: '#0077FF' },
     { name: 'Attack', value: 40, color: '#FF1010' },
     { name: 'Defense', value: 15, color: '#00FF62' },
-  ]
-
-  const footData = [
-    { name: 'Right Foot', value: 65, color: '#FDC700' },
-    { name: 'Left Foot', value: 25, color: '#FF1010' },
-    { name: 'Head', value: 15, color: '#00FF62' },
-  ]
+  ];
 
   return (
     <div className="mt-20 container">
@@ -108,7 +135,7 @@ export function PerformanceAnalytics() {
           <div className="flex justify-center">
             <PerformanceChart
               title="Skills"
-              percentage={83}
+              percentage={skillsAvg}
               data={skillData}
             />
           </div>
@@ -128,7 +155,7 @@ export function PerformanceAnalytics() {
           <div className="mb-12">
             <PerformanceChart
               title="Foot"
-              percentage={80}
+              percentage={footAvg}
               data={footData}
             />
           </div>

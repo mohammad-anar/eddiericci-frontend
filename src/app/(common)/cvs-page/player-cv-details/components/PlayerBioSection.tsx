@@ -130,6 +130,18 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
 
   const [isPositionMap, setIsPositionMap] = useState(true);
 
+  const getIndicatorColor = (val: number) => {
+    if (val >= 80) return "bg-green-500";
+    if (val >= 60) return "bg-yellow-500";
+    return "bg-red-500";
+  };
+
+  const getHexColor = (val: number) => {
+    if (val >= 80) return "#22c55e";
+    if (val >= 60) return "#eab308";
+    return "#ef4444";
+  };
+
   const handleImageUpload = async (
     file: File,
     field: string
@@ -493,7 +505,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                     <div className="relative flex items-center h-2 group translate-y-[5px]">
                       <div className="w-full h-1.5 bg-[#333] rounded-full overflow-hidden relative">
                         <div
-                          className="h-full bg-green-500 transition-all duration-300 ease-out"
+                          className={cn("h-full transition-all duration-300 ease-out", getIndicatorColor(playerData.leftLegUsage))}
                           style={{ width: `${playerData.leftLegUsage}%` }}
                         />
                       </div>
@@ -507,9 +519,9 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                           handleUpdate("leftLegUsage", parseInt(e.target.value))
                         }
                         style={{
-                          background: `linear-gradient(to right, #22c55e ${playerData.leftLegUsage}%, #333 ${playerData.leftLegUsage}%)`,
+                          background: `linear-gradient(to right, ${getHexColor(playerData.leftLegUsage)} ${playerData.leftLegUsage}%, #333 ${playerData.leftLegUsage}%)`,
                         }}
-                        className="w-full h-1.5 rounded-full appearance-none cursor-pointer transition-all absolute inset-0 z-10 opacity-0 group-hover:opacity-100 accent-green-500"
+                        className="w-full h-1.5 rounded-full appearance-none cursor-pointer transition-all absolute inset-0 z-10 opacity-0 group-hover:opacity-100 accent-primary"
                       />
                       {/* Always Active Invisible Slider for Dragging */}
                       <input
@@ -556,7 +568,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                     <div className="relative flex items-center h-2 group translate-y-[5px]">
                       <div className="w-full h-1.5 bg-[#333] rounded-full overflow-hidden relative">
                         <div
-                          className="h-full bg-green-500 transition-all duration-300 ease-out"
+                          className={cn("h-full transition-all duration-300 ease-out", getIndicatorColor(playerData.rightLegUsage))}
                           style={{ width: `${playerData.rightLegUsage}%` }}
                         />
                       </div>
@@ -570,9 +582,9 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                           handleUpdate("rightLegUsage", parseInt(e.target.value))
                         }
                         style={{
-                          background: `linear-gradient(to right, #22c55e ${playerData.rightLegUsage}%, #333 ${playerData.rightLegUsage}%)`,
+                          background: `linear-gradient(to right, ${getHexColor(playerData.rightLegUsage)} ${playerData.rightLegUsage}%, #333 ${playerData.rightLegUsage}%)`,
                         }}
-                        className="w-full h-1.5 rounded-full appearance-none cursor-pointer transition-all absolute inset-0 z-10 opacity-0 group-hover:opacity-100 accent-green-500"
+                        className="w-full h-1.5 rounded-full appearance-none cursor-pointer transition-all absolute inset-0 z-10 opacity-0 group-hover:opacity-100 accent-primary"
                       />
                       {/* Always Active Invisible Slider for Dragging */}
                       <input
@@ -821,7 +833,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                         <div className="relative flex items-center h-2 group">
                           <div className="w-full h-1.5 bg-[#333] rounded-full overflow-hidden relative">
                             <div
-                              className="h-full bg-green-500 transition-all duration-300 ease-out"
+                              className={cn("h-full transition-all duration-300 ease-out", getIndicatorColor(value as number))}
                               style={{ width: `${value}%` }}
                             />
                           </div>
@@ -834,9 +846,9 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                               handleUpdate(`strengths.${key}`, parseInt(e.target.value))
                             }
                             style={{
-                              background: `linear-gradient(to right, #22c55e ${value}%, #333 ${value}%)`,
+                              background: `linear-gradient(to right, ${getHexColor(value as number)} ${value}%, #333 ${value}%)`,
                             }}
-                            className="w-full h-1.5 rounded-full appearance-none cursor-pointer transition-all absolute inset-0 z-10 opacity-0 group-hover:opacity-100 accent-green-500"
+                            className="w-full h-1.5 rounded-full appearance-none cursor-pointer transition-all absolute inset-0 z-10 opacity-0 group-hover:opacity-100 accent-primary"
                           />
                           <input
                             type="range"
@@ -854,7 +866,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                           value={value as any}
                           className="h-1.5"
                           style={{ backgroundColor: '#333' }}
-                          indicatorClassName="bg-green-500"
+                          indicatorClassName={getIndicatorColor(value as number)}
                         />
                       )}
                     </div>
@@ -893,7 +905,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                           <div className="relative flex items-center h-2 group">
                             <div className="w-full h-1.5 bg-[#333] rounded-full overflow-hidden relative">
                               <div
-                                className="h-full bg-green-500 transition-all duration-300 ease-out"
+                                className={cn("h-full transition-all duration-300 ease-out", getIndicatorColor(value as number))}
                                 style={{ width: `${value}%` }}
                               />
                             </div>
@@ -906,9 +918,9 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                                 handleUpdate(`performanceMetrics.${key}`, parseInt(e.target.value))
                               }
                               style={{
-                                background: `linear-gradient(to right, #22c55e ${value}%, #333 ${value}%)`,
+                                background: `linear-gradient(to right, ${getHexColor(value as number)} ${value}%, #333 ${value}%)`,
                               }}
-                              className="w-full h-1.5 rounded-full appearance-none cursor-pointer transition-all absolute inset-0 z-10 opacity-0 group-hover:opacity-100 accent-green-500"
+                              className="w-full h-1.5 rounded-full appearance-none cursor-pointer transition-all absolute inset-0 z-10 opacity-0 group-hover:opacity-100 accent-primary"
                             />
                             <input
                               type="range"
@@ -926,7 +938,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                             value={value as any}
                             className="h-1.5"
                             style={{ backgroundColor: '#333' }}
-                            indicatorClassName="bg-green-500"
+                            indicatorClassName={getIndicatorColor(value as number)}
                           />
                         )}
                       </div>

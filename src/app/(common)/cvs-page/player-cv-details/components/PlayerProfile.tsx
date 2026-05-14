@@ -68,21 +68,33 @@ interface Attribute {
 
 const getBadgeStatus = (score: number): "Excellent" | "Good" | "Average" => {
   if (score >= 80) return "Excellent";
-  if (score >= 70) return "Good";
+  if (score >= 60) return "Good";
   return "Average";
 };
 
 const getBadgeVariant = (status: string) => {
   switch (status) {
     case "Excellent":
-      return "bg-[#1B4D2E] text-[#00FF62] border-[#00FF62]";
+      return "bg-green-500/10 text-green-500 border-green-500/50";
     case "Good":
-      return "bg-[#4D3D1B] text-[#FFCC00] border-[#FFCC00]";
+      return "bg-yellow-500/10 text-yellow-500 border-yellow-500/50";
     case "Average":
-      return "bg-[#4D1B1B] text-[#DC143C] border-[#DC143C]";
+      return "bg-red-500/10 text-red-500 border-red-500/50";
     default:
-      return "bg-[#1B4D2E] text-[#00FF62] border-[#00FF62]";
+      return "bg-green-500/10 text-green-500 border-green-500/50";
   }
+};
+
+const getIndicatorColor = (val: number) => {
+  if (val >= 80) return "bg-green-500";
+  if (val >= 60) return "bg-yellow-500";
+  return "bg-red-500";
+};
+
+const getHexColor = (val: number) => {
+  if (val >= 80) return "#22c55e";
+  if (val >= 60) return "#eab308";
+  return "#ef4444";
 };
 
 const getFlagUrl = (countryName: string) => {
@@ -239,13 +251,13 @@ export default function PlayerProfile({
                             handleUpdate(attr.name, parseInt(e.target.value))
                           }
                           style={{
-                            background: `linear-gradient(to right, #22c55e ${attr.score}%, #333 ${attr.score}%)`,
+                            background: `linear-gradient(to right, ${getHexColor(attr.score)} ${attr.score}%, #333 ${attr.score}%)`,
                           }}
-                          className="w-full h-1.5 rounded-full appearance-none cursor-pointer accent-green-500 hover:accent-green-400 transition-all absolute inset-0 z-10 opacity-0 group-hover:opacity-100"
+                          className="w-full h-1.5 rounded-full appearance-none cursor-pointer accent-primary hover:accent-primary transition-all absolute inset-0 z-10 opacity-0 group-hover:opacity-100"
                         />
                         <div className="w-full h-1.5 bg-[#333] rounded-full overflow-hidden relative">
                           <div
-                            className="h-full bg-green-500 transition-all duration-300 ease-out"
+                            className={cn("h-full transition-all duration-300 ease-out", getIndicatorColor(attr.score))}
                             style={{ width: `${attr.score}%` }}
                           />
                         </div>
@@ -266,7 +278,7 @@ export default function PlayerProfile({
                         value={attr.score}
                         className="h-1.5"
                         style={{ backgroundColor: '#333' }}
-                        indicatorClassName="bg-green-500"
+                        indicatorClassName={getIndicatorColor(attr.score)}
                       />
                     )}
                   </div>
@@ -279,7 +291,8 @@ export default function PlayerProfile({
                       canEdit={editable}
                       type="number"
                       editTrigger="doubleClick"
-                      className="text-base font-semibold text-white justify-end"
+                      className="text-base font-semibold justify-end"
+                      style={{ color: getHexColor(attr.score) }}
                       inputClassName="text-right h-7 w-16 bg-gray-900/50 border-gray-700 focus:border-primary transition-all px-2 rounded-md"
                     />
                   </div>

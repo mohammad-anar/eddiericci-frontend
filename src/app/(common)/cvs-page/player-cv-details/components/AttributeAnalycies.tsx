@@ -37,6 +37,12 @@ const AttributeDonut = ({ score, color }: { score: number; color: string }) => {
   )
 }
 
+const getHexColor = (val: number) => {
+  if (val >= 80) return "#22c55e";
+  if (val >= 60) return "#eab308";
+  return "#ef4444";
+};
+
 const AttributesAnalysis = ({ editable = false }: { editable?: boolean }) => {
   const { setAttributesAvg } = usePlayerStats();
   const { playerData } = usePlayer();
@@ -94,7 +100,8 @@ const AttributesAnalysis = ({ editable = false }: { editable?: boolean }) => {
       value: Math.round(getSkillValue(name))
     }));
     const score = Math.round(attrs.reduce((sum, a) => sum + a.value, 0) / attrs.length);
-    return { ...card, attributes: attrs, score };
+    const color = getHexColor(score);
+    return { ...card, attributes: attrs, score, color };
   });
 
   useEffect(() => {

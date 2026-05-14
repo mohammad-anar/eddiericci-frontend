@@ -35,7 +35,7 @@ interface MetricRow {
 
 const getGrade = (score: number): 'Excellent' | 'Good' | 'Average' => {
   if (score >= 80) return 'Excellent';
-  if (score >= 50) return 'Good';
+  if (score >= 60) return 'Good';
   return 'Average';
 };
 
@@ -188,7 +188,7 @@ export function MetricsAnalysis({ editable = false }: { editable?: boolean }) {
                                   <div 
                                     className={cn(
                                       "h-full transition-all duration-300 ease-out",
-                                      metric.score >= 80 ? "bg-[#22c55e]" : metric.score >= 50 ? "bg-[#eab308]" : "bg-[#ef4444]"
+                                      metric.score >= 80 ? "bg-[#22c55e]" : metric.score >= 60 ? "bg-[#eab308]" : "bg-[#ef4444]"
                                     )}
                                     style={{ width: `${metric.score}%` }}
                                   />
@@ -203,11 +203,11 @@ export function MetricsAnalysis({ editable = false }: { editable?: boolean }) {
                                     handleUpdate(activeTab, idx, 'score', parseInt(e.target.value))
                                   }
                                   style={{
-                                    background: `linear-gradient(to right, ${metric.score >= 80 ? '#22c55e' : metric.score >= 50 ? '#eab308' : '#ef4444'} ${metric.score}%, #333 ${metric.score}%)`,
+                                    background: `linear-gradient(to right, ${metric.score >= 80 ? '#22c55e' : metric.score >= 60 ? '#eab308' : '#ef4444'} ${metric.score}%, #333 ${metric.score}%)`,
                                   }}
                                   className={cn(
                                     "w-full h-1.5 rounded-full appearance-none cursor-pointer transition-all absolute inset-0 z-10 opacity-0 group-hover:opacity-100",
-                                    metric.score >= 80 ? "accent-[#22c55e]" : metric.score >= 50 ? "accent-[#eab308]" : "accent-[#ef4444]"
+                                    metric.score >= 80 ? "accent-[#22c55e]" : metric.score >= 60 ? "accent-[#eab308]" : "accent-[#ef4444]"
                                   )}
                                 />
                                 {/* Always Active Invisible Slider for Dragging */}
@@ -227,7 +227,7 @@ export function MetricsAnalysis({ editable = false }: { editable?: boolean }) {
                                 value={metric.score} 
                                 className="w-full h-1.5"
                                 style={{ backgroundColor: '#333' }}
-                                indicatorClassName={getProgressColor(metric.grade)} 
+                                indicatorClassName={metric.score >= 80 ? "bg-[#22c55e]" : metric.score >= 60 ? "bg-[#eab308]" : "bg-[#ef4444]"} 
                               />
                             )}
                           </div>

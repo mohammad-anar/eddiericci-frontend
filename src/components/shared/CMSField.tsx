@@ -73,7 +73,7 @@ export const CMSField = ({
               value={searchTerm || String(tempValue)}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search..."
-              className={cn("h-8 text-xs bg-gray-800 border-primary/30", inputClassName)}
+              className={cn("h-8 text-xs bg-gray-800 border-primary/30 min-w-20", inputClassName)}
               autoFocus
             />
             <Button
@@ -111,7 +111,7 @@ export const CMSField = ({
             value={String(tempValue)}
             onValueChange={(val) => handleSave(val)}
           >
-            <SelectTrigger className={cn("h-8 text-xs bg-gray-800 border-primary/30", inputClassName)}>
+            <SelectTrigger className={cn("h-8 text-xs bg-gray-800 border-primary/30 min-w-20", inputClassName)}>
               <SelectValue placeholder="Select option" />
             </SelectTrigger>
             <SelectContent className="bg-gray-900 border-gray-800 text-white">
@@ -161,7 +161,7 @@ export const CMSField = ({
               }
               setTempValue(val);
             }}
-            className={cn("h-8 text-xs bg-gray-800 border-primary/30", inputClassName)}
+            className={cn("h-8 text-xs bg-gray-800 border-primary/30 min-w-20", inputClassName)}
             autoFocus
             onKeyDown={(e) => {
               if (e.key === "Enter") handleSave();

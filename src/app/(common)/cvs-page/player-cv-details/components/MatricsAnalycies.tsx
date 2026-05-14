@@ -24,37 +24,35 @@ import { Progress } from '@/components/ui/progress'
 import { useUpdatePlayerProfileMutation } from '@/lib/features/cv/cvApi'
 import { CMSField } from '@/components/shared/CMSField'
 import { toast } from 'sonner'
+import { cn } from '@/lib/utils'
 
 interface MetricRow {
   category: string
   score: number
   trend: number
-  grade: 'Excellent' | 'Good' | 'Average' | 'Poor'
+  grade: 'Excellent' | 'Good' | 'Average' | 'Average'
 }
 
-const getGrade = (score: number): 'Excellent' | 'Good' | 'Average' | 'Poor' => {
-  if (score >= 90) return 'Excellent';
-  if (score >= 80) return 'Good';
-  if (score >= 70) return 'Average';
-  return 'Poor';
+const getGrade = (score: number): 'Excellent' | 'Good' | 'Average' => {
+  if (score >= 80) return 'Excellent';
+  if (score >= 50) return 'Good';
+  return 'Average';
 };
 
 const getGradeColor = (grade: string) => {
   switch (grade) {
-    case 'Excellent': return 'bg-primary text-black';
-    case 'Good': return 'bg-blue text-white';
-    case 'Average': return 'bg-yellow text-black';
-    case 'Poor': return 'bg-red text-white';
+    case 'Excellent': return 'bg-[#22c55e] text-white'; // Green
+    case 'Good': return 'bg-[#eab308] text-white';      // Yellow
+    case 'Average': return 'bg-[#ef4444] text-white';      // Red
     default: return 'bg-gray-500 text-white';
   }
 };
 
 const getProgressColor = (grade: string) => {
   switch (grade) {
-    case 'Excellent': return '[&>div]:bg-primary';
-    case 'Good': return '[&>div]:bg-blue';
-    case 'Average': return '[&>div]:bg-yellow';
-    case 'Poor': return '[&>div]:bg-red';
+    case 'Excellent': return '[&>div]:bg-[#22c55e]';
+    case 'Good': return '[&>div]:bg-[#eab308]';
+    case 'Average': return '[&>div]:bg-[#ef4444]';
     default: return '[&>div]:bg-gray-500';
   }
 };
@@ -181,14 +179,58 @@ export function MetricsAnalysis({ editable = false }: { editable?: boolean }) {
                         />
                       </TableCell>
 
-                      <TableCell className="border-r border-border min-w-[200px]">
+                      <TableCell className="border-r border-border min-w-[250px]">
                         <div className="flex items-center justify-center gap-3">
-                          <Progress 
-                            value={metric.score} 
-                            className="w-32 h-1.5"
-                            style={{ backgroundColor: '#d1d5db' }}
-                            indicatorClassName={getProgressColor(metric.grade)} 
-                          />
+                          <div className="relative flex-1 flex items-center h-2 group min-w-[120px] translate-y-[5px]">
+                            {editable ? (
+                              <>
+                                <div className="w-full h-1.5 bg-[#333] rounded-full overflow-hidden relative">
+                                  <div 
+                                    className={cn(
+                                      "h-full transition-all duration-300 ease-out",
+                                      metric.score >= 80 ? "bg-[#22c55e]" : metric.score >= 50 ? "bg-[#eab308]" : "bg-[#ef4444]"
+                                    )}
+                                    style={{ width: `${metric.score}%` }}
+                                  />
+                                </div>
+                                {/* Visible Slider on Hover */}
+                                <input
+                                  type="range"
+                                  min="0"
+                                  max="100"
+                                  value={metric.score}
+                                  onChange={(e) =>
+                                    handleUpdate(activeTab, idx, 'score', parseInt(e.target.value))
+                                  }
+                                  style={{
+                                    background: `linear-gradient(to right, ${metric.score >= 80 ? '#22c55e' : metric.score >= 50 ? '#eab308' : '#ef4444'} ${metric.score}%, #333 ${metric.score}%)`,
+                                  }}
+                                  className={cn(
+                                    "w-full h-1.5 rounded-full appearance-none cursor-pointer transition-all absolute inset-0 z-10 opacity-0 group-hover:opacity-100",
+                                    metric.score >= 80 ? "accent-[#22c55e]" : metric.score >= 50 ? "accent-[#eab308]" : "accent-[#ef4444]"
+                                  )}
+                                />
+                                {/* Always Active Invisible Slider for Dragging */}
+                                <input
+                                  type="range"
+                                  min="0"
+                                  max="100"
+                                  value={metric.score}
+                                  onChange={(e) =>
+                                    handleUpdate(activeTab, idx, 'score', parseInt(e.target.value))
+                                  }
+                                  className="w-full h-6 opacity-0 cursor-pointer absolute inset-0 z-20"
+                                />
+                              </>
+                            ) : (
+                              <Progress 
+                                value={metric.score} 
+                                className="w-full h-1.5"
+                                style={{ backgroundColor: '#333' }}
+                                indicatorClassName={getProgressColor(metric.grade)} 
+                              />
+                            )}
+                          </div>
                           <CMSField
                             value={metric.score}
                             onUpdate={(val) => handleUpdate(activeTab, idx, 'score', val)}

@@ -21,6 +21,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import FullEditablePage from "@/app/(common)/cvs-page/player-cv-details/components/FullEditablePage";
+import { usePlayer } from "@/lib/hooks/usePlayer";
+import { usePlayerStats } from "@/app/(common)/cvs-page/player-cv-details/components/FullEditablePage";
+import { FileText } from 'lucide-react';
+import { SHARED_REPORTS_DATA } from "@/lib/constants/reports";
 
 const CareerItem = ({ logo, name, role, years, type }: { logo: string; name: string; role: string; years: string; type: string }) => (
   <div className="bg-black/40 border border-white/10 rounded-2xl p-4 flex flex-col gap-3 group hover:border-white/20 transition-all">
@@ -41,7 +45,18 @@ const CareerItem = ({ logo, name, role, years, type }: { logo: string; name: str
 );
 
 const GenerateCv = () => {
+  const { playerData } = usePlayer();
+  const { role: contextRole } = usePlayerStats();
   const [role, setRole] = useState<string>("player");
+
+  const gameReports = SHARED_REPORTS_DATA
+    .filter(r => r.status === "Paid")
+    .slice(0, 3)
+    .map(r => ({
+      id: r.id,
+      opponent: `vs ${r.team2}`,
+      rating: r.rating
+    }));
 
   useEffect(() => {
     const userRole = localStorage.getItem("userRole") || "player";
@@ -55,7 +70,7 @@ const GenerateCv = () => {
     const htmlContent = `
       <html>
         <head>
-          <title>Technical Scouting Report - Marcus Silva</title>
+          <title>Technical Scouting Report - ${playerData.fullName}</title>
           <style>
             @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap');
             body {
@@ -143,12 +158,12 @@ const GenerateCv = () => {
           <div class="header">
             <div>
               <div class="brand">Eddie Ricci Football Management</div>
-              <h1 class="player-name">Marcus Silva</h1>
-              <div class="player-title">Forward • Santos FC Academy • Brazil</div>
+              <h1 class="player-name">${playerData.fullName}</h1>
+              <div class="player-title">${playerData.position} • ${playerData.clubs[0]?.name || 'Unattached'} • ${playerData.birthCountry}</div>
             </div>
             <div class="rating-circle">
               <span class="rating-label">Overall</span>
-              <span class="rating-value">74</span>
+              <span class="rating-value">${playerData.rating}</span>
             </div>
           </div>
 
@@ -157,11 +172,11 @@ const GenerateCv = () => {
             <div class="section">
               <div class="section-header">Biological Profile</div>
               <table class="attribute-table">
-                <tr class="attribute-row"><td class="attribute-cell attr-label">Age / DOB</td><td class="attribute-cell attr-value">22 / 15-03-2002</td></tr>
-                <tr class="attribute-row"><td class="attribute-cell attr-label">Height / Weight</td><td class="attribute-cell attr-value">1.82m / 76kg</td></tr>
-                <tr class="attribute-row"><td class="attribute-cell attr-label">Primary Foot</td><td class="attribute-cell attr-value">Right (Strong)</td></tr>
-                <tr class="attribute-row"><td class="attribute-cell attr-label">Secondary Foot</td><td class="attribute-cell attr-value">Left (31%)</td></tr>
-                <tr class="attribute-row"><td class="attribute-cell attr-label">Nationality</td><td class="attribute-cell attr-value">Brazilian / Italian</td></tr>
+                <tr class="attribute-row"><td class="attribute-cell attr-label">Age / DOB</td><td class="attribute-cell attr-value">${playerData.age} / ${playerData.dob}</td></tr>
+                <tr class="attribute-row"><td class="attribute-cell attr-label">Height / Weight</td><td class="attribute-cell attr-value">${playerData.height}m / ${playerData.weight}kg</td></tr>
+                <tr class="attribute-row"><td class="attribute-cell attr-label">Primary Foot</td><td class="attribute-cell attr-value">Right (${playerData.rightLegUsage}%)</td></tr>
+                <tr class="attribute-row"><td class="attribute-cell attr-label">Secondary Foot</td><td class="attribute-cell attr-value">Left (${playerData.leftLegUsage}%)</td></tr>
+                <tr class="attribute-row"><td class="attribute-cell attr-label">Nationality</td><td class="attribute-cell attr-value">${playerData.birthCountry} / ${playerData.dualNationality || 'N/A'}</td></tr>
               </table>
             </div>
 
@@ -169,10 +184,10 @@ const GenerateCv = () => {
             <div class="section">
               <div class="section-header">Scouting Summary</div>
               <table class="attribute-table">
-                <tr class="attribute-row"><td class="attribute-cell attr-label">Market Value</td><td class="attribute-cell attr-value">€45M</td></tr>
-                <tr class="attribute-row"><td class="attribute-cell attr-label">Contract Until</td><td class="attribute-cell attr-value">June 2026</td></tr>
-                <tr class="attribute-row"><td class="attribute-cell attr-label">Agency</td><td class="attribute-cell attr-value">Elite Sports Management</td></tr>
-                <tr class="attribute-row"><td class="attribute-cell attr-label">Agent</td><td class="attribute-cell attr-value">John Morrison</td></tr>
+                <tr class="attribute-row"><td class="attribute-cell attr-label">Market Value</td><td class="attribute-cell attr-value">€${playerData.marketValue}</td></tr>
+                <tr class="attribute-row"><td class="attribute-cell attr-label">Contract Until</td><td class="attribute-cell attr-value">${playerData.contractUntil}</td></tr>
+                <tr class="attribute-row"><td class="attribute-cell attr-label">Agency</td><td class="attribute-cell attr-value">${playerData.agency}</td></tr>
+                <tr class="attribute-row"><td class="attribute-cell attr-label">Agent</td><td class="attribute-cell attr-value">${playerData.agent}</td></tr>
               </table>
             </div>
 
@@ -180,11 +195,9 @@ const GenerateCv = () => {
             <div class="section">
               <div class="section-header">Technical Attributes</div>
               <table class="attribute-table">
-                <tr class="attribute-row"><td class="attribute-cell attr-label">Ball Control</td><td class="attribute-cell attr-value">89 <div class="attr-bar-bg"><div class="attr-bar-fill" style="width: 89%"></div></div></td></tr>
-                <tr class="attribute-row"><td class="attribute-cell attr-label">Dribbling</td><td class="attribute-cell attr-value">85 <div class="attr-bar-bg"><div class="attr-bar-fill" style="width: 85%"></div></div></td></tr>
-                <tr class="attribute-row"><td class="attribute-cell attr-label">Finishing</td><td class="attribute-cell attr-value">84 <div class="attr-bar-bg"><div class="attr-bar-fill" style="width: 84%"></div></div></td></tr>
-                <tr class="attribute-row"><td class="attribute-cell attr-label">Short Passing</td><td class="attribute-cell attr-value">92 <div class="attr-bar-bg"><div class="attr-bar-fill" style="width: 92%"></div></div></td></tr>
-                <tr class="attribute-row"><td class="attribute-cell attr-label">Long Passing</td><td class="attribute-cell attr-value">78 <div class="attr-bar-bg"><div class="attr-bar-fill" style="width: 78%"></div></div></td></tr>
+                ${playerData.skillsCategories.find(c => c.category === "Technical")?.skills.slice(0, 5).map(skill => `
+                  <tr class="attribute-row"><td class="attribute-cell attr-label">${skill.name}</td><td class="attribute-cell attr-value">${skill.value} <div class="attr-bar-bg"><div class="attr-bar-fill" style="width: ${skill.value}%"></div></div></td></tr>
+                `).join('') || ''}
               </table>
             </div>
 
@@ -192,11 +205,9 @@ const GenerateCv = () => {
             <div class="section">
               <div class="section-header">Physical Profile</div>
               <table class="attribute-table">
-                <tr class="attribute-row"><td class="attribute-cell attr-label">Acceleration</td><td class="attribute-cell attr-value">82 <div class="attr-bar-bg"><div class="attr-bar-fill" style="width: 82%"></div></div></td></tr>
-                <tr class="attribute-row"><td class="attribute-cell attr-label">Sprint Speed</td><td class="attribute-cell attr-value">84 <div class="attr-bar-bg"><div class="attr-bar-fill" style="width: 84%"></div></div></td></tr>
-                <tr class="attribute-row"><td class="attribute-cell attr-label">Stamina</td><td class="attribute-cell attr-value">89 <div class="attr-bar-bg"><div class="attr-bar-fill" style="width: 89%"></div></div></td></tr>
-                <tr class="attribute-row"><td class="attribute-cell attr-label">Strength</td><td class="attribute-cell attr-value">75 <div class="attr-bar-bg"><div class="attr-bar-fill" style="width: 75%"></div></div></td></tr>
-                <tr class="attribute-row"><td class="attribute-cell attr-label">Agility</td><td class="attribute-cell attr-value">88 <div class="attr-bar-bg"><div class="attr-bar-fill" style="width: 88%"></div></div></td></tr>
+                ${playerData.skillsCategories.find(c => c.category === "Physical")?.skills.slice(0, 5).map(skill => `
+                  <tr class="attribute-row"><td class="attribute-cell attr-label">${skill.name}</td><td class="attribute-cell attr-value">${skill.value} <div class="attr-bar-bg"><div class="attr-bar-fill" style="width: ${skill.value}%"></div></div></td></tr>
+                `).join('') || ''}
               </table>
             </div>
 
@@ -204,10 +215,9 @@ const GenerateCv = () => {
             <div class="section">
               <div class="section-header">Mental & Tactical</div>
               <table class="attribute-table">
-                <tr class="attribute-row"><td class="attribute-cell attr-label">Positioning</td><td class="attribute-cell attr-value">87 <div class="attr-bar-bg"><div class="attr-bar-fill" style="width: 87%"></div></div></td></tr>
-                <tr class="attribute-row"><td class="attribute-cell attr-label">Vision</td><td class="attribute-cell attr-value">91 <div class="attr-bar-bg"><div class="attr-bar-fill" style="width: 91%"></div></div></td></tr>
-                <tr class="attribute-row"><td class="attribute-cell attr-label">Decision Making</td><td class="attribute-cell attr-value">85 <div class="attr-bar-bg"><div class="attr-bar-fill" style="width: 85%"></div></div></td></tr>
-                <tr class="attribute-row"><td class="attribute-cell attr-label">Work Rate</td><td class="attribute-cell attr-value">89 <div class="attr-bar-bg"><div class="attr-bar-fill" style="width: 89%"></div></div></td></tr>
+                ${playerData.skillsCategories.find(c => c.category === "Tactical")?.skills.slice(0, 5).map(skill => `
+                  <tr class="attribute-row"><td class="attribute-cell attr-label">${skill.name}</td><td class="attribute-cell attr-value">${skill.value} <div class="attr-bar-bg"><div class="attr-bar-fill" style="width: ${skill.value}%"></div></div></td></tr>
+                `).join('') || ''}
               </table>
             </div>
 
@@ -215,10 +225,10 @@ const GenerateCv = () => {
             <div class="section">
               <div class="section-header">Intelligence Metrics</div>
               <table class="attribute-table">
-                <tr class="attribute-row"><td class="attribute-cell attr-label">Focus Control</td><td class="attribute-cell attr-value">High</td></tr>
-                <tr class="attribute-row"><td class="attribute-cell attr-label">Strategy Planning</td><td class="attribute-cell attr-value">Elite</td></tr>
-                <tr class="attribute-row"><td class="attribute-cell attr-label">Adaptation Rate</td><td class="attribute-cell attr-value">Fast</td></tr>
-                <tr class="attribute-row"><td class="attribute-cell attr-label">Learning Curve</td><td class="attribute-cell attr-value">Steep</td></tr>
+                <tr class="attribute-row"><td class="attribute-cell attr-label">Pass Accuracy</td><td class="attribute-cell attr-value">${playerData.performanceMetrics.passAccuracy}%</td></tr>
+                <tr class="attribute-row"><td class="attribute-cell attr-label">Shoot Accuracy</td><td class="attribute-cell attr-value">${playerData.performanceMetrics.shootAccuracy}%</td></tr>
+                <tr class="attribute-row"><td class="attribute-cell attr-label">Dribble Success</td><td class="attribute-cell attr-value">${playerData.performanceMetrics.dribbleSuccess}%</td></tr>
+                <tr class="attribute-row"><td class="attribute-cell attr-label">Tackle Success</td><td class="attribute-cell attr-value">${playerData.performanceMetrics.tackleSuccess}%</td></tr>
               </table>
             </div>
 
@@ -232,25 +242,21 @@ const GenerateCv = () => {
                   <th style="padding: 12px; border-bottom: 2px solid #eee">Level / Role</th>
                   <th style="padding: 12px; border-bottom: 2px solid #eee">Status</th>
                 </tr>
-                <tr style="font-size: 13px;">
-                  <td style="padding: 12px; border-bottom: 1px solid #eee">2020 - Pres</td>
-                  <td style="padding: 12px; border-bottom: 1px solid #eee">Manchester City</td>
-                  <td style="padding: 12px; border-bottom: 1px solid #eee">Premier Academy</td>
-                  <td style="padding: 12px; border-bottom: 1px solid #eee">Active</td>
-                </tr>
-                <tr style="font-size: 13px;">
-                  <td style="padding: 12px; border-bottom: 1px solid #eee">2016 - 2020</td>
-                  <td style="padding: 12px; border-bottom: 1px solid #eee">Liverpool FC</td>
-                  <td style="padding: 12px; border-bottom: 1px solid #eee">U-10 to U-14</td>
-                  <td style="padding: 12px; border-bottom: 1px solid #eee">Completed</td>
-                </tr>
+                ${playerData.clubs.map(club => `
+                  <tr style="font-size: 13px;">
+                    <td style="padding: 12px; border-bottom: 1px solid #eee">${club.from} - ${club.to}</td>
+                    <td style="padding: 12px; border-bottom: 1px solid #eee">${club.name}</td>
+                    <td style="padding: 12px; border-bottom: 1px solid #eee">${club.category || 'N/A'}</td>
+                    <td style="padding: 12px; border-bottom: 1px solid #eee">Active</td>
+                  </tr>
+                `).join('')}
               </table>
             </div>
 
             <div class="section full-width highlight-box">
               <div class="section-header">Coach Evaluation Notes</div>
               <p style="font-size: 13px; color: #444; margin: 0;">
-                Marcus demonstrates elite-level vision and technical control under pressure. His ability to interpret tactical switches in real-time is well above his age bracket. Recommended for high-intensity transition systems.
+                ${playerData.fullName} demonstrates elite-level vision and technical control under pressure. Current overall rating is verified at ${playerData.rating}.
               </p>
             </div>
           </div>
@@ -307,7 +313,7 @@ const GenerateCv = () => {
 
             <div className="absolute right-0 bottom-0 h-full w-[70%] md:w-[55%] flex items-end justify-end pointer-events-none opacity-60 md:opacity-100">
               <img
-                src="/ronaldo.png"
+                src={playerData.playerImage.src || "/ronaldo.png"}
                 alt="Player"
                 className="h-[90%] md:h-[105%] object-contain drop-shadow-[0_40px_80px_rgba(0,0,0,0.9)]"
               />
@@ -316,19 +322,19 @@ const GenerateCv = () => {
             <div className="relative p-6 md:p-10 w-full space-y-8">
               <div className="flex flex-col gap-6">
                 <div className="w-20 h-20 md:w-24 md:h-24 rounded-full border-4 border-gold bg-gold/80 flex items-center justify-center backdrop-blur-2xl shadow-2xl">
-                  <span className="text-3xl md:text-4xl font-black text-white font-orbitron">74</span>
+                  <span className="text-3xl md:text-4xl font-black text-white font-orbitron">{playerData.rating}</span>
                 </div>
                 <div className="space-y-4">
-                  <div className="bg-[#E31B23] border border-[#E31B23]/20 px-4 py-1.5 rounded-full text-[10px] font-black text-white uppercase w-fit tracking-[0.2em] shadow-[0_0_20px_rgba(227,27,35,0.3)]">Active Player</div>
+                  <div className="bg-[#E31B23] border border-[#E31B23]/20 px-4 py-1.5 rounded-full text-[10px] font-black text-white uppercase w-fit tracking-[0.2em] shadow-[0_0_20px_rgba(227,27,35,0.3)]">{playerData.transferStatus || "Active Player"}</div>
                   <div className="space-y-2">
-                    <h1 className="text-3xl md:text-6xl font-black text-white font-orbitron uppercase tracking-tighter leading-none">Marcus Silva</h1>
+                    <h1 className="text-3xl md:text-6xl font-black text-white font-orbitron uppercase tracking-tighter leading-none">{playerData.fullName}</h1>
                     <div className="flex flex-wrap items-center gap-3 md:gap-6 text-[9px] md:text-[11px] font-black uppercase tracking-[0.2em] pt-1">
-                      <span className="text-[#E31B23]">Forward</span>
+                      <span className="text-[#E31B23]">{playerData.position}</span>
                       <span className="text-white/20 hidden md:inline">/</span>
-                      <span className="text-white">22 Years Old</span>
+                      <span className="text-white">{playerData.age} Years Old</span>
                       <span className="text-white/20 hidden md:inline">/</span>
                       <span className="flex items-center gap-3 text-white">
-                        <img src="https://flagcdn.com/br.svg" alt="Brazil" className="w-4 h-3 md:w-5 md:h-3.5 object-cover rounded-sm shadow-sm" /> Brazil
+                        <img src={`https://flagcdn.com/br.svg`} alt={playerData.birthCountry} className="w-4 h-3 md:w-5 md:h-3.5 object-cover rounded-sm shadow-sm" /> {playerData.birthCountry}
                       </span>
                     </div>
                   </div>
@@ -340,28 +346,28 @@ const GenerateCv = () => {
                   <div className="p-3 bg-white/5 rounded-xl border border-white/10 text-white/40"><IconShield size={20} /></div>
                   <div>
                     <p className="text-[10px] text-white/40 uppercase font-black tracking-widest">Current Club</p>
-                    <p className="text-sm font-bold text-white">Santos FC Academy</p>
+                    <p className="text-sm font-bold text-white">{playerData.clubs[0]?.name || "Unattached"}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="p-3 bg-white/5 rounded-xl border border-white/10 text-white/40"><IconPhone size={20} /></div>
                   <div>
                     <p className="text-[10px] text-white/40 uppercase font-black tracking-widest">Contact</p>
-                    <p className="text-sm font-bold text-white">+44 7700 900000</p>
+                    <p className="text-sm font-bold text-white">{playerData.phone}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="p-3 bg-white/5 rounded-xl border border-white/10 text-white/40"><IconClock size={20} /></div>
                   <div>
-                    <p className="text-[10px] text-white/40 uppercase font-black tracking-widest">Validation Status</p>
-                    <p className="text-sm font-bold text-[#FBBF24]">15 days until re-validation</p>
+                    <p className="text-[10px] text-white/40 uppercase font-black tracking-widest">Contract Until</p>
+                    <p className="text-sm font-bold text-[#FBBF24]">{playerData.contractUntil}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="p-3 bg-white/5 rounded-xl border border-white/10 text-white/40"><IconMail size={20} /></div>
                   <div>
                     <p className="text-[10px] text-white/40 uppercase font-black tracking-widest">Email</p>
-                    <p className="text-sm font-bold text-white truncate max-w-[180px]">MarcusSilva@k10football.com</p>
+                    <p className="text-sm font-bold text-white truncate max-w-[180px]">{playerData.email}</p>
                   </div>
                 </div>
               </div>
@@ -403,23 +409,30 @@ const GenerateCv = () => {
           </div>
 
           {/* Career Journey / Last Evaluated */}
+          {/* New Game Reports */}
           <div className="bg-[#111111] h-fit rounded-3xl border border-white/10 p-8 flex flex-col gap-6">
-            <div className="flex items-center gap-2">
-              <div className="p-2 bg-[#E31B23]/10 rounded-lg text-[#E31B23]">
-                <IconShare size={18} />
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-10 h-10 bg-[#E31B23] rounded-lg flex items-center justify-center">
+                <FileText className="w-6 h-6 text-white" />
               </div>
               <h3 className="text-sm font-black text-white font-orbitron uppercase tracking-widest">
-                {role === "coach" ? "Last Player Evaluated" : "Career Journey"}
+                New Game Reports
               </h3>
             </div>
-            <div className="flex flex-col gap-4">
-              <div className="h-32 overflow-y-auto pr-3 flex flex-col gap-3">
-                <CareerItem logo="/Manchester-City-F.C-Transparent-File 1.png" name="Manchester City" role="U8, U10" years="2005-2008" type="Free Transfer" />
-                <CareerItem logo="/pngegg.png" name="Liverpool FC" role="U11-U12" years="2007-2010" type="Loan Transfer" />
-              </div>
-              <Button className="w-full bg-white/5 hover:bg-white/10 text-white/40 border border-white/10 py-4 rounded-xl font-bold uppercase tracking-widest text-[10px] h-auto gap-2">
-                <IconPlus size={16} /> Add
-              </Button>
+
+            <div className="space-y-3">
+              {gameReports.map((report) => (
+                <div key={report.id} className="border border-white/10 rounded-xl p-4 flex items-center justify-between hover:bg-white/5 transition group">
+                  <div className="flex items-center gap-3">
+                    <FileText className="w-5 h-5 text-white/40 group-hover:text-[#E31B23] transition-colors" />
+                    <span className="text-white/60 text-sm font-bold">{report.opponent}</span>
+                  </div>
+                  <span className="text-white font-black text-xl font-orbitron">{report.rating}</span>
+                </div>
+              ))}
+              {gameReports.length === 0 && (
+                <p className="text-white/40 text-[10px] uppercase font-bold text-center py-4">No reports available</p>
+              )}
             </div>
           </div>
         </div>

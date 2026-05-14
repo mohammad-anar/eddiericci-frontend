@@ -161,50 +161,72 @@ export function SkillsAttributes({ editable = false }: { editable?: boolean }) {
                   const color = getHexColor(category.category);
                   
                   return (
-                    <div key={skill.name} className="space-y-1">
-                      <div className="flex justify-between items-center mb-1">
-                        <span className="text-sm text-gray-300">
+                    <div key={skill.name} className="flex items-center gap-2 p-1.5 bg-[#1a1a1a]/40 border border-border/40 rounded-lg group/skill transition-colors hover:bg-[#1a1a1a]/60">
+                      <div className="w-[85px] shrink-0">
+                        <span className="text-xs text-gray-300 truncate block">
                           {skill.name}
                         </span>
+                      </div>
+
+                      <div className="flex-1 min-w-0 max-w-[150px] translate-y-[5px]">
+                        {editable ? (
+                          <div className="relative flex items-center h-2 group">
+                            <div className="w-full h-1.5 bg-[#333] rounded-full overflow-hidden relative">
+                              <div 
+                                className={cn("h-full transition-all duration-300 ease-out", getIndicatorColor(category.category))}
+                                style={{ width: `${skill.value}%` }}
+                              />
+                            </div>
+                            
+                            <input
+                              type="range"
+                              min="0"
+                              max="100"
+                              value={skill.value}
+                              onChange={(e) => handleUpdate(catIdx, skillIdx, parseInt(e.target.value))}
+                              style={{
+                                background: `linear-gradient(to right, ${getHexColor(category.category)} ${skill.value}%, #333 ${skill.value}%)`,
+                              }}
+                              className={cn(
+                                "w-full h-1.5 rounded-full appearance-none cursor-pointer transition-all absolute inset-0 z-10 opacity-0 group-hover:opacity-100",
+                                category.category === "Technical" ? "accent-blue" : 
+                                category.category === "Physical" ? "accent-red" : 
+                                category.category === "Tactical" ? "accent-primary" : 
+                                "accent-yellow"
+                              )}
+                            />
+
+                            <input
+                              type="range"
+                              min="0"
+                              max="100"
+                              value={skill.value}
+                              onChange={(e) => handleUpdate(catIdx, skillIdx, parseInt(e.target.value))}
+                              className="w-full h-6 opacity-0 cursor-pointer absolute inset-0 z-20"
+                            />
+                          </div>
+                        ) : (
+                          <Progress
+                            value={skill.value}
+                            indicatorClassName={getIndicatorColor(category.category)}
+                            className="h-1.5"
+                            style={{ backgroundColor: '#333' }}
+                          />
+                        )}
+                      </div>
+
+                      <div className="shrink-0">
                         <CMSField
                           value={skill.value}
                           onUpdate={(val) => handleUpdate(catIdx, skillIdx, parseInt(String(val)))}
                           canEdit={editable}
                           type="number"
                           editTrigger="doubleClick"
-                          className="text-primary justify-end w-32"
-                          inputClassName="text-right h-6 w-full"
+                          className="text-primary justify-end w-8"
+                          inputClassName="text-right h-5 w-full text-[10px]"
                           hideIcon={true}
                         />
                       </div>
-                      {editingField === fieldId ? (
-                        <input
-                          type="range"
-                          value={skill.value}
-                          onChange={(e) => handleUpdate(catIdx, skillIdx, parseInt(e.target.value))}
-                          onBlur={() => setEditingField(null)}
-                          autoFocus
-                          style={{
-                            backgroundSize: `${skill.value}% 100%`,
-                            backgroundImage: `linear-gradient(${color}, ${color})`,
-                            backgroundRepeat: 'no-repeat',
-                            backgroundColor: '#d1d5db'
-                          }}
-                          className="w-full h-1 rounded-lg appearance-none cursor-pointer accent-primary"
-                        />
-                      ) : (
-                        <div 
-                          onDoubleClick={() => editable && setEditingField(fieldId)} 
-                          className={cn(editable ? "cursor-pointer" : "")}
-                        >
-                          <Progress
-                            value={skill.value}
-                            indicatorClassName={getIndicatorColor(category.category)}
-                            className="h-2"
-                            style={{ backgroundColor: '#d1d5db' }}
-                          />
-                        </div>
-                      )}
                     </div>
                   );
                 })}

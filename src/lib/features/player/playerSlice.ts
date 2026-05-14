@@ -9,6 +9,7 @@ import leftLeg from "@/assets/cvs-page/id/left-leg-image.png";
 import right from "@/assets/cvs-page/id/right-legt-image.png";
 import playerImage from "@/assets/cvs-page/id/player-image.png";
 import trofeeIcon from "@/assets/cvs-page/id/trofeeIcon.png";
+import positionMap from "@/assets/cvs-page/id/positionmap.png";
 
 export interface Club {
   id: string;
@@ -79,6 +80,8 @@ export interface PlayerData {
   };
   clubs: Club[];
   skillsCategories: SkillCategory[];
+  futsalMap?: any;
+  positionMap?: any;
 }
 
 export interface Skill {
@@ -271,6 +274,8 @@ const initialState: PlayerData = {
       ],
     },
   ],
+  futsalMap: positionMap,
+  positionMap: positionMap,
 };
 
 export const playerSlice = createSlice({

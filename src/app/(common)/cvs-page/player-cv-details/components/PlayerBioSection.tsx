@@ -321,8 +321,8 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                       }
                     }}
                     canEdit={canEditBio}
-                    className="w-32 justify-end"
-                    inputClassName="text-right"
+                    className="w-1/2 justify-end"
+                    inputClassName="text-right w-full bg-gray-900/50 border-gray-700 focus:border-primary transition-all px-3 py-1.5 rounded-lg"
                   />
                 </div>
                 <div className="flex justify-between items-center">
@@ -434,7 +434,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                     canEdit={canEditBio}
                     isNumeric
                     className="text-2xl font-bold text-primary justify-center"
-                    inputClassName="text-center w-20"
+                    inputClassName="text-center w-24 h-10 bg-gray-900/50 border-gray-700 focus:border-primary transition-all px-2 rounded-lg"
                   />
                   <div className="text-xs text-gray-400">HEIGHT (m)</div>
                 </div>
@@ -445,7 +445,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                     canEdit={canEditBio}
                     isNumeric
                     className="text-2xl font-bold text-primary justify-center"
-                    inputClassName="text-center w-20"
+                    inputClassName="text-center w-24 h-10 bg-gray-900/50 border-gray-700 focus:border-primary transition-all px-2 rounded-lg"
                   />
                   <div className="text-xs text-gray-400">WEIGHT (kg)</div>
                 </div>
@@ -470,34 +470,49 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                       type="number"
                       editTrigger="doubleClick"
                       className="text-primary justify-end w-32"
-                      inputClassName="text-right h-6 w-full"
+                      inputClassName="text-right h-7 w-20 bg-gray-900/50 border-gray-700 focus:border-primary transition-all px-2 rounded-md"
                     />
                   </div>
-                  {editingField === "leftLegUsage" ? (
-                    <input
-                      type="range"
-                      value={playerData.leftLegUsage}
-                      onChange={(e) =>
-                        handleUpdate("leftLegUsage", parseInt(e.target.value))
-                      }
-                      onBlur={() => setEditingField(null)}
-                      autoFocus
-                      style={{
-                        backgroundSize: `${playerData.leftLegUsage}% 100%`,
-                        backgroundImage: `linear-gradient(#22c55e, #22c55e)`,
-                        backgroundRepeat: 'no-repeat',
-                        backgroundColor: '#374151'
-                      }}
-                      className="w-full h-1 rounded-lg appearance-none cursor-pointer accent-green-500"
-                    />
-                  ) : (
-                    <div onDoubleClick={() => canEditBio && setEditingField("leftLegUsage")} className="cursor-pointer">
-                      <Progress 
-                        value={playerData.leftLegUsage} 
-                        style={{ backgroundColor: '#d1d5db' }}
-                        indicatorClassName="bg-green-500" 
+                  {canEditBio ? (
+                    <div className="relative flex items-center h-2 group translate-y-[5px]">
+                      <div className="w-full h-1.5 bg-[#333] rounded-full overflow-hidden relative">
+                        <div 
+                          className="h-full bg-green-500 transition-all duration-300 ease-out"
+                          style={{ width: `${playerData.leftLegUsage}%` }}
+                        />
+                      </div>
+                      {/* Visible Slider on Hover */}
+                      <input
+                        type="range"
+                        min="0"
+                        max="100"
+                        value={playerData.leftLegUsage}
+                        onChange={(e) =>
+                          handleUpdate("leftLegUsage", parseInt(e.target.value))
+                        }
+                        style={{
+                          background: `linear-gradient(to right, #22c55e ${playerData.leftLegUsage}%, #333 ${playerData.leftLegUsage}%)`,
+                        }}
+                        className="w-full h-1.5 rounded-full appearance-none cursor-pointer transition-all absolute inset-0 z-10 opacity-0 group-hover:opacity-100 accent-green-500"
+                      />
+                      {/* Always Active Invisible Slider for Dragging */}
+                      <input
+                        type="range"
+                        min="0"
+                        max="100"
+                        value={playerData.leftLegUsage}
+                        onChange={(e) =>
+                          handleUpdate("leftLegUsage", parseInt(e.target.value))
+                        }
+                        className="w-full h-6 opacity-0 cursor-pointer absolute inset-0 z-20"
                       />
                     </div>
+                  ) : (
+                    <Progress 
+                      value={playerData.leftLegUsage} 
+                      style={{ backgroundColor: '#333' }}
+                      indicatorClassName="bg-green-500" 
+                    />
                   )}
                 </div>
                 <div className="border-2 bg-gray-600/30 p-3 rounded-xl">
@@ -518,34 +533,49 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                       type="number"
                       editTrigger="doubleClick"
                       className="text-primary justify-end w-32"
-                      inputClassName="text-right h-6 w-full"
+                      inputClassName="text-right h-7 w-20 bg-gray-900/50 border-gray-700 focus:border-primary transition-all px-2 rounded-md"
                     />
                   </div>
-                  {editingField === "rightLegUsage" ? (
-                    <input
-                      type="range"
-                      value={playerData.rightLegUsage}
-                      onChange={(e) =>
-                        handleUpdate("rightLegUsage", parseInt(e.target.value))
-                      }
-                      onBlur={() => setEditingField(null)}
-                      autoFocus
-                      style={{
-                        backgroundSize: `${playerData.rightLegUsage}% 100%`,
-                        backgroundImage: `linear-gradient(#22c55e, #22c55e)`,
-                        backgroundRepeat: 'no-repeat',
-                        backgroundColor: '#374151'
-                      }}
-                      className="w-full h-1 rounded-lg appearance-none cursor-pointer accent-green-500"
-                    />
-                  ) : (
-                    <div onDoubleClick={() => canEditBio && setEditingField("rightLegUsage")} className="cursor-pointer">
-                      <Progress 
-                        value={playerData.rightLegUsage} 
-                        style={{ backgroundColor: '#d1d5db' }}
-                        indicatorClassName="bg-green-500" 
+                  {canEditBio ? (
+                    <div className="relative flex items-center h-2 group translate-y-[5px]">
+                      <div className="w-full h-1.5 bg-[#333] rounded-full overflow-hidden relative">
+                        <div 
+                          className="h-full bg-green-500 transition-all duration-300 ease-out"
+                          style={{ width: `${playerData.rightLegUsage}%` }}
+                        />
+                      </div>
+                      {/* Visible Slider on Hover */}
+                      <input
+                        type="range"
+                        min="0"
+                        max="100"
+                        value={playerData.rightLegUsage}
+                        onChange={(e) =>
+                          handleUpdate("rightLegUsage", parseInt(e.target.value))
+                        }
+                        style={{
+                          background: `linear-gradient(to right, #22c55e ${playerData.rightLegUsage}%, #333 ${playerData.rightLegUsage}%)`,
+                        }}
+                        className="w-full h-1.5 rounded-full appearance-none cursor-pointer transition-all absolute inset-0 z-10 opacity-0 group-hover:opacity-100 accent-green-500"
+                      />
+                      {/* Always Active Invisible Slider for Dragging */}
+                      <input
+                        type="range"
+                        min="0"
+                        max="100"
+                        value={playerData.rightLegUsage}
+                        onChange={(e) =>
+                          handleUpdate("rightLegUsage", parseInt(e.target.value))
+                        }
+                        className="w-full h-6 opacity-0 cursor-pointer absolute inset-0 z-20"
                       />
                     </div>
+                  ) : (
+                    <Progress 
+                      value={playerData.rightLegUsage} 
+                      style={{ backgroundColor: '#333' }}
+                      indicatorClassName="bg-green-500" 
+                    />
                   )}
                 </div>
               </div>
@@ -602,7 +632,19 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                 </button>
               </div>
               {
-                isPositionMap ? <Image src={positionMap} alt="position map" /> : <Image src={positionMap} className="rotate-180" alt="position map" />
+                isPositionMap ? (
+                  <EditableImage 
+                    src={playerData.positionMap || positionMap} 
+                    alt="position map" 
+                    field="positionMap"
+                  />
+                ) : (
+                  <EditableImage 
+                    src={playerData.futsalMap || positionMap} 
+                    alt="futsal map" 
+                    field="futsalMap"
+                  />
+                )
               }
             </div>
           </div>
@@ -758,52 +800,66 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
               </h2>
               <div className="space-y-2 text-sm">
                 {Object.entries(playerData.strengths).map(([key, value]) => (
-                  <div key={key}>
-                    <div className="flex justify-between mb-1 capitalize">
-                      <span>{key}</span>
+                  <div key={key} className="flex items-center gap-4 p-2 bg-[#1a1a1a]/50 border border-border/50 rounded-lg">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm text-gray-300 capitalize">{key}</p>
+                    </div>
+
+                    <div className="flex-1 min-w-0 max-w-[150px] translate-y-[5px]">
+                      {canEditEvaluation ? (
+                        <div className="relative flex items-center h-2 group">
+                          <div className="w-full h-1.5 bg-[#333] rounded-full overflow-hidden relative">
+                            <div 
+                              className="h-full bg-green-500 transition-all duration-300 ease-out"
+                              style={{ width: `${value}%` }}
+                            />
+                          </div>
+                          <input
+                            type="range"
+                            min="0"
+                            max="100"
+                            value={value as any}
+                            onChange={(e) =>
+                              handleUpdate(`strengths.${key}`, parseInt(e.target.value))
+                            }
+                            style={{
+                              background: `linear-gradient(to right, #22c55e ${value}%, #333 ${value}%)`,
+                            }}
+                            className="w-full h-1.5 rounded-full appearance-none cursor-pointer transition-all absolute inset-0 z-10 opacity-0 group-hover:opacity-100 accent-green-500"
+                          />
+                          <input
+                            type="range"
+                            min="0"
+                            max="100"
+                            value={value as any}
+                            onChange={(e) =>
+                              handleUpdate(`strengths.${key}`, parseInt(e.target.value))
+                            }
+                            className="w-full h-6 opacity-0 cursor-pointer absolute inset-0 z-20"
+                          />
+                        </div>
+                      ) : (
+                        <Progress
+                          value={value as any}
+                          className="h-1.5"
+                          style={{ backgroundColor: '#333' }}
+                          indicatorClassName="bg-green-500"
+                        />
+                      )}
+                    </div>
+
+                    <div className="shrink-0 text-right min-w-[3rem]">
                       <CMSField
                         value={value as any}
                         onUpdate={(val) => handleUpdate(`strengths.${key}`, parseInt(String(val)))}
                         canEdit={canEditEvaluation}
                         type="number"
                         editTrigger="doubleClick"
-                        className="text-primary justify-end w-32"
-                        inputClassName="text-right h-6 w-full"
+                        className="text-primary justify-end w-12"
+                        inputClassName="text-right h-7 w-full bg-gray-900/50 border-gray-700 focus:border-primary transition-all px-2 rounded-md"
+                        hideIcon={true}
                       />
                     </div>
-                    {editingField === `strengths.${key}` ? (
-                      <input
-                        type="range"
-                        value={value as any}
-                        onChange={(e) =>
-                          handleUpdate(
-                            `strengths.${key}`,
-                            parseInt(e.target.value)
-                          )
-                        }
-                        onBlur={() => setEditingField(null)}
-                        autoFocus
-                        style={{
-                          backgroundSize: `${value}% 100%`,
-                          backgroundImage: `linear-gradient(#22c55e, #22c55e)`,
-                          backgroundRepeat: 'no-repeat',
-                          backgroundColor: '#d1d5db'
-                        }}
-                        className="w-full h-1 rounded-lg appearance-none cursor-pointer accent-green-500"
-                      />
-                    ) : (
-                      <div
-                        onDoubleClick={() => canEditEvaluation && setEditingField(`strengths.${key}`)}
-                        className={cn(canEditEvaluation ? "cursor-pointer" : "")}
-                      >
-                        <Progress
-                          value={value as any}
-                          className="h-2"
-                          style={{ backgroundColor: '#d1d5db' }}
-                          indicatorClassName="bg-green-500"
-                        />
-                      </div>
-                    )}
                   </div>
                 ))}
               </div>
@@ -816,52 +872,66 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
               <div className="space-y-2 text-sm">
                 {Object.entries(playerData.performanceMetrics).map(
                   ([key, value]) => (
-                    <div key={key}>
-                      <div className="flex justify-between mb-1 capitalize">
-                        <span>{key.replace(/([A-Z])/g, " $1")}</span>
+                    <div key={key} className="flex items-center gap-4 p-2 bg-[#1a1a1a]/50 border border-border/50 rounded-lg">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-gray-300 capitalize">{key.replace(/([A-Z])/g, " $1")}</p>
+                      </div>
+
+                      <div className="flex-1 min-w-0 max-w-[150px] translate-y-[5px]">
+                        {canEditEvaluation ? (
+                          <div className="relative flex items-center h-2 group">
+                            <div className="w-full h-1.5 bg-[#333] rounded-full overflow-hidden relative">
+                              <div 
+                                className="h-full bg-green-500 transition-all duration-300 ease-out"
+                                style={{ width: `${value}%` }}
+                              />
+                            </div>
+                            <input
+                              type="range"
+                              min="0"
+                              max="100"
+                              value={value as any}
+                              onChange={(e) =>
+                                handleUpdate(`performanceMetrics.${key}`, parseInt(e.target.value))
+                              }
+                              style={{
+                                background: `linear-gradient(to right, #22c55e ${value}%, #333 ${value}%)`,
+                              }}
+                              className="w-full h-1.5 rounded-full appearance-none cursor-pointer transition-all absolute inset-0 z-10 opacity-0 group-hover:opacity-100 accent-green-500"
+                            />
+                            <input
+                              type="range"
+                              min="0"
+                              max="100"
+                              value={value as any}
+                              onChange={(e) =>
+                                handleUpdate(`performanceMetrics.${key}`, parseInt(e.target.value))
+                              }
+                              className="w-full h-6 opacity-0 cursor-pointer absolute inset-0 z-20"
+                            />
+                          </div>
+                        ) : (
+                          <Progress
+                            value={value as any}
+                            className="h-1.5"
+                            style={{ backgroundColor: '#333' }}
+                            indicatorClassName="bg-green-500"
+                          />
+                        )}
+                      </div>
+
+                      <div className="shrink-0 text-right min-w-[3rem]">
                         <CMSField
                           value={value as any}
                           onUpdate={(val) => handleUpdate(`performanceMetrics.${key}`, parseInt(String(val)))}
                           canEdit={canEditEvaluation}
                           type="number"
                           editTrigger="doubleClick"
-                          className="text-primary justify-end w-32"
-                          inputClassName="text-right h-6 w-full"
+                          className="text-primary justify-end w-12"
+                          inputClassName="text-right h-7 w-full bg-gray-900/50 border-gray-700 focus:border-primary transition-all px-2 rounded-md"
+                          hideIcon={true}
                         />
                       </div>
-                      {editingField === `performanceMetrics.${key}` ? (
-                        <input
-                          type="range"
-                          value={value as any}
-                          onChange={(e) =>
-                            handleUpdate(
-                              `performanceMetrics.${key}`,
-                              parseInt(e.target.value)
-                            )
-                          }
-                          onBlur={() => setEditingField(null)}
-                          autoFocus
-                          style={{
-                            backgroundSize: `${value}% 100%`,
-                            backgroundImage: `linear-gradient(#22c55e, #22c55e)`,
-                            backgroundRepeat: 'no-repeat',
-                            backgroundColor: '#d1d5db'
-                          }}
-                          className="w-full h-1 rounded-lg appearance-none cursor-pointer accent-green-500"
-                        />
-                      ) : (
-                        <div
-                          onDoubleClick={() => canEditEvaluation && setEditingField(`performanceMetrics.${key}`)}
-                          className={cn(canEditEvaluation ? "cursor-pointer" : "")}
-                        >
-                          <Progress
-                            value={value as any}
-                            className="h-2"
-                            style={{ backgroundColor: '#d1d5db' }}
-                            indicatorClassName="bg-green-500"
-                          />
-                        </div>
-                      )}
                     </div>
                   )
                 )}
@@ -997,6 +1067,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                     canEdit={canEditEvaluation}
                     isNumeric
                     className="text-3xl font-bold text-primary justify-center"
+                    inputClassName="text-center w-24 h-10 bg-gray-900/50 border-gray-700 focus:border-primary transition-all px-2 rounded-lg"
                   />
                   <div className="text-xs text-gray-400 mt-1">MATCHES</div>
                 </div>
@@ -1007,6 +1078,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                     canEdit={canEditEvaluation}
                     isNumeric
                     className="text-3xl font-bold text-primary justify-center"
+                    inputClassName="text-center w-24 h-10 bg-gray-900/50 border-gray-700 focus:border-primary transition-all px-2 rounded-lg"
                   />
                   <div className="text-xs text-gray-400 mt-1">GOALS</div>
                 </div>
@@ -1017,6 +1089,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                     canEdit={canEditEvaluation}
                     isNumeric
                     className="text-3xl font-bold text-primary justify-center"
+                    inputClassName="text-center w-24 h-10 bg-gray-900/50 border-gray-700 focus:border-primary transition-all px-2 rounded-lg"
                   />
                   <div className="text-xs text-gray-400 mt-1">ASSISTS</div>
                 </div>
@@ -1027,6 +1100,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                     canEdit={canEditEvaluation}
                     isNumeric
                     className="text-3xl font-bold text-primary justify-center"
+                    inputClassName="text-center w-24 h-10 bg-gray-900/50 border-gray-700 focus:border-primary transition-all px-2 rounded-lg"
                   />
                   <div className="text-xs text-gray-400 mt-1">
                     AVERAGE RATING

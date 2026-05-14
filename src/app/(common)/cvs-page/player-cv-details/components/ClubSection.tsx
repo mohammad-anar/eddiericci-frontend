@@ -3,8 +3,9 @@ import React, { useState, useRef } from 'react';
 import { usePlayer } from '@/lib/hooks/usePlayer';
 import { CMSField } from '@/components/shared/CMSField';
 import { cn } from '@/lib/utils';
-import { Plus, Trash2, X, Check } from 'lucide-react';
+import { Plus, Trash2, X, Check, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
 import club1 from '@/assets/cvs-page/club1.png';
 import Image from 'next/image';
@@ -30,6 +31,8 @@ const ClubSection = () => {
   const [fromDate, setFromDate] = useState(YEARS[0]);
   const [toDate, setToDate] = useState("Present");
 
+  const clubCount = playerData?.clubs?.length || 0;
+  const isLimitReached = clubCount >= 6;
 
   const updateClub = (id: string, field: string, value: any) => {
     const newClubs = playerData.clubs.map(club =>
@@ -45,6 +48,10 @@ const ClubSection = () => {
 
   const addClub = () => {
     if (!selectedClub) return;
+    if (isLimitReached) {
+      toast.error("Maximum 6 clubs allowed");
+      return;
+    }
 
     const newClub = {
       id: Math.random().toString(36).substr(2, 9),
@@ -58,16 +65,30 @@ const ClubSection = () => {
     handleUpdate("clubs", [...playerData.clubs, newClub]);
     setIsAdding(false);
     setSelectedClub(null);
+    toast.success("Club added successfully");
   };
 
   return (
     <div className="container py-10 bg-cardBg rounded-xl mt-10">
       <div className="flex justify-between items-center mb-8">
-        <div className="w-10" /> {/* Spacer */}
+        <div className="flex items-center gap-2">
+           <Info size={14} className="text-gray-400" />
+           <span className="text-xs text-gray-400">{clubCount}/6 Clubs</span>
+        </div>
         <h1 className="text-4xl font-light text-center text-foreground font-heading">Clubs</h1>
         <Button
-          onClick={() => setIsAdding(true)}
-          className="bg-primary text-black hover:bg-primary/90"
+          onClick={() => {
+            if (isLimitReached) {
+              toast.error("Maximum 6 clubs allowed. Remove an entry to add a new one.");
+            } else {
+              setIsAdding(true);
+            }
+          }}
+          disabled={isLimitReached && !isAdding}
+          className={cn(
+            "text-black transition-all",
+            isLimitReached ? "bg-gray-600 cursor-not-allowed" : "bg-primary hover:bg-primary/90"
+          )}
           size="sm"
         >
           <Plus className="h-4 w-4 mr-2" /> Add Club

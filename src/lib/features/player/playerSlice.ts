@@ -10,6 +10,7 @@ import right from "@/assets/cvs-page/id/right-legt-image.png";
 import playerImage from "@/assets/cvs-page/id/player-image.png";
 import trofeeIcon from "@/assets/cvs-page/id/trofeeIcon.png";
 import positionMap from "@/assets/cvs-page/id/positionmap.png";
+import futsalMap from "@/assets/cvs-page/id/Futsal Pitch.jpg";
 
 export interface Club {
   id: string;
@@ -115,9 +116,9 @@ const initialState: PlayerData = {
   leftLegImage: leftLeg,
   rightLegImage: right,
   languages: [
-    { name: "Portuguese", level: "NATIVE", color: "text-primary" },
-    { name: "English", level: "FLUENT", color: "text-yellow" },
-    { name: "Spanish", level: "INTERMEDIATE", color: "text-orange" },
+    { name: "Portuguese", level: "Native", color: "text-primary" },
+    { name: "English", level: "Fluent", color: "text-yellow" },
+    { name: "Spanish", level: "Intermediate", color: "text-orange" },
   ],
   rating: 94,
   playerImage: playerImage,
@@ -274,7 +275,7 @@ const initialState: PlayerData = {
       ],
     },
   ],
-  futsalMap: positionMap,
+  futsalMap: futsalMap,
   positionMap: positionMap,
 };
 

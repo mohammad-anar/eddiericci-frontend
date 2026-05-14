@@ -9,6 +9,7 @@ import flagImage from "@/assets/cvs-page/id/flag.png";
 import leftLeg from "@/assets/cvs-page/id/left-leg-image.png";
 import playerImage from "@/assets/cvs-page/id/player-image.png";
 import positionMap from "@/assets/cvs-page/id/positionmap.png";
+import futsal from "@/assets/cvs-page/id/positionmap.png";
 import right from "@/assets/cvs-page/id/right-legt-image.png";
 import trofeeIcon from "@/assets/cvs-page/id/trofeeIcon.png";
 import { Button } from "@/components/ui/button";
@@ -600,29 +601,24 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
               <h2 className="text-lg text-center font-heading font-normal mb-4">
                 Languages
               </h2>
-              <div className="space-y-2 text-sm">
+              <div className="space-y-3">
                 {playerData.languages.map((lang: any, idx: number) => (
-                  <div key={idx} className="flex justify-between items-center gap-4">
+                  <div key={idx} className="flex justify-between items-center p-2 bg-black/20 border border-border/50 rounded-lg group hover:bg-black/40 transition-all">
                     <CMSField
                       value={lang.name}
-                      onUpdate={(val) => {
-                        const newLangs = [...playerData.languages];
-                        newLangs[idx] = { ...newLangs[idx], name: String(val) };
-                        handleUpdate("languages", newLangs);
-                      }}
+                      onUpdate={(val) => handleUpdate(`languages.${idx}.name`, val)}
                       canEdit={canEditBio}
-                      className="flex-1"
+                      className="flex-1 font-medium text-gray-200"
                     />
                     <CMSField
-                      value={lang.level}
-                      onUpdate={(val) => {
-                        const newLangs = [...playerData.languages];
-                        newLangs[idx] = { ...newLangs[idx], level: String(val) };
-                        handleUpdate("languages", newLangs);
-                      }}
+                      value={lang.level || "Fluent"}
+                      onUpdate={(val) => handleUpdate(`languages.${idx}.level`, val)}
                       canEdit={canEditBio}
-                      className="w-24 justify-end"
-                      inputClassName="text-right"
+                      type="select"
+                      options={["Native", "Fluent", "Intermediate", "Beginner"]}
+                      className="w-32 justify-end"
+                      inputClassName="text-right text-primary font-bold"
+                      hideIcon={true}
                     />
                   </div>
                 ))}

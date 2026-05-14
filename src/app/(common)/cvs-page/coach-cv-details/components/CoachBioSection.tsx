@@ -116,12 +116,29 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
 
 
 
-  const handleImageUpload = (file: File, field: string) => {
+  const handleImageUpload = async (file: File, field: string) => {
+    let processedFile = file;
+
+    if (field === "coachImage" || field === "playerImage") {
+      try {
+        const { toast } = await import("sonner");
+        toast.loading("Removing background... Please wait.", { id: "bg-removal" });
+        const { removeBackground } = await import("@imgly/background-removal");
+        const blob = await removeBackground(file);
+        processedFile = new File([blob], file.name, { type: "image/png" });
+        toast.success("Background removed!", { id: "bg-removal" });
+      } catch (error) {
+        console.error("Background removal failed:", error);
+        const { toast } = await import("sonner");
+        toast.error("Background removal failed. Using original image.", { id: "bg-removal" });
+      }
+    }
+
     const reader = new FileReader();
     reader.onloadend = () => {
       handleUpdate(field, reader.result);
     };
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(processedFile);
   };
 
   const EditableImage = ({
@@ -511,13 +528,13 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
               />
             </div>
 
-            {/* Coach Image */}
-            <div className="relative w-full h-[500px] mb-8 ">
+            <div className="relative w-full h-[723px] mb-8 flex items-end justify-center">
               <EditableImage
                 src={coachData.coachImage}
                 alt={coachData.fullName}
-                fill
-                className="object-contain"
+                className="object-contain w-auto h-full"
+                width={800}
+                height={800}
                 field="coachImage"
               />
             </div>

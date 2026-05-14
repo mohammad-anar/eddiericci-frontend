@@ -180,8 +180,8 @@ export function MetricsAnalysis({ editable = false }: { editable?: boolean }) {
                       </TableCell>
 
                       <TableCell className="border-r border-border min-w-[250px]">
-                        <div className="flex items-center justify-center gap-3">
-                          <div className="relative flex-1 flex items-center h-2 group min-w-[120px] translate-y-[5px]">
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="relative flex-1 min-w-0 flex items-center h-2 group translate-y-[5px]">
                             {editable ? (
                               <>
                                 <div className="w-full h-1.5 bg-[#333] rounded-full overflow-hidden relative">
@@ -231,14 +231,16 @@ export function MetricsAnalysis({ editable = false }: { editable?: boolean }) {
                               />
                             )}
                           </div>
-                          <CMSField
-                            value={metric.score}
-                            onUpdate={(val) => handleUpdate(activeTab, idx, 'score', val)}
-                            canEdit={editable}
-                            isNumeric
-                            className="font-medium text-sm min-w-[35px] justify-end"
-                            inputClassName="text-right w-16"
-                          />
+                          <div className="shrink-0">
+                            <CMSField
+                              value={metric.score}
+                              onUpdate={(val) => handleUpdate(activeTab, idx, 'score', val)}
+                              canEdit={editable}
+                              isNumeric
+                              className="font-medium text-sm justify-end"
+                              inputClassName="text-right w-12 bg-gray-900 border-gray-700"
+                            />
+                          </div>
                         </div>
                       </TableCell>
 

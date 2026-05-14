@@ -161,14 +161,14 @@ export function SkillsAttributes({ editable = false }: { editable?: boolean }) {
                   const color = getHexColor(category.category);
                   
                   return (
-                    <div key={skill.name} className="flex items-center gap-2 p-1.5 bg-[#1a1a1a]/40 border border-border/40 rounded-lg group/skill transition-colors hover:bg-[#1a1a1a]/60">
-                      <div className="w-[85px] shrink-0">
-                        <span className="text-xs text-gray-300 truncate block">
+                    <div key={skill.name} className="grid grid-cols-[85px_1fr_auto] items-center gap-2 p-1.5 bg-[#1a1a1a]/40 border border-border/40 rounded-lg group/skill transition-colors hover:bg-[#1a1a1a]/60">
+                      <div className="truncate">
+                        <span className="text-[10px] text-gray-400 capitalize truncate block">
                           {skill.name}
                         </span>
                       </div>
 
-                      <div className="flex-1 min-w-0 max-w-[150px] translate-y-[5px]">
+                      <div className="min-w-0 translate-y-[5px]">
                         {editable ? (
                           <div className="relative flex items-center h-2 group">
                             <div className="w-full h-1.5 bg-[#333] rounded-full overflow-hidden relative">
@@ -215,15 +215,15 @@ export function SkillsAttributes({ editable = false }: { editable?: boolean }) {
                         )}
                       </div>
 
-                      <div className="shrink-0">
+                      <div className="flex justify-end">
                         <CMSField
                           value={skill.value}
                           onUpdate={(val) => handleUpdate(catIdx, skillIdx, parseInt(String(val)))}
                           canEdit={editable}
                           type="number"
                           editTrigger="doubleClick"
-                          className="text-primary justify-end w-8"
-                          inputClassName="text-right h-5 w-full text-[10px]"
+                          className="text-primary font-bold text-[10px] justify-end"
+                          inputClassName="text-right h-5 w-12 text-[10px] bg-gray-900"
                           hideIcon={true}
                         />
                       </div>

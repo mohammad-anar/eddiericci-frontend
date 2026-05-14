@@ -129,15 +129,30 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
 
   const [isPositionMap, setIsPositionMap] = useState(true);
 
-  const handleImageUpload = (
+  const handleImageUpload = async (
     file: File,
     field: string
   ) => {
+    let processedFile = file;
+
+    if (field === "playerImage") {
+      try {
+        toast.loading("Removing background... Please wait.", { id: "bg-removal" });
+        const { removeBackground } = await import("@imgly/background-removal");
+        const blob = await removeBackground(file);
+        processedFile = new File([blob], file.name, { type: "image/png" });
+        toast.success("Background removed!", { id: "bg-removal" });
+      } catch (error) {
+        console.error("Background removal failed:", error);
+        toast.error("Background removal failed. Using original image.", { id: "bg-removal" });
+      }
+    }
+
     const reader = new FileReader();
     reader.onloadend = () => {
       handleUpdate(field, reader.result);
     };
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(processedFile);
   };
 
   const EditableImage = ({
@@ -225,7 +240,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
         "selectedStyleIds",
         currentStyles.filter((styleId: any) => styleId !== id)
       );
-    } else if (currentStyles.length < 5) {
+    } else if (currentStyles.length < 4) {
       handleUpdate("selectedStyleIds", [...currentStyles, id]);
     }
   };
@@ -476,7 +491,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                   {canEditBio ? (
                     <div className="relative flex items-center h-2 group translate-y-[5px]">
                       <div className="w-full h-1.5 bg-[#333] rounded-full overflow-hidden relative">
-                        <div 
+                        <div
                           className="h-full bg-green-500 transition-all duration-300 ease-out"
                           style={{ width: `${playerData.leftLegUsage}%` }}
                         />
@@ -508,10 +523,10 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                       />
                     </div>
                   ) : (
-                    <Progress 
-                      value={playerData.leftLegUsage} 
+                    <Progress
+                      value={playerData.leftLegUsage}
                       style={{ backgroundColor: '#333' }}
-                      indicatorClassName="bg-green-500" 
+                      indicatorClassName="bg-green-500"
                     />
                   )}
                 </div>
@@ -539,7 +554,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                   {canEditBio ? (
                     <div className="relative flex items-center h-2 group translate-y-[5px]">
                       <div className="w-full h-1.5 bg-[#333] rounded-full overflow-hidden relative">
-                        <div 
+                        <div
                           className="h-full bg-green-500 transition-all duration-300 ease-out"
                           style={{ width: `${playerData.rightLegUsage}%` }}
                         />
@@ -571,10 +586,10 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                       />
                     </div>
                   ) : (
-                    <Progress 
-                      value={playerData.rightLegUsage} 
+                    <Progress
+                      value={playerData.rightLegUsage}
                       style={{ backgroundColor: '#333' }}
-                      indicatorClassName="bg-green-500" 
+                      indicatorClassName="bg-green-500"
                     />
                   )}
                 </div>
@@ -633,15 +648,15 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
               </div>
               {
                 isPositionMap ? (
-                  <EditableImage 
-                    src={playerData.positionMap || positionMap} 
-                    alt="position map" 
+                  <EditableImage
+                    src={playerData.positionMap || positionMap}
+                    alt="position map"
                     field="positionMap"
                   />
                 ) : (
-                  <EditableImage 
-                    src={playerData.futsalMap || positionMap} 
-                    alt="futsal map" 
+                  <EditableImage
+                    src={playerData.futsalMap || positionMap}
+                    alt="futsal map"
                     field="futsalMap"
                   />
                 )
@@ -713,13 +728,13 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
             </div>
 
             {/* Player Image */}
-            <div className="relative w-full h-[723px] mb-8">
+            <div className="relative w-full h-[523px] mb-8 flex  items-end justify-center">
               <EditableImage
                 src={playerData.playerImage}
                 alt={playerData.fullName}
-                className="object-contain w-[300px] mx-auto h-full"
-                width={300}
-                height={300}
+                className="object-contain w-auto mx-auto h-[500px]"
+                width={800}
+                height={1000}
                 field="playerImage"
               />
             </div>
@@ -740,7 +755,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                       </DialogTrigger>
                       <DialogContent className="bg-cardBg border-border text-foreground">
                         <DialogHeader>
-                          <DialogTitle>Select Player Styles (Max 3)</DialogTitle>
+                          <DialogTitle>Select Player Styles (Max 4)</DialogTitle>
                         </DialogHeader>
                         <div className="grid grid-cols-2 gap-4 py-4">
                           {ALL_STYLES.map((style) => (
@@ -757,7 +772,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                                 disabled={
                                   !playerData.selectedStyleIds.includes(
                                     style.id
-                                  ) && playerData.selectedStyleIds.length >= 5
+                                  ) && playerData.selectedStyleIds.length >= 4
                                 }
                               />
                               <Label
@@ -779,7 +794,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                     <div key={style.id} className="space-y-4">
                       <div className="flex justify-center">
                         <Image
-                          src={styleBadges[index >= 3 ? index - 2 : index]}
+                          src={styleBadges[index % styleBadges.length]}
                           className="w-20 h-20"
                           alt={style.label}
                         />
@@ -800,16 +815,16 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
               </h2>
               <div className="space-y-2 text-sm">
                 {Object.entries(playerData.strengths).map(([key, value]) => (
-                  <div key={key} className="flex items-center gap-4 p-2 bg-[#1a1a1a]/50 border border-border/50 rounded-lg">
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm text-gray-300 capitalize">{key}</p>
+                  <div key={key} className="grid grid-cols-[80px_1fr_auto] items-center gap-2 p-2 bg-[#1a1a1a]/50 border border-border/50 rounded-lg group hover:bg-[#1a1a1a]/80 transition-colors">
+                    <div className="truncate">
+                      <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest leading-none">{key}</p>
                     </div>
 
-                    <div className="flex-1 min-w-0 max-w-[150px] translate-y-[5px]">
+                    <div className="min-w-0 translate-y-[5px]">
                       {canEditEvaluation ? (
                         <div className="relative flex items-center h-2 group">
                           <div className="w-full h-1.5 bg-[#333] rounded-full overflow-hidden relative">
-                            <div 
+                            <div
                               className="h-full bg-green-500 transition-all duration-300 ease-out"
                               style={{ width: `${value}%` }}
                             />
@@ -848,15 +863,15 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                       )}
                     </div>
 
-                    <div className="shrink-0 text-right min-w-[3rem]">
+                    <div className="flex justify-end">
                       <CMSField
                         value={value as any}
                         onUpdate={(val) => handleUpdate(`strengths.${key}`, parseInt(String(val)))}
                         canEdit={canEditEvaluation}
                         type="number"
                         editTrigger="doubleClick"
-                        className="text-primary justify-end w-12"
-                        inputClassName="text-right h-7 w-full bg-gray-900/50 border-gray-700 focus:border-primary transition-all px-2 rounded-md"
+                        className="text-primary font-bold text-xs justify-end"
+                        inputClassName="text-right h-7 w-16 bg-gray-900 border-primary/50 focus:border-primary transition-all px-2 rounded-md"
                         hideIcon={true}
                       />
                     </div>
@@ -872,16 +887,16 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
               <div className="space-y-2 text-sm">
                 {Object.entries(playerData.performanceMetrics).map(
                   ([key, value]) => (
-                    <div key={key} className="flex items-center gap-4 p-2 bg-[#1a1a1a]/50 border border-border/50 rounded-lg">
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm text-gray-300 capitalize">{key.replace(/([A-Z])/g, " $1")}</p>
+                    <div key={key} className="grid grid-cols-[80px_1fr_auto] items-center gap-2 p-2 bg-[#1a1a1a]/50 border border-border/50 rounded-lg group hover:bg-[#1a1a1a]/80 transition-colors">
+                      <div className="truncate">
+                        <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest leading-none">{key.replace(/([A-Z])/g, " $1")}</p>
                       </div>
 
-                      <div className="flex-1 min-w-0 max-w-[150px] translate-y-[5px]">
+                      <div className="min-w-0 translate-y-[5px]">
                         {canEditEvaluation ? (
                           <div className="relative flex items-center h-2 group">
                             <div className="w-full h-1.5 bg-[#333] rounded-full overflow-hidden relative">
-                              <div 
+                              <div
                                 className="h-full bg-green-500 transition-all duration-300 ease-out"
                                 style={{ width: `${value}%` }}
                               />
@@ -920,15 +935,15 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                         )}
                       </div>
 
-                      <div className="shrink-0 text-right min-w-[3rem]">
+                      <div className="flex justify-end">
                         <CMSField
                           value={value as any}
                           onUpdate={(val) => handleUpdate(`performanceMetrics.${key}`, parseInt(String(val)))}
                           canEdit={canEditEvaluation}
                           type="number"
                           editTrigger="doubleClick"
-                          className="text-primary justify-end w-12"
-                          inputClassName="text-right h-7 w-full bg-gray-900/50 border-gray-700 focus:border-primary transition-all px-2 rounded-md"
+                          className="text-primary font-bold text-xs justify-end"
+                          inputClassName="text-right h-7 w-16 bg-gray-900 border-primary/50 focus:border-primary transition-all px-2 rounded-md"
                           hideIcon={true}
                         />
                       </div>
@@ -1008,46 +1023,31 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
               <h2 className="text-lg text-center font-heading font-normal mb-4">
                 Career Highlights
               </h2>
-              <div className="space-y-2 text-xs text-gray-300 border-l-2 border-green-600 pl-2">
+              <div className="space-y-6 border-l-2 border-green-600 pl-4 mt-6">
                 {playerData.careerHighlights.map((highlight: any, idx: number) => (
-                  <div key={idx} className="flex gap-2 items-start mb-4">
-                    <div className="relative w-8 h-8 mt-0.5 shrink-0">
-                      <EditableImage
-                        src={highlight.icon}
-                        alt="trofee"
-                        field={`careerHighlights.${idx}.icon`}
+                  <div key={idx} className="flex gap-4 items-center">
+                    <div className="relative w-10 h-10 shrink-0 flex items-center justify-center">
+                      <Image
+                        src={trofeeIcon}
+                        alt="Achievement"
+                        width={36}
+                        height={36}
+                        className="object-contain drop-shadow-md"
                       />
                     </div>
-                    <div className="flex flex-col gap-1 w-full">
+                    <div className="flex flex-col gap-0.5 w-full">
                       <CMSField
                         value={highlight.year}
-                        onUpdate={(val) => {
-                          const newHighlights = [...playerData.careerHighlights];
-                          newHighlights[idx] = { ...newHighlights[idx], year: String(val) };
-                          handleUpdate("careerHighlights", newHighlights);
-                        }}
+                        onUpdate={(val) => handleUpdate(`careerHighlights.${idx}.year`, val)}
                         canEdit={canEditBio}
-                        className="text-[10px]"
+                        className="text-xs font-black text-primary/80 tracking-widest"
                       />
                       <CMSField
                         value={highlight.title}
-                        onUpdate={(val) => {
-                          const newHighlights = [...playerData.careerHighlights];
-                          newHighlights[idx] = { ...newHighlights[idx], title: String(val) };
-                          handleUpdate("careerHighlights", newHighlights);
-                        }}
+                        onUpdate={(val) => handleUpdate(`careerHighlights.${idx}.title`, val)}
                         canEdit={canEditBio}
-                        className="text-[10px]"
-                      />
-                      <CMSField
-                        value={highlight.club}
-                        onUpdate={(val) => {
-                          const newHighlights = [...playerData.careerHighlights];
-                          newHighlights[idx] = { ...newHighlights[idx], club: String(val) };
-                          handleUpdate("careerHighlights", newHighlights);
-                        }}
-                        canEdit={canEditBio}
-                        className="text-[10px]"
+                        className="text-base text-gray-400 leading-none tracking-tight"
+                        inputClassName="h-7 text-base font-black"
                       />
                     </div>
                   </div>

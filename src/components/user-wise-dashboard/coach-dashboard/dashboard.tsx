@@ -1,11 +1,11 @@
 "use client";
 import React, { useContext } from "react";
 import { CoachContext } from "@/app/dashboard/coach/layout";
-import { 
-  IconUser, 
-  IconBallFootball, 
-  IconUsers, 
-  IconChartBar, 
+import {
+  IconUser,
+  IconBallFootball,
+  IconUsers,
+  IconChartBar,
   IconSettings,
   IconDownload,
   IconShare,
@@ -16,12 +16,12 @@ import {
   IconExternalLink,
   IconCircleCheck
 } from "@tabler/icons-react";
-import { 
-  Radar, 
-  RadarChart, 
-  PolarGrid, 
-  PolarAngleAxis, 
-  PolarRadiusAxis, 
+import {
+  Radar,
+  RadarChart,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
   ResponsiveContainer,
   PieChart,
   Pie,
@@ -128,8 +128,8 @@ export const CoachDashboard = () => {
       key: "actions",
       align: "right",
       render: () => (
-        <TableActionButtons 
-          onView={() => console.log("View player")} 
+        <TableActionButtons
+          onView={() => console.log("View player")}
           viewColor="text-[#E31B23] hover:text-white border-[#E31B23]/20 hover:border-[#E31B23] bg-[#E31B23]/5 hover:bg-[#E31B23]"
         />
       ),
@@ -142,7 +142,7 @@ export const CoachDashboard = () => {
         {/* Left Column */}
         <div className="lg:col-span-9 space-y-6">
           {/* Hero Section */}
-          <DashboardHero 
+          <DashboardHero
             backgroundImage="/stadium-night.jpg"
             rating={58} // In CoachBioSection it was [58]
             badgeText={`${coachData.transferStatus} Coach`}
@@ -243,16 +243,16 @@ export const CoachDashboard = () => {
                         <Cell key={`cell-${index}`} fill={entry.color} stroke="none" />
                       ))}
                     </Pie>
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{ backgroundColor: '#111', border: '1px solid #333', color: '#fff' }}
                       itemStyle={{ color: '#fff' }}
                     />
-                    <Legend 
-                      verticalAlign="bottom" 
+                    <Legend
+                      verticalAlign="bottom"
                       align="center"
                       iconType="square"
                       iconSize={8}
-                      wrapperStyle={{ 
+                      wrapperStyle={{
                         paddingTop: '20px',
                         paddingBottom: '10px'
                       }}
@@ -266,55 +266,55 @@ export const CoachDashboard = () => {
 
           {/* My CV Section */}
           <div className="p-8 rounded-2xl border border-white/20 bg-[#0D0D0D]">
-             <h2 className="text-xl font-bold text-white mb-6">My CV</h2>
-             <div className="flex flex-col lg:flex-row gap-8 items-start justify-between">
-                {/* Progress Card */}
-                <div className="p-5 rounded-xl border border-white/10 bg-white/[0.02] w-full lg:w-auto min-w-[200px]">
-                   <span className="text-[10px] text-gray-500 uppercase font-black tracking-widest">Profile Completion</span>
-                   <div className="text-4xl font-black text-[#E31B23] italic mt-1 mb-3">85%</div>
-                   <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
-                      <div className="h-full bg-[#E31B23] rounded-full" style={{ width: '85%' }} />
-                   </div>
+            <h2 className="text-xl font-bold text-white mb-6">My CV</h2>
+            <div className="flex flex-col lg:flex-row gap-8 items-start justify-between">
+              {/* Progress Card */}
+              <div className="p-5 rounded-xl border border-white/10 bg-white/[0.02] w-full lg:w-auto min-w-[200px]">
+                <span className="text-[10px] text-gray-500 uppercase font-black tracking-widest">Profile Completion</span>
+                <div className="text-4xl font-black text-[#E31B23] italic mt-1 mb-3">85%</div>
+                <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+                  <div className="h-full bg-[#E31B23] rounded-full" style={{ width: '85%' }} />
+                </div>
+              </div>
+
+              {/* Info and Checklist */}
+              <div className="flex-1 space-y-6">
+                <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+                  {[
+                    { label: 'Personal Info', checked: true },
+                    { label: 'Key Accomplishments', checked: true },
+                    { label: 'Major Trophies', checked: true },
+                    { label: 'Key Skills', checked: true },
+                    { label: 'Courses', checked: true }
+                  ].map((item) => (
+                    <div key={item.label} className="flex items-center gap-2">
+                      <IconCircleCheck size={18} className="text-green-500" />
+                      <span className="text-sm font-bold text-white">{item.label}</span>
+                    </div>
+                  ))}
                 </div>
 
-                {/* Info and Checklist */}
-                <div className="flex-1 space-y-6">
-                   <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-                      {[
-                        { label: 'Personal Info', checked: true },
-                        { label: 'Key Accomplishments', checked: true },
-                        { label: 'Major Trophies', checked: true },
-                        { label: 'Key Skills', checked: true },
-                        { label: 'Courses', checked: true }
-                      ].map((item) => (
-                        <div key={item.label} className="flex items-center gap-2">
-                          <IconCircleCheck size={18} className="text-green-500" />
-                          <span className="text-sm font-bold text-white">{item.label}</span>
-                        </div>
-                      ))}
-                   </div>
-
-                   <div className="flex gap-4">
-                      <div className="w-1 h-12 bg-white/40 rounded-full" />
-                      <div>
-                        <h4 className="text-base font-bold text-white mb-1 italic">Silver</h4>
-                        <p className="text-xs text-gray-500 max-w-md leading-relaxed">
-                          Your CV meets silver standards and is ready to share with top clubs and agents.
-                        </p>
-                      </div>
-                   </div>
+                <div className="flex gap-4">
+                  <div className="w-1 h-12 bg-white/40 rounded-full" />
+                  <div>
+                    <h4 className="text-base font-bold text-white mb-1 italic">Silver</h4>
+                    <p className="text-xs text-gray-500 max-w-md leading-relaxed">
+                      Your CV meets silver standards and is ready to share with top clubs and agents.
+                    </p>
+                  </div>
                 </div>
+              </div>
 
-                {/* Buttons */}
-                <div className="flex flex-col gap-2 w-full lg:w-auto">
-                   <button className="px-6 py-2.5 rounded-lg border border-white/10 bg-white/10 text-xs font-bold text-white hover:bg-white/20 transition-all text-center">
-                      Download PDF
-                   </button>
-                   <button className="px-6 py-2.5 rounded-lg border border-white/10 bg-white/10 text-xs font-bold text-white hover:bg-white/20 transition-all text-center">
-                      Share Agent
-                   </button>
-                </div>
-             </div>
+              {/* Buttons */}
+              <div className="flex flex-col gap-2 w-full lg:w-auto">
+                <button className="px-6 py-2.5 rounded-lg border border-white/10 bg-white/10 text-xs font-bold text-white hover:bg-white/20 transition-all text-center">
+                  Download PDF
+                </button>
+                <button className="px-6 py-2.5 rounded-lg border border-white/10 bg-white/10 text-xs font-bold text-white hover:bg-white/20 transition-all text-center">
+                  Share Agent
+                </button>
+              </div>
+            </div>
           </div>
 
           {/* Media Sections */}
@@ -405,16 +405,16 @@ export const CoachDashboard = () => {
           <section className="p-6 rounded-2xl border border-white/20 bg-[#0D0D0D]">
             <h2 className="text-sm font-bold text-white uppercase tracking-widest mb-6 italic">Quickk stats</h2>
             <div className="space-y-4">
-               {[
-                 { label: "Matches Coached", value: coachData.seasonStats.matches.toString(), color: "text-white" },
-                 { label: "Total Wins", value: coachData.seasonStats.wins.toString(), color: "text-red-500" },
-                 { label: "Clean Sheets", value: coachData.seasonStats.cleanSheets.toString(), color: "text-green-500" },
-               ].map((stat) => (
-                 <div key={stat.label} className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">{stat.label}</span>
-                    <span className={`text-sm font-black italic ${stat.color}`}>{stat.value}</span>
-                 </div>
-               ))}
+              {[
+                { label: "Matches Coached", value: coachData.seasonStats.matches.toString(), color: "text-white" },
+                { label: "Total Wins", value: coachData.seasonStats.wins.toString(), color: "text-red-500" },
+                { label: "Clean Sheets", value: coachData.seasonStats.cleanSheets.toString(), color: "text-green-500" },
+              ].map((stat) => (
+                <div key={stat.label} className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">{stat.label}</span>
+                  <span className={`text-sm font-black italic ${stat.color}`}>{stat.value}</span>
+                </div>
+              ))}
             </div>
           </section>
         </div>
@@ -440,26 +440,26 @@ const MediaBlock = ({ title, type, items }: { title: string, type: 'image' | 'vi
       {items.map((item, idx) => (
         <div key={idx} className="group relative rounded-xl overflow-hidden border border-white/20 bg-[#111]">
           <div className="relative aspect-video overflow-hidden">
-             <img src={item.img} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 opacity-60" alt={item.title} />
-             {type === 'video' && (
-                <div className="absolute inset-0 flex items-center justify-center">
-                   <div className="w-10 h-10 rounded-full bg-[#E31B23] flex items-center justify-center shadow-2xl">
-                      <IconPlayerPlay size={20} className="text-white fill-current ml-0.5" />
-                   </div>
+            <img src={item.img} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 opacity-60" alt={item.title} />
+            {type === 'video' && (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-full bg-[#E31B23] flex items-center justify-center shadow-2xl">
+                  <IconPlayerPlay size={20} className="text-white fill-current ml-0.5" />
                 </div>
-             )}
+              </div>
+            )}
           </div>
           <div className="p-3">
-             <h4 className="text-xs font-bold text-white truncate">{item.title}</h4>
-             <p className="text-[9px] text-gray-500 uppercase font-bold tracking-widest mt-1">{item.date}</p>
-             <div className="flex items-center gap-3 mt-3">
-                <div className="flex items-center gap-1 text-[10px] text-gray-400">
-                   <IconEye size={12} /> {item.views}
-                </div>
-                <div className="flex items-center gap-1 text-[10px] text-gray-400">
-                   <IconHeart size={12} className="text-[#E31B23]" /> {item.likes}
-                </div>
-             </div>
+            <h4 className="text-xs font-bold text-white truncate">{item.title}</h4>
+            <p className="text-[9px] text-gray-500 uppercase font-bold tracking-widest mt-1">{item.date}</p>
+            <div className="flex items-center gap-3 mt-3">
+              <div className="flex items-center gap-1 text-[10px] text-gray-400">
+                <IconEye size={12} /> {item.views}
+              </div>
+              <div className="flex items-center gap-1 text-[10px] text-gray-400">
+                <IconHeart size={12} className="text-[#E31B23]" /> {item.likes}
+              </div>
+            </div>
           </div>
         </div>
       ))}

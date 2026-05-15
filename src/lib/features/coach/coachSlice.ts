@@ -8,6 +8,10 @@ import coachStyleImage from "@/assets/cvs-page/id/coach-style-image.png";
 import flagFr from "@/assets/cvs-page/id/flag-fr.png";
 import flagIt from "@/assets/cvs-page/id/flag-itally.png";
 import trophyIcon from "@/assets/cvs-page/id/trofeeIcon.png";
+import courseLogo1 from "@/assets/cvs-page/id/courses-logo1.png";
+import courseLogo2 from "@/assets/cvs-page/id/courses-logo2.png";
+import courseLogo3 from "@/assets/cvs-page/id/courses-logo3.png";
+import courseLogo4 from "@/assets/cvs-page/id/courses-logo4.png";
 
 export interface CoachLanguage {
   name: string;
@@ -46,6 +50,10 @@ export interface CoachData {
   mainFlag: any;
   coachType: string;
   selectedStyleIds: string[];
+  complementaryLogos: { id: number; name: string; image: any }[];
+  complementaryCourses: { id: number; title: string }[];
+  formationMarkers: { id: number; x: number; y: number }[][];
+  testimonials: { id: number; name: string; role: string; text: string; avatar: string }[];
 }
 
 const initialState: CoachData = {
@@ -119,6 +127,87 @@ const initialState: CoachData = {
   ],
   coachType: "Head Coach",
   selectedStyleIds: ["tiki-taka", "motivator", "youth-development"],
+  complementaryLogos: [
+    { id: 1, name: 'Logo 1', image: courseLogo1 },
+    { id: 2, name: 'Logo 2', image: courseLogo2 },
+    { id: 3, name: 'Logo 3', image: courseLogo3 },
+    { id: 4, name: 'Logo 4', image: courseLogo4 },
+  ],
+  complementaryCourses: [
+    { id: 1, title: 'Level 1 Coaching Certificate' },
+    { id: 2, title: 'Football Management' },
+    { id: 3, title: 'Level 3 Coaching Certificate' },
+    { id: 4, title: 'Technical Coordination in the Base Categories' },
+    { id: 5, title: 'Performance Analysis in Professional Football' },
+    { id: 6, title: 'Strength, Power and Speed from Base to Professional' },
+    { id: 7, title: 'Level 2 Coaching Certificate' },
+  ],
+  formationMarkers: [[], [], []],
+  testimonials: [
+    {
+      id: 1,
+      name: 'Emanuel',
+      role: 'Assistant Coach',
+      text: 'Working with this coach changed everything for our team. Skills that felt impossible now look effortless.',
+      avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop'
+    },
+    {
+      id: 2,
+      name: 'Dylan Hodges',
+      role: 'Head Coach of the club',
+      text: 'The coach improved our squad faster than we expected. Progress that used to take months now shows within days.',
+      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop'
+    },
+    {
+      id: 3,
+      name: 'Madonna',
+      role: 'Youth Academy Director',
+      text: 'Our players develop twice as fast under this coach. What once felt confusing is now clear and structured.',
+      avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop'
+    },
+    {
+      id: 4,
+      name: 'Iris Barrows',
+      role: 'Professional Scout',
+      text: 'This coach unlocked a new level in my son\'s game. Techniques that took ages to grasp now make perfect sense.',
+      avatar: 'https://images.unsplash.com/photo-1534528741775-53a8c9c0c0d0?w=400&h=400&fit=crop'
+    },
+    {
+      id: 5,
+      name: 'Jitzsche',
+      role: 'National Data Engineer',
+      text: 'Simplified learning for our players. Skills that took forever to pick up now come quickly.',
+      avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop'
+    },
+    {
+      id: 6,
+      name: 'Elliott',
+      role: 'Senior Tactics Executive',
+      text: 'The coach has simplified learning for our players. Skills that took forever to pick up now come quickly.',
+      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop'
+    },
+    {
+      id: 7,
+      name: 'Evelyn Pollich',
+      role: 'Strategist',
+      text: 'Our team grows rapidly with this coach. Drills that used to drain the boys now boost their confidence.',
+      avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop'
+    },
+    {
+      id: 8,
+      name: 'Shanelle',
+      role: 'Coordinator',
+      text: 'The coach brought discipline and clarity. Progress that was slow before now happens session after session.',
+      avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop'
+    },
+    {
+      id: 9,
+      name: 'Aletha',
+      role: 'Assistant',
+      text: 'This coach helps players improve. Techniques that took repeated practice now look natural.',
+      avatar: 'https://images.unsplash.com/photo-1534528741775-53a8c9c0c0d0?w=400&h=400&fit=crop'
+    }
+  ]
 };
 
 export const coachSlice = createSlice({

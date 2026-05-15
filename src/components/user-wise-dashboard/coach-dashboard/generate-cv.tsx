@@ -15,12 +15,21 @@ import {
   IconMail,
   IconShield,
   IconShare,
-  IconTrophy
+  IconTrophy,
+  IconBallFootball
 } from "@tabler/icons-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import FullEditableCv from "@/app/(common)/cvs-page/coach-cv-details/components/FullEditableCv";
+import { useCoach } from "@/lib/hooks/useCoach";
+import { usePlayerStats } from "@/app/(common)/cvs-page/player-cv-details/components/FullEditablePage";
+
+const pendingReports = [
+  { id: 1, name: "Marcus Silva", position: "Forward", rating: 9.2, avatar: "https://i.pravatar.cc/150?u=1" },
+  { id: 2, name: "David Chen", position: "Midfielder", rating: 8.8, avatar: "https://i.pravatar.cc/150?u=2" },
+  { id: 3, name: "Alex Jonson", position: "Defender", rating: 8.5, avatar: "https://i.pravatar.cc/150?u=3" },
+];
 
 const CareerItem = ({ logo, name, role, years, type }: { logo: string; name: string; role: string; years: string; type: string }) => (
   <div className="bg-black/40 border border-white/10 rounded-2xl p-4 flex flex-col gap-3 group hover:border-white/20 transition-all">
@@ -41,7 +50,13 @@ const CareerItem = ({ logo, name, role, years, type }: { logo: string; name: str
 );
 
 const GenerateCvCoach = () => {
+  const { coachData } = useCoach();
+  const { bioRating, skillsAvg, metricsAvg, attributesAvg } = usePlayerStats();
   const [role, setRole] = useState<string>("coach");
+
+  const overallRating = Math.round(
+    (bioRating + skillsAvg + metricsAvg + attributesAvg) / 4
+  );
 
   useEffect(() => {
     const userRole = localStorage.getItem("userRole") || "coach";
@@ -290,60 +305,7 @@ const GenerateCvCoach = () => {
         </Button>
       </div>
 
-      {/* Top Squares - As requested by client doc */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-full">
-        {/* Completion Status */}
-        <div className="bg-[#111111] rounded-3xl border border-white/10 p-8 flex flex-col gap-6">
-          <h3 className="text-sm font-black text-white font-orbitron uppercase tracking-widest">Completion Status</h3>
-          <div className="space-y-4">
-            <div className="flex justify-between items-end">
-              <span className="text-5xl font-black text-[#E31B23] font-orbitron">85%</span>
-            </div>
-            <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden">
-              <div className="h-full bg-[#E31B23] rounded-full" style={{ width: "85%" }} />
-            </div>
-            <p className="text-[10px] text-white/40 font-bold leading-relaxed uppercase tracking-wider">
-              Complete all sections to unlock Gold tier status
-            </p>
-          </div>
-        </div>
 
-        {/* Tier Status */}
-        <div className="bg-[#111111] rounded-3xl border border-white/10 p-8 flex flex-col gap-6 relative overflow-hidden">
-          <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#FBBF24]/10 blur-3xl rounded-full" />
-          <div className="flex flex-col">
-            <h3 className="text-3xl font-black text-[#FBBF24] font-orbitron italic tracking-tighter leading-none">GOLD</h3>
-            <div className="w-full h-1 bg-[#FBBF24] mt-2 opacity-50" />
-          </div>
-          <p className="text-[10px] text-white/60 font-bold leading-relaxed uppercase tracking-wider mt-2">
-            Your CV meets Gold standards and is ready to share with top clubs and agents.
-          </p>
-          <Button className="bg-white/5 hover:bg-white/10 text-white border border-white/10 gap-2 w-full py-4 rounded-xl font-black uppercase tracking-widest text-[10px] h-auto mt-4">
-            <IconShare size={18} className="text-white/40" /> Request Re-validation
-          </Button>
-        </div>
-
-        {/* Career Journey / Last Team */}
-        <div className="bg-[#111111] h-fit rounded-3xl border border-white/10 p-8 flex flex-col gap-6">
-          <div className="flex items-center gap-2">
-            <div className="p-2 bg-[#E31B23]/10 rounded-lg text-[#E31B23]">
-              <IconShare size={18} />
-            </div>
-            <h3 className="text-sm font-black text-white font-orbitron uppercase tracking-widest">
-              Career Journey
-            </h3>
-          </div>
-          <div className="flex flex-col gap-4">
-            <div className="h-32 overflow-y-auto pr-3 flex flex-col gap-3">
-              <CareerItem logo="/Manchester-City-F.C-Transparent-File 1.png" name="Manchester City" role="Head Coach" years="2020-Present" type="Active" />
-              <CareerItem logo="/pngegg.png" name="Liverpool FC" role="Assistant Coach" years="2016-2020" type="Completed" />
-            </div>
-            <Button className="w-full bg-white/5 hover:bg-white/10 text-white/40 border border-white/10 py-4 rounded-xl font-bold uppercase tracking-widest text-[10px] h-auto gap-2">
-              <IconPlus size={16} /> Add
-            </Button>
-          </div>
-        </div>
-      </div>
 
       {/* Main Content */}
       <div className="flex flex-col gap-6">
@@ -368,19 +330,19 @@ const GenerateCvCoach = () => {
             <div className="relative p-6 md:p-10 w-full space-y-8">
               <div className="flex flex-col gap-6">
                 <div className="w-20 h-20 md:w-24 md:h-24 rounded-full border-4 border-gold bg-gold/80 flex items-center justify-center backdrop-blur-2xl shadow-2xl">
-                  <span className="text-3xl md:text-4xl font-black text-white font-orbitron">88</span>
+                  <span className="text-3xl md:text-4xl font-black text-white font-orbitron">{overallRating}</span>
                 </div>
                 <div className="space-y-4">
-                  <div className="bg-[#E31B23] border border-[#E31B23]/20 px-4 py-1.5 rounded-full text-[10px] font-black text-white uppercase w-fit tracking-[0.2em] shadow-[0_0_20px_rgba(227,27,35,0.3)]">Active Coach</div>
+                  <div className="bg-[#E31B23] border border-[#E31B23]/20 px-4 py-1.5 rounded-full text-[10px] font-black text-white uppercase w-fit tracking-[0.2em] shadow-[0_0_20px_rgba(227,27,35,0.3)]">{coachData.transferStatus}</div>
                   <div className="space-y-2">
-                    <h1 className="text-3xl md:text-6xl font-black text-white font-orbitron uppercase tracking-tighter leading-none">Coach Profile</h1>
+                    <h1 className="text-3xl md:text-6xl font-black text-white font-orbitron uppercase tracking-tighter leading-none">{coachData.fullName}</h1>
                     <div className="flex flex-wrap items-center gap-3 md:gap-6 text-[9px] md:text-[11px] font-black uppercase tracking-[0.2em] pt-1">
-                      <span className="text-[#E31B23]">Head Coach</span>
+                      <span className="text-[#E31B23]">{coachData.coachType}</span>
                       <span className="text-white/20 hidden md:inline">/</span>
                       <span className="text-white">15+ Years Experience</span>
                       <span className="text-white/20 hidden md:inline">/</span>
                       <span className="flex items-center gap-3 text-white">
-                        <img src="https://flagcdn.com/br.svg" alt="Brazil" className="w-4 h-3 md:w-5 md:h-3.5 object-cover rounded-sm shadow-sm" /> Professional
+                        <img src="https://flagcdn.com/br.svg" alt={coachData.birthCountry} className="w-4 h-3 md:w-5 md:h-3.5 object-cover rounded-sm shadow-sm" /> {coachData.birthCountry}
                       </span>
                     </div>
                   </div>
@@ -392,14 +354,14 @@ const GenerateCvCoach = () => {
                   <div className="p-3 bg-white/5 rounded-xl border border-white/10 text-white/40"><IconShield size={20} /></div>
                   <div>
                     <p className="text-[10px] text-white/40 uppercase font-black tracking-widest">Current Club</p>
-                    <p className="text-sm font-bold text-white">Professional FC</p>
+                    <p className="text-sm font-bold text-white">{coachData.clubs[0]?.name || "N/A"}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="p-3 bg-white/5 rounded-xl border border-white/10 text-white/40"><IconPhone size={20} /></div>
                   <div>
                     <p className="text-[10px] text-white/40 uppercase font-black tracking-widest">Contact</p>
-                    <p className="text-sm font-bold text-white">+44 7700 900000</p>
+                    <p className="text-sm font-bold text-white">{coachData.phone}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
@@ -413,15 +375,75 @@ const GenerateCvCoach = () => {
                   <div className="p-3 bg-white/5 rounded-xl border border-white/10 text-white/40"><IconMail size={20} /></div>
                   <div>
                     <p className="text-[10px] text-white/40 uppercase font-black tracking-widest">Email</p>
-                    <p className="text-sm font-bold text-white truncate max-w-[180px]">coach@k10football.com</p>
+                    <p className="text-sm font-bold text-white truncate max-w-[180px]">{coachData.email}</p>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </section>
+
+        {/* Top Squares - As requested by client doc */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-full">
+          {/* Completion Status */}
+          <div className="bg-[#111111] rounded-3xl border border-white/10 p-8 flex flex-col gap-6">
+            <h3 className="text-sm font-black text-white font-orbitron uppercase tracking-widest">Completion Status</h3>
+            <div className="space-y-4">
+              <div className="flex justify-between items-end">
+                <span className="text-5xl font-black text-[#E31B23] font-orbitron">85%</span>
+              </div>
+              <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden">
+                <div className="h-full bg-[#E31B23] rounded-full" style={{ width: "85%" }} />
+              </div>
+              <p className="text-[10px] text-white/40 font-bold leading-relaxed uppercase tracking-wider">
+                Complete all sections to unlock Gold tier status
+              </p>
+            </div>
+          </div>
+
+          {/* Tier Status */}
+          <div className="bg-[#111111] rounded-3xl border border-white/10 p-8 flex flex-col gap-6 relative overflow-hidden">
+            <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#FBBF24]/10 blur-3xl rounded-full" />
+            <div className="flex flex-col">
+              <h3 className="text-3xl font-black text-[#FBBF24] font-orbitron italic tracking-tighter leading-none">GOLD</h3>
+              <div className="w-full h-1 bg-[#FBBF24] mt-2 opacity-50" />
+            </div>
+            <p className="text-[10px] text-white/60 font-bold leading-relaxed uppercase tracking-wider mt-2">
+              Your CV meets Gold standards and is ready to share with top clubs and agents.
+            </p>
+            <Button className="bg-white/5 hover:bg-white/10 text-white border border-white/10 gap-2 w-full py-4 rounded-xl font-black uppercase tracking-widest text-[10px] h-auto mt-4">
+              <IconShare size={18} className="text-white/40" /> Request Re-validation
+            </Button>
+          </div>
+
+          {/* Pending Game Reports */}
+          <section className="p-6 rounded-2xl border border-white/20 bg-[#0D0D0D]">
+            <div className="flex items-center gap-2 mb-6">
+              <div className="p-2 rounded-lg bg-[#E31B23]/10 text-[#E31B23]">
+                <IconBallFootball size={20} />
+              </div>
+              <h2 className="text-sm font-bold text-white uppercase tracking-widest">Pending Game Reports</h2>
+            </div>
+            <div className="space-y-4">
+              {pendingReports.map((report) => (
+                <div key={report.id} className="flex items-center justify-between p-3 rounded-xl bg-white/10 border border-white/20 group hover:border-[#E31B23]/50 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <img src={report.avatar} className="w-10 h-10 rounded-full object-cover" alt={report.name} />
+                    <div>
+                      <div className="text-sm font-bold text-white">{report.name}</div>
+                      <div className="text-[10px] text-gray-500 uppercase tracking-widest">{report.position}</div>
+                    </div>
+                  </div>
+                  <div className="text-lg font-black text-white italic">{report.rating}</div>
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
         <FullEditableCv editable={true} />
       </div>
+
+
       <style jsx global>{`
         @media print {
           @page {

@@ -29,7 +29,7 @@ const AttributeDonut = ({ score, color }: { score: number; color: string }) => {
             value={score}
             position="center"
             fill={color}
-            className="text-lg font-bold"
+            className="text-2xl font-black"
           />
         </Pie>
       </PieChart>
@@ -118,33 +118,33 @@ const AttributesAnalysis = ({ editable = false }: { editable?: boolean }) => {
         {cards.map((card, index) => (
           <div
             key={index}
-            className="border border-border bg-black/30 rounded-lg p-8 flex flex-col items-center"
+            className="border border-border bg-black/30 rounded-lg p-8 flex flex-col items-center hover:bg-black/50 transition-colors"
           >
             {/* Title */}
-            <h3 className="text-lg font-light font-heading text-center mb-6">
+            <h3 className="text-xl font-bold font-heading text-center mb-8 uppercase tracking-widest text-primary/90">
               {card.title}
             </h3>
 
             {/* Donut Chart */}
-            <div className="flex flex-col items-center mb-8">
+            <div className="flex flex-col items-center mb-10">
               <AttributeDonut score={card.score} color={card.color} />
-              <span className="mt-2 text-xl font-bold text-white">
+              <span className="mt-4 text-3xl font-black text-white">
                 {card.score}
               </span>
             </div>
 
             {/* Score Text */}
-            <p className="text-sm text-gray-400 text-center mb-6">Score</p>
+            <p className="text-xs uppercase tracking-widest text-gray-500 font-black text-center mb-8">Overall Score</p>
 
             {/* Attributes List */}
-            <div className="w-full space-y-3">
+            <div className="w-full space-y-4">
               {card.attributes.map((attr, attrIndex) => (
                 <div
                   key={attrIndex}
-                  className="flex justify-between border-b border-white/10 pb-2 items-center text-sm"
+                  className="flex justify-between border-b border-white/10 pb-2 items-center text-base"
                 >
-                  <span className="text-gray-300">{attr.name}</span>
-                  <span className="font-medium text-white">{attr.value}</span>
+                  <span className="text-gray-400 font-bold uppercase tracking-wide">{attr.name}</span>
+                  <span className="font-black text-white text-lg">{attr.value}</span>
                 </div>
               ))}
             </div>
@@ -155,4 +155,4 @@ const AttributesAnalysis = ({ editable = false }: { editable?: boolean }) => {
   )
 }
 
-export default AttributesAnalysis;
+export default AttributesAnalysis;

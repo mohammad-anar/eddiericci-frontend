@@ -176,12 +176,12 @@ export default function PlayerProfile({
             </div>
 
             {/* Player Info */}
-            <div className="text-center p-6 space-y-3">
+            <div className="text-center p-8 space-y-4">
               <CMSField
                 value={playerData.fullName}
                 onUpdate={(val) => handleInfoChange("fullName", val)}
                 canEdit={false}
-                className="text-2xl font-bold justify-center"
+                className="text-3xl font-black justify-center uppercase tracking-tight"
                 inputClassName="text-center"
               />
               <div className="flex items-center justify-center gap-2">
@@ -189,26 +189,26 @@ export default function PlayerProfile({
                   value={playerData.birthCountry}
                   onUpdate={(val) => handleInfoChange("birthCountry", val)}
                   canEdit={false}
-                  className="text-base text-gray-300"
+                  className="text-lg text-gray-300 font-bold uppercase tracking-wider"
                   inputClassName="text-center"
                 />
-                <div className="flex items-center gap-1.5 ml-1">
+                <div className="flex items-center gap-2 ml-1">
                   {getFlagUrl(playerData.birthCountry) && (
                     <Image
                       src={getFlagUrl(playerData.birthCountry)}
                       alt="birth country flag"
-                      width={32}
-                      height={20}
-                      className="w-6 h-4 object-cover rounded-sm shadow-sm"
+                      width={40}
+                      height={24}
+                      className="w-8 h-5 object-cover rounded-sm shadow-md"
                     />
                   )}
                   {playerData.dualNationality && getFlagUrl(playerData.dualNationality) && (
                     <Image
                       src={getFlagUrl(playerData.dualNationality)}
                       alt="dual nationality flag"
-                      width={32}
-                      height={20}
-                      className="w-6 h-4 object-cover rounded-sm shadow-sm"
+                      width={40}
+                      height={24}
+                      className="w-8 h-5 object-cover rounded-sm shadow-md"
                     />
                   )}
                 </div>
@@ -217,7 +217,7 @@ export default function PlayerProfile({
                 value={playerData.position}
                 onUpdate={(val) => handleInfoChange("position", val)}
                 canEdit={false}
-                className="text-sm text-gray-400 justify-center"
+                className="text-base text-primary/80 font-black justify-center uppercase tracking-[0.2em]"
                 inputClassName="text-center"
               />
             </div>
@@ -231,11 +231,11 @@ export default function PlayerProfile({
               {attrData.map((attr, idx) => (
                 <div
                   key={idx}
-                  className="flex items-center gap-4 p-4 bg-[#1a1a1a] border border-border rounded-lg"
+                  className="flex items-center gap-6 p-5 bg-[#1a1a1a] border border-border rounded-lg hover:bg-[#222] transition-colors"
                 >
                   {/* Attribute Name */}
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-gray-300">{attr.name}</p>
+                    <p className="text-base font-bold text-gray-200 uppercase tracking-wide">{attr.name}</p>
                   </div>
 
                   {/* Progress Bar / Slider */}
@@ -253,9 +253,9 @@ export default function PlayerProfile({
                           style={{
                             background: `linear-gradient(to right, ${getHexColor(attr.score)} ${attr.score}%, #333 ${attr.score}%)`,
                           }}
-                          className="w-full h-1.5 rounded-full appearance-none cursor-pointer accent-primary hover:accent-primary transition-all absolute inset-0 z-10 opacity-0 group-hover:opacity-100"
+                          className="w-full h-2 rounded-full appearance-none cursor-pointer accent-primary hover:accent-primary transition-all absolute inset-0 z-10 opacity-0 group-hover:opacity-100"
                         />
-                        <div className="w-full h-1.5 bg-[#333] rounded-full overflow-hidden relative">
+                        <div className="w-full h-2 bg-[#333] rounded-full overflow-hidden relative">
                           <div
                             className={cn("h-full transition-all duration-300 ease-out", getIndicatorColor(attr.score))}
                             style={{ width: `${attr.score}%` }}
@@ -270,13 +270,13 @@ export default function PlayerProfile({
                           onChange={(e) =>
                             handleUpdate(attr.name, parseInt(e.target.value))
                           }
-                          className="w-full h-6 opacity-0 cursor-pointer absolute inset-0 z-20"
+                          className="w-full h-8 opacity-0 cursor-pointer absolute inset-0 z-20"
                         />
                       </div>
                     ) : (
                       <Progress
                         value={attr.score}
-                        className="h-1.5"
+                        className="h-2"
                         style={{ backgroundColor: '#333' }}
                         indicatorClassName={getIndicatorColor(attr.score)}
                       />
@@ -284,23 +284,23 @@ export default function PlayerProfile({
                   </div>
 
                   {/* Score */}
-                  <div className="shrink-0 text-right min-w-[4rem] transition-all duration-300">
+                  <div className="shrink-0 text-right min-w-[5rem] transition-all duration-300">
                     <CMSField
                       value={attr.score}
                       onUpdate={(val) => handleUpdate(attr.name, parseInt(String(val)))}
                       canEdit={editable}
                       type="number"
                       editTrigger="doubleClick"
-                      className="text-base font-semibold justify-end"
+                      className="text-xl font-black justify-end uppercase"
                       style={{ color: getHexColor(attr.score) }}
-                      inputClassName="text-right h-7 w-16 bg-gray-900/50 border-gray-700 focus:border-primary transition-all px-2 rounded-md"
+                      inputClassName="text-right h-8 w-20 text-lg bg-gray-900/50 border-gray-700 focus:border-primary transition-all px-2 rounded-md uppercase"
                     />
                   </div>
 
                   {/* Status Badge */}
-                  <div className="w-24">
+                  <div className="w-32">
                     <Badge
-                      className={`${getBadgeVariant(attr.status)} border text-xs font-semibold justify-center w-full`}
+                      className={`${getBadgeVariant(attr.status)} border text-sm font-black justify-center w-full py-1 uppercase tracking-tighter`}
                     >
                       {attr.status}
                     </Badge>

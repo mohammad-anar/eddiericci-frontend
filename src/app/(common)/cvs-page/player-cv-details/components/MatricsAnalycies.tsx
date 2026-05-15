@@ -131,7 +131,7 @@ export function MetricsAnalysis({ editable = false }: { editable?: boolean }) {
                 <TabsTrigger
                   key={category}
                   value={category}
-                  className="rounded-full font-medium transition-all data-[state=active]:bg-primary data-[state=active]:text-black data-[state=inactive]:text-foreground"
+                  className="rounded-full text-base font-bold transition-all data-[state=active]:bg-primary data-[state=active]:text-black data-[state=inactive]:text-foreground uppercase tracking-widest py-2"
                 >
                   {category}
                 </TabsTrigger>
@@ -141,17 +141,17 @@ export function MetricsAnalysis({ editable = false }: { editable?: boolean }) {
             <TabsContent value={activeTab}>
               <Table className="border border-border">
                 <TableHeader>
-                  <TableRow className="border-border">
-                    <TableHead className="border-r border-border">
+                  <TableRow className="border-border bg-white/5">
+                    <TableHead className="border-r border-border text-gray-400 font-black uppercase tracking-wider h-14">
                       Category
                     </TableHead>
-                    <TableHead className="text-center border-r border-border">
+                    <TableHead className="text-center border-r border-border text-gray-400 font-black uppercase tracking-wider h-14">
                       Score (0-100)
                     </TableHead>
-                    <TableHead className="text-center border-r border-border">
+                    <TableHead className="text-center border-r border-border text-gray-400 font-black uppercase tracking-wider h-14">
                       Trend
                     </TableHead>
-                    <TableHead className="text-right">
+                    <TableHead className="text-right text-gray-400 font-black uppercase tracking-wider h-14">
                       Grade
                     </TableHead>
                   </TableRow>
@@ -163,12 +163,13 @@ export function MetricsAnalysis({ editable = false }: { editable?: boolean }) {
                       key={idx}
                       className="border-b border-border hover:bg-[#262626] transition-colors"
                     >
-                      <TableCell className="font-medium border-r border-border">
+                      <TableCell className="border-r border-border py-4">
                         <CMSField
                           value={metric.category}
                           onUpdate={(val) => handleUpdate(activeTab, idx, 'category', val)}
                           canEdit={editable}
-                          className="w-full"
+                          className="w-full font-bold text-base uppercase text-gray-200"
+                          inputClassName="text-base font-bold uppercase"
                         />
                       </TableCell>
 
@@ -230,31 +231,31 @@ export function MetricsAnalysis({ editable = false }: { editable?: boolean }) {
                               onUpdate={(val) => handleUpdate(activeTab, idx, 'score', val)}
                               canEdit={editable}
                               isNumeric
-                              className="font-medium text-sm justify-end"
+                              className="font-black text-lg justify-end"
                               style={{ color: metric.score >= 80 ? '#22c55e' : metric.score >= 60 ? '#eab308' : '#ef4444' }}
-                              inputClassName="text-right w-12 bg-gray-900 border-gray-700"
+                              inputClassName="text-right w-16 text-lg bg-gray-900 border-gray-700 font-black"
                             />
                           </div>
                         </div>
                       </TableCell>
 
                       <TableCell className="text-center border-r border-border">
-                        <div className="flex justify-center">
-                          <span className="text-primary font-medium text-sm">+</span>
+                        <div className="flex justify-center items-center gap-1">
+                          <span className="text-primary font-black text-base">+</span>
                           <CMSField
                             value={metric.trend}
                             onUpdate={(val) => handleUpdate(activeTab, idx, 'trend', val)}
                             canEdit={editable}
                             isNumeric
-                            className="text-primary font-medium text-sm"
-                            inputClassName="w-12 text-center"
+                            className="text-primary font-black text-base"
+                            inputClassName="w-14 text-center text-base font-black"
                           />
                         </div>
                       </TableCell>
 
                       <TableCell className="text-right">
                         <Badge
-                          className={`font-medium min-w-[80px] justify-center ${getGradeColor(metric.grade)}`}
+                          className={`font-black text-sm min-w-[100px] py-1.5 justify-center uppercase tracking-tighter ${getGradeColor(metric.grade)} shadow-md`}
                         >
                           {metric.grade}
                         </Badge>

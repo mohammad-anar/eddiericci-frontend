@@ -1138,14 +1138,17 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                         value={highlight.year}
                         onUpdate={(val) => handleUpdate(`careerHighlights.${idx}.year`, val)}
                         canEdit={canEditBio}
-                        className="text-xs font-black text-primary/80 tracking-widest"
+                        type="textarea"
+                        className="text-xs font-black text-primary/80 tracking-widest leading-relaxed"
+                        inputClassName="text-xs font-black min-h-[30px] py-0.5"
                       />
                       <CMSField
                         value={highlight.title}
                         onUpdate={(val) => handleUpdate(`careerHighlights.${idx}.title`, val)}
                         canEdit={canEditBio}
-                        className="text-base text-gray-400 leading-none tracking-tight"
-                        inputClassName="h-7 text-base font-black"
+                        type="textarea"
+                        className="text-sm md:text-base text-gray-400 leading-relaxed tracking-tight"
+                        inputClassName="text-base font-black min-h-[40px] py-1"
                       />
                     </div>
                   </div>

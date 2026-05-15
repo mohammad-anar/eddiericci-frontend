@@ -204,7 +204,10 @@ export const CMSField = ({
       onClick={() => canEdit && editTrigger === "click" && setIsEditing(true)}
       onDoubleClick={() => canEdit && editTrigger === "doubleClick" && setIsEditing(true)}
     >
-      <span className={cn("truncate", type === "textarea" && "whitespace-pre-wrap truncate-none")}>{value}</span>
+      <span className={cn(
+        type !== "textarea" && "truncate",
+        type === "textarea" && "whitespace-pre-wrap"
+      )}>{value}</span>
       {canEdit && !hideIcon && (
         <PencilIcon className="h-3 w-3 opacity-0 group-hover:opacity-100 text-primary transition-opacity" />
       )}

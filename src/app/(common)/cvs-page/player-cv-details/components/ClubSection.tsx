@@ -3,7 +3,7 @@ import React, { useState, useRef } from 'react';
 import { usePlayer } from '@/lib/hooks/usePlayer';
 import { CMSField } from '@/components/shared/CMSField';
 import { cn } from '@/lib/utils';
-import { Plus, Trash2, X, Check, Info } from 'lucide-react';
+import { Plus, Trash2, X, Check, Info, Upload, Image as ImageIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
@@ -13,26 +13,35 @@ import Image from 'next/image';
 const YEARS = Array.from({ length: 30 }, (_, i) => String(new Date().getFullYear() - i));
 const TO_YEARS = ["Present", ...YEARS];
 
-const PREDEFINED_CLUBS = [
-  { name: "Manchester City", logo: club1, color: "border-blue-400" },
-  { name: "Liverpool FC", logo: club1, color: "border-red-500" },
-  { name: "Chelsea FC", logo: club1, color: "border-blue-500" },
-  { name: "Arsenal FC", logo: club1, color: "border-white" },
-  { name: "Real Madrid", logo: club1, color: "border-yellow-500" },
-  { name: "Barcelona FC", logo: club1, color: "border-blue-900" },
-  { name: "Bayern Munich", logo: club1, color: "border-white" },
-  { name: "Paris Saint-Germain", logo: club1, color: "border-red-600" },
-];
-
 const ClubSection = () => {
   const { playerData, handleUpdate } = usePlayer();
   const [isAdding, setIsAdding] = useState(false);
-  const [selectedClub, setSelectedClub] = useState<typeof PREDEFINED_CLUBS[0] | null>(null);
+  
+  // States for new club entry
+  const [newClubName, setNewClubName] = useState("");
+  const [newClubLogo, setNewClubLogo] = useState<string | null>(null);
   const [fromDate, setFromDate] = useState(YEARS[0]);
   const [toDate, setToDate] = useState("Present");
+  
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const clubCount = playerData?.clubs?.length || 0;
   const isLimitReached = clubCount >= 6;
+
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) { // 2MB limit
+        toast.error("File size too large. Max 2MB.");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setNewClubLogo(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const updateClub = (id: string, field: string, value: any) => {
     const newClubs = playerData.clubs.map(club =>
@@ -47,7 +56,10 @@ const ClubSection = () => {
   };
 
   const addClub = () => {
-    if (!selectedClub) return;
+    if (!newClubName.trim()) {
+      toast.error("Please enter a club name");
+      return;
+    }
     if (isLimitReached) {
       toast.error("Maximum 6 clubs allowed");
       return;
@@ -55,16 +67,19 @@ const ClubSection = () => {
 
     const newClub = {
       id: Math.random().toString(36).substr(2, 9),
-      name: selectedClub.name,
+      name: newClubName,
       from: fromDate,
       to: toDate,
-      logo: selectedClub.logo,
-      color: selectedClub.color,
+      logo: newClubLogo || club1, // Use uploaded logo or fallback
+      color: "border-primary", // Default border color for new entries
     };
 
     handleUpdate("clubs", [...playerData.clubs, newClub]);
+    
+    // Reset state
     setIsAdding(false);
-    setSelectedClub(null);
+    setNewClubName("");
+    setNewClubLogo(null);
     toast.success("Club added successfully");
   };
 
@@ -86,7 +101,7 @@ const ClubSection = () => {
           }}
           disabled={isLimitReached && !isAdding}
           className={cn(
-            "text-black transition-all",
+            "text-black transition-all font-bold",
             isLimitReached ? "bg-gray-600 cursor-not-allowed" : "bg-primary hover:bg-primary/90"
           )}
           size="sm"
@@ -112,10 +127,10 @@ const ClubSection = () => {
               <div className="shrink-0 relative group/logo">
                 <div className={cn(
                   "w-20 h-20 rounded-full border-2 flex items-center justify-center overflow-hidden bg-gray-900",
-                  club.color
+                  club.color || "border-primary"
                 )}>
                   <Image
-                    src={club1}
+                    src={(club.logo && !club.logo.startsWith('bg-')) ? club.logo : club1}
                     alt={club.name}
                     width={80}
                     height={80}
@@ -124,9 +139,12 @@ const ClubSection = () => {
                 </div>
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="text-lg font-semibold text-foreground truncate">
-                  {club.name}
-                </h3>
+                <CMSField
+                  value={club.name}
+                  onUpdate={(val) => updateClub(club.id, "name", val)}
+                  canEdit={true}
+                  className="text-lg font-semibold text-foreground truncate uppercase"
+                />
                 <div className="flex items-center gap-1 text-sm text-gray-400 mt-1">
                   <CMSField
                     value={club.from}
@@ -163,22 +181,38 @@ const ClubSection = () => {
                 </button>
               </div>
 
-              <div className="space-y-3">
-                <div className="space-y-1">
-                  <span className="text-[10px] text-gray-500 uppercase">Select Club</span>
-                  <select
-                    className="w-full bg-gray-900 border border-gray-800 rounded px-2 py-1 text-sm text-white"
-                    onChange={(e) => {
-                      const club = PREDEFINED_CLUBS.find(c => c.name === e.target.value);
-                      if (club) setSelectedClub(club);
-                    }}
-                    value={selectedClub?.name || ""}
+              <div className="space-y-4">
+                {/* Logo Upload Section */}
+                <div className="flex flex-col items-center gap-3">
+                  <div 
+                    onClick={() => fileInputRef.current?.click()}
+                    className="w-20 h-20 rounded-full border-2 border-dashed border-gray-700 bg-black/40 flex items-center justify-center cursor-pointer hover:border-primary transition-colors overflow-hidden"
                   >
-                    <option value="" disabled>Choose a club...</option>
-                    {PREDEFINED_CLUBS.map(c => (
-                      <option key={c.name} value={c.name}>{c.name}</option>
-                    ))}
-                  </select>
+                    {newClubLogo ? (
+                      <Image src={newClubLogo} alt="Preview" width={80} height={80} className="object-contain p-2" />
+                    ) : (
+                      <Upload size={24} className="text-gray-500" />
+                    )}
+                  </div>
+                  <span className="text-[10px] text-gray-500 uppercase">Club Logo</span>
+                  <input 
+                    type="file" 
+                    ref={fileInputRef} 
+                    className="hidden" 
+                    accept="image/*"
+                    onChange={handleLogoUpload}
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <span className="text-[10px] text-gray-500 uppercase">Club Name</span>
+                  <input
+                    type="text"
+                    placeholder="Enter club name..."
+                    className="w-full bg-gray-900 border border-gray-800 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-primary transition-colors"
+                    value={newClubName}
+                    onChange={(e) => setNewClubName(e.target.value)}
+                  />
                 </div>
 
                 <div className="grid grid-cols-2 gap-2">
@@ -206,8 +240,8 @@ const ClubSection = () => {
 
                 <Button
                   onClick={addClub}
-                  disabled={!selectedClub}
-                  className="w-full bg-primary text-black hover:bg-primary/90 mt-2"
+                  disabled={!newClubName.trim()}
+                  className="w-full bg-primary text-black font-bold hover:bg-primary/90 mt-2"
                   size="sm"
                 >
                   <Check className="h-4 w-4 mr-2" /> Confirm Add

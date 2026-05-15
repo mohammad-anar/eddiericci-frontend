@@ -153,9 +153,9 @@ export function SkillsAttributes({ editable = false }: { editable?: boolean }) {
                   const color = getHexColor(skill.value);
                   
                   return (
-                    <div key={skill.name} className="grid grid-cols-[85px_1fr_auto] items-center gap-2 p-1.5 bg-[#1a1a1a]/40 border border-border/40 rounded-lg group/skill transition-colors hover:bg-[#1a1a1a]/60">
+                    <div key={skill.name} className="grid grid-cols-[100px_1fr_auto] items-center gap-2 p-1.5 bg-[#1a1a1a]/40 border border-border/40 rounded-lg group/skill transition-colors hover:bg-[#1a1a1a]/60">
                       <div className="truncate">
-                        <span className="text-[10px] text-gray-400 capitalize truncate block">
+                        <span className="text-xs font-bold text-gray-400 uppercase truncate block">
                           {skill.name}
                         </span>
                       </div>
@@ -208,9 +208,9 @@ export function SkillsAttributes({ editable = false }: { editable?: boolean }) {
                           canEdit={editable}
                           type="number"
                           editTrigger="doubleClick"
-                          className="font-bold text-[10px] justify-end"
+                          className="font-bold text-xs justify-end uppercase"
                           style={{ color: getHexColor(skill.value) }}
-                          inputClassName="text-right h-5 w-12 text-[10px] bg-gray-900"
+                          inputClassName="text-right h-6 w-14 text-xs bg-gray-900 uppercase"
                           hideIcon={true}
                         />
                       </div>

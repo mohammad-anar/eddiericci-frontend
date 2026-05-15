@@ -13,6 +13,12 @@ import { CMSField } from "@/components/shared/CMSField";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { usePlayer } from "@/lib/hooks/usePlayer";
+import goldCard from "@/assets/cvs-page/gold-card.png";
+import pinkCard from "@/assets/cvs-page/pink-card.png";
+import whiteCard from "@/assets/cvs-page/white-card.png";
+import flag1 from "@/assets/cvs-page/flag1.png";
+import club1 from "@/assets/cvs-page/club1.png";
+import { useRouter } from "next/navigation";
 
 const COUNTRY_CODES: Record<string, string> = {
   "afghanistan": "af", "albania": "al", "algeria": "dz", "andorra": "ad", "angola": "ao",
@@ -59,6 +65,7 @@ const COUNTRY_CODES: Record<string, string> = {
   "vanuatu": "vu", "vatican city": "va", "venezuela": "ve", "vietnam": "vn", "yemen": "ye",
   "zambia": "zm", "zimbabwe": "zw"
 };
+
 
 interface Attribute {
   name: string;
@@ -108,6 +115,7 @@ export default function PlayerProfile({
 }: {
   editable?: boolean;
 }) {
+  const router = useRouter();
   const { bioRating, skillsAvg, metricsAvg, attributesAvg, role } =
     usePlayerStats();
   const { playerData, handleUpdate: updatePlayerData } = usePlayer();
@@ -116,6 +124,34 @@ export default function PlayerProfile({
   const overallRating = Math.round(
     (bioRating + skillsAvg + metricsAvg + attributesAvg) / 4,
   );
+
+  const getStatValue = (names: string[]) => {
+    const values = names.map(name => {
+      for (const cat of playerData.skillsCategories || []) {
+        const skill = cat.skills.find(s => s.name.toLowerCase() === name.toLowerCase());
+        if (skill) return skill.value;
+      }
+      return 75; // baseline
+    });
+    return Math.round(values.reduce((a, b) => a + b, 0) / values.length);
+  };
+
+  const currentStats = {
+    pac: getStatValue(["Acceleration", "Sprint Speed"]),
+    sho: getStatValue(["Shooting", "Finishing", "Long Shots"]),
+    pas: getStatValue(["Short Passing", "Long Passing", "Crossing"]),
+    dri: getStatValue(["Dribbling", "Ball Control", "Agility"]),
+    def: getStatValue(["Marking", "Interceptions", "Tackling", "Heading"]),
+    phy: getStatValue(["Strength", "Stamina", "Aggression", "Jumping"])
+  };
+
+  const currentPlayer = {
+    name: playerData.fullName?.split(' ').pop()?.toUpperCase() || "PLAYER",
+    rating: overallRating,
+    position: playerData.position || "ST",
+    stats: currentStats,
+    cardType: (overallRating >= 80 ? "gold" : overallRating >= 60 ? "pink" : "white") as "gold" | "white" | "pink"
+  };
 
   const attrData: Attribute[] = playerData.skillsCategories
     .flatMap(c => c.skills)
@@ -153,15 +189,121 @@ export default function PlayerProfile({
         {/* Left Section - Player Card */}
         <div className="lg:col-span-1  bg-cardBg h-fit rounded-xl overflow-hidden">
           <div className=" overflow-hidden">
-            {/* Player Image */}
             <div className="aspect-square bg-gradient-to-b from-[#2df168] to-[#39493b] flex items-center justify-center">
-              <Image
-                src={playerData.playerImage || playerImage}
-                alt="Player"
-                width={500}
-                height={500}
-                className="w-full h-full object-contain"
-              />
+              <div onClick={() => router.push("/cvs-page/player-cv-details")} className="flex min-w-60 justify-center cursor-pointer">
+                <div className="relative min-h-50 hover:scale-110 duration-300">
+                  <Image
+                    className=" h-full w-full min-w-60 z-10"
+                    src={
+                      currentPlayer.cardType === "pink"
+                        ? pinkCard
+                        : currentPlayer.cardType === "gold"
+                          ? goldCard
+                          : whiteCard
+                    }
+                    alt="card background"
+                  />
+                  {/* top values */}
+                  <div className="absolute top-[15%] left-7 text-black">
+                    <h2 className="text-3xl font-semibold">{currentPlayer.rating}</h2>
+                    <h2 className="text-lg">{currentPlayer.position}</h2>
+                    <Image src={flag1} className="w-6 mt-2" alt="flag image" />
+                    <Image src={club1} className="w-6 mt-2" alt="club image image" />
+                  </div>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className=" relative w-[90%] h-[90%] ">
+                      {/* player image */}
+                      <Image
+                        className="w-40 h-48 ml-10 object-cover"
+                        src={playerImage}
+                        alt="player Image"
+                      />
+
+                      {/* shadow */}
+                      <div
+                        className={`w-full h-40 absolute top-[35%] left-0 ${currentPlayer.cardType === "gold"
+                          ? "bg-linear-to-t from-transparent via-[#F9E07F] to-transparent"
+                          : currentPlayer.cardType === "white"
+                            ? "bg-linear-to-t from-transparent via-[#E5E5E7] to-transparent"
+                            : "bg-linear-to-t from-transparent via-[#F5DCCE] to-transparent"
+                          }`}
+                      ></div>
+                      {/* name */}
+                      <div
+                        className={` absolute text-black font-heading text-2xl text-center border-b pb-2 w-[80%]  top-[49%] left-1/2 -translate-x-1/2 z-10`}
+                      >
+                        {currentPlayer.name}
+                      </div>
+
+                      <div className="text-black relative z-10 mt-6">
+                        {/*  */}
+                        <div className="flex items-center justify-between gap-4 p-3">
+                          {/* left */}
+                          <div className="flex-1">
+                            {/* 1 */}
+                            <div className="flex justify-between">
+                              <span className="font-bold text-gray-900">
+                                {currentPlayer.stats.pac}
+                              </span>
+                              <span className="font-semibold text-gray-700">
+                                PAC
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="font-bold text-gray-900">
+                                {currentPlayer.stats.sho}
+                              </span>
+                              <span className="font-semibold text-gray-700">
+                                SHO
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="font-bold text-gray-900">
+                                {currentPlayer.stats.pas}
+                              </span>
+                              <span className="font-semibold text-gray-700">
+                                PAS
+                              </span>
+                            </div>
+                          </div>
+                          <div className="h-16 border-r border-border"></div>
+                          {/* right */}
+                          <div className="flex-1">
+                            {/* 1 */}
+                            <div className="flex justify-between">
+                              <span className="font-bold text-gray-900">
+                                {currentPlayer.stats.dri}
+                              </span>
+                              <span className="font-semibold text-gray-700">
+                                DRI
+                              </span>
+                            </div>
+                            {/* 1 */}
+                            <div className="flex justify-between">
+                              <span className="font-bold text-gray-900">
+                                {currentPlayer.stats.def}
+                              </span>
+                              <span className="font-semibold text-gray-700">
+                                DEF
+                              </span>
+                            </div>
+                            {/* 1 */}
+                            <div className="flex justify-between">
+                              <span className="font-bold text-gray-900">
+                                {currentPlayer.stats.phy}
+                              </span>
+                              <span className="font-semibold text-gray-700">
+                                PHY
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="w-[30%] border-b border-border mx-auto"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Performance Rating */}

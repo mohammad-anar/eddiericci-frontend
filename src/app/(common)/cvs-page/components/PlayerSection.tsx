@@ -248,20 +248,20 @@ export default function Players() {
                   {/* shadow */}
                   <div
                     className={`w-full h-40 absolute top-[35%] left-0 ${player.cardType === "gold"
-                        ? "bg-linear-to-t from-transparent via-[#F9E07F] to-transparent"
-                        : player.cardType === "white"
-                          ? "bg-linear-to-t from-transparent via-[#E5E5E7] to-transparent"
-                          : "bg-linear-to-t from-transparent via-[#F5DCCE] to-transparent"
+                      ? "bg-linear-to-t from-transparent via-[#F9E07F] to-transparent"
+                      : player.cardType === "white"
+                        ? "bg-linear-to-t from-transparent via-[#E5E5E7] to-transparent"
+                        : "bg-linear-to-t from-transparent via-[#F5DCCE] to-transparent"
                       }`}
                   ></div>
                   {/* name */}
                   <div
-                    className={` absolute text-black text-2xl font-semibold text-center border-b pb-2 w-[80%]  top-[49%] left-1/2 -translate-x-1/2 z-10`}
+                    className={` absolute text-black font-heading text-2xl text-center border-b pb-2 w-[80%]  top-[49%] left-1/2 -translate-x-1/2 z-10`}
                   >
                     {player.name}
                   </div>
 
-                  <div className="text-black relative z-10 mt-2">
+                  <div className="text-black relative z-10 mt-6">
                     {/*  */}
                     <div className="flex items-center justify-between gap-4 p-3">
                       {/* left */}

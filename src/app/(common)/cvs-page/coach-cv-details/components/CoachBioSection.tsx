@@ -11,13 +11,15 @@ import trophyIcon from "@/assets/cvs-page/id/trofeeIcon.png";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { IconTrophy } from "@tabler/icons-react";
-import { ChevronDown, PencilIcon } from "lucide-react";
+import { ChevronDown, PencilIcon, Plus, Trash2, X, Check, Upload } from "lucide-react";
 import Image, { type StaticImageData } from "next/image";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { CMSField } from "@/components/shared/CMSField";
 import { useCoach } from "@/lib/hooks/useCoach";
 import { usePlayerStats } from "../../player-cv-details/components/FullEditablePage";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -37,6 +39,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { toast } from "sonner";
 
 const COACH_TYPES = [
   "Head Coach",
@@ -86,6 +89,56 @@ type CoachData = {
   mainFlag: StaticImageData | string;
 };
 
+const COUNTRY_CODES: Record<string, string> = {
+  "afghanistan": "af", "albania": "al", "algeria": "dz", "andorra": "ad", "angola": "ao",
+  "antigua and barbuda": "ag", "argentina": "ar", "armenia": "am", "australia": "au",
+  "austria": "at", "azerbaijan": "az", "bahamas": "bs", "bahrain": "bh", "bangladesh": "bd",
+  "barbados": "bb", "belarus": "by", "belgium": "be", "belize": "bz", "benin": "bj",
+  "bhutan": "bt", "bolivia": "bo", "bosnia and herzegovina": "ba", "botswana": "bw",
+  "brazil": "br", "brunei": "bn", "bulgaria": "bg", "burkina faso": "bf", "burundi": "bi",
+  "cambodia": "kh", "cameroon": "cm", "canada": "ca", "cape verde": "cv",
+  "central african republic": "cf", "chad": "td", "chile": "cl", "china": "cn",
+  "colombia": "co", "comoros": "km", "congo": "cg", "costa rica": "cr", "croatia": "hr",
+  "cuba": "cu", "cyprus": "cy", "czech republic": "cz", "denmark": "dk", "djibouti": "dj",
+  "dominica": "dm", "dominican republic": "do", "ecuador": "ec", "egypt": "eg",
+  "el salvador": "sv", "equatorial guinea": "gq", "eritrea": "er", "estonia": "ee",
+  "ethiopia": "et", "fiji": "fj", "finland": "fi", "france": "fr", "gabon": "ga",
+  "gambia": "gm", "georgia": "ge", "germany": "de", "ghana": "gh", "greece": "gr",
+  "grenada": "gd", "guatemala": "gt", "guinea": "gn", "guinea-bissau": "gw",
+  "guyana": "gy", "haiti": "ht", "honduras": "hn", "hungary": "hu", "iceland": "is",
+  "india": "in", "indonesia": "id", "iran": "ir", "iraq": "iq", "ireland": "ie",
+  "israel": "il", "italy": "it", "jamaica": "jm", "japan": "jp", "jordan": "jo",
+  "kazakhstan": "kz", "kenya": "ke", "kiribati": "ki", "korea, north": "kp",
+  "korea, south": "kr", "kuwait": "kw", "kyrgyzstan": "kg", "laos": "la", "latvia": "lv",
+  "lebanon": "lb", "lesotho": "ls", "liberia": "lr", "libya": "ly", "liechtenstein": "li",
+  "lithuania": "lt", "luxembourg": "lu", "macedonia": "mk", "madagascar": "mg",
+  "malawi": "mw", "malaysia": "my", "maldives": "mv", "mali": "ml", "malta": "mt",
+  "marshall islands": "mh", "mauritania": "mr", "mauritius": "mu", "mexico": "mx",
+  "micronesia": "fm", "moldova": "md", "monaco": "mc", "mongolia": "mn", "montenegro": "me",
+  "morocco": "ma", "mozambique": "mz", "myanmar": "mm", "namibia": "na", "nauru": "nr",
+  "nepal": "np", "netherlands": "nl", "new zealand": "nz", "nicaragua": "ni",
+  "niger": "ne", "nigeria": "ng", "norway": "no", "oman": "om", "pakistan": "pk",
+  "palau": "pw", "panama": "pa", "papua new guinea": "pg", "paraguay": "py", "peru": "pe",
+  "philippines": "ph", "poland": "pl", "portugal": "pt", "qatar": "qa", "romania": "ro",
+  "russia": "ru", "rwanda": "rw", "saint kitts and nevis": "kn", "saint lucia": "lc",
+  "saint vincent and the grenadines": "vc", "samoa": "ws", "san marino": "sm",
+  "sao tome and principe": "st", "saudi arabia": "sa", "senegal": "sn", "serbia": "rs",
+  "seychelles": "sc", "sierra leone": "sl", "singapore": "sg", "slovakia": "sk",
+  "slovenia": "si", "solomon islands": "sb", "somalia": "so", "south africa": "za",
+  "spain": "es", "sri lanka": "lk", "sudan": "sd", "suriname": "sr", "swaziland": "sz",
+  "sweden": "se", "switzerland": "ch", "syria": "sy", "taiwan": "tw", "tajikistan": "tj",
+  "tanzania": "tz", "thailand": "th", "timor-leste": "tl", "togo": "tg", "tonga": "to",
+  "trinidad and tobago": "tt", "tunisia": "tn", "turkey": "tr", "turkmenistan": "tm",
+  "tuvalu": "tv", "uganda": "ug", "ukraine": "ua", "united arab emirates": "ae",
+  "united kingdom": "gb", "united states": "us", "uruguay": "uy", "uzbekistan": "uz",
+  "vanuatu": "vu", "vatican city": "va", "venezuela": "ve", "vietnam": "vn", "yemen": "ye",
+  "zambia": "zm", "zimbabwe": "zw"
+};
+
+const ALL_COUNTRIES = Object.keys(COUNTRY_CODES).map(c =>
+  c.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
+).sort();
+
 const COACH_STYLE_GROUPS = [
   {
     label: "Tactical Philosophy",
@@ -106,15 +159,111 @@ const COACH_STYLE_GROUPS = [
   },
 ];
 
+const ALL_COACH_STYLES = COACH_STYLE_GROUPS.flatMap(group =>
+  group.styles.map(style => ({
+    id: style.toLowerCase().replace(/ /g, "-"),
+    label: style
+  }))
+);
+
+const YEARS = Array.from({ length: 30 }, (_, i) => String(new Date().getFullYear() - i));
+const TO_YEARS = ["Present", ...YEARS];
+
+interface Attribute {
+  name: string;
+  score: number;
+  status: "Excellent" | "Good" | "Average";
+}
+
+const getBadgeStatus = (score: number): "Excellent" | "Good" | "Average" => {
+  if (score >= 80) return "Excellent";
+  if (score >= 60) return "Good";
+  return "Average";
+};
+
+const getBadgeVariant = (status: string) => {
+  switch (status) {
+    case "Excellent":
+      return "bg-green-500/10 text-green-500 border-green-500/50";
+    case "Good":
+      return "bg-yellow-500/10 text-yellow-500 border-yellow-500/50";
+    case "Average":
+      return "bg-red-500/10 text-red-500 border-red-500/50";
+    default:
+      return "bg-green-500/10 text-green-500 border-green-500/50";
+  }
+};
+
+const getIndicatorColor = (val: number) => {
+  if (val >= 80) return "bg-green-500";
+  if (val >= 60) return "bg-yellow-500";
+  return "bg-red-500";
+};
+
+const getHexColor = (val: number) => {
+  if (val >= 80) return "#22c55e";
+  if (val >= 60) return "#eab308";
+  return "#ef4444";
+};
+
 const CoachBioSection = ({ editable }: { editable?: boolean }) => {
   const { coachData, handleUpdate } = useCoach();
 
+  const [isAddingClub, setIsAddingClub] = useState(false);
+  const [newClubName, setNewClubName] = useState("");
+  const [newClubLogo, setNewClubLogo] = useState<string | null>(null);
+  const [fromYear, setFromYear] = useState(YEARS[0]);
+  const [toYear, setToYear] = useState("Present");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const styleBadges = [badge1, badge2, badge3];
-  const { role } = usePlayerStats();
+  const { role, bioRating, skillsAvg, metricsAvg, attributesAvg } = usePlayerStats();
 
-  const canEdit = !!(editable && role === "coach");
+  const canEdit = !!(editable && (role === "coach" || role === "admin" || !role));
 
+  const overallRating = Math.round(
+    (bioRating + skillsAvg + metricsAvg + attributesAvg) / 4,
+  );
 
+  const attrData: Attribute[] = coachData.keySkills.map((skill) => ({
+    name: skill.name,
+    score: skill.value,
+    status: getBadgeStatus(skill.value)
+  }));
+
+  const handleAttrUpdate = async (index: number, value: number) => {
+    const newSkills = [...coachData.keySkills];
+    newSkills[index] = { ...newSkills[index], value };
+    handleUpdate("keySkills", newSkills);
+  };
+
+  const calculateAge = (dobString: string) => {
+    if (!dobString) return "";
+    let birthDate: Date;
+
+    if (dobString.includes("/")) {
+      const [day, month, year] = dobString.split("/");
+      birthDate = new Date(`${year}-${month}-${day}`);
+    } else {
+      birthDate = new Date(dobString);
+    }
+
+    if (isNaN(birthDate.getTime())) return "";
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    return age;
+  };
+
+  const getFlagUrl = (countryName: string) => {
+    if (!countryName) return "";
+    const code = COUNTRY_CODES[countryName.toLowerCase()];
+    if (!code) return "";
+    return `https://flagcdn.com/w160/${code}.png`;
+  };
 
   const handleImageUpload = async (file: File, field: string) => {
     let processedFile = file;
@@ -140,6 +289,73 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
     };
     reader.readAsDataURL(processedFile);
   };
+
+  const handleClubLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        toast.error("File size too large. Max 2MB.");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setNewClubLogo(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const addClub = () => {
+    if (!newClubName.trim()) {
+      toast.error("Please enter a club name");
+      return;
+    }
+
+    const newClub = {
+      id: Math.random().toString(36).substr(2, 9),
+      name: newClubName,
+      from: fromYear,
+      to: toYear,
+      logo: newClubLogo || "",
+    };
+
+    handleUpdate("clubs", [...coachData.clubs, newClub]);
+    setIsAddingClub(false);
+    setNewClubName("");
+    setNewClubLogo(null);
+    toast.success("Club added successfully");
+  };
+
+  const removeClub = (id: string) => {
+    const newClubs = coachData.clubs.filter(c => c.id !== id);
+    handleUpdate("clubs", newClubs);
+    toast.success("Club removed");
+  };
+
+  const updateClub = (id: string, field: string, value: any) => {
+    const newClubs = coachData.clubs.map(c =>
+      c.id === id ? { ...c, [field]: value } : c
+    );
+    handleUpdate("clubs", newClubs);
+  };
+
+  const toggleStyle = (styleId: string) => {
+    const currentStyles = coachData.selectedStyleIds || [];
+    if (currentStyles.includes(styleId)) {
+      handleUpdate(
+        "selectedStyleIds",
+        currentStyles.filter((id) => id !== styleId)
+      );
+    } else if (currentStyles.length < 4) {
+      handleUpdate("selectedStyleIds", [...currentStyles, styleId]);
+    } else {
+      toast.error("Maximum 4 styles allowed");
+    }
+  };
+
+  const orderedSelectedStyles = (coachData.selectedStyleIds || []).map(
+    (id) => ALL_COACH_STYLES.find((s) => s.id === id)!
+  ).filter(Boolean);
 
   const EditableImage = ({
     src,
@@ -279,21 +495,24 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
                   <span className="text-gray-400">Date of Birth</span>
                   <CMSField
                     value={coachData.dob}
-                    onUpdate={(val) => handleUpdate("dob", val)}
+                    type="date"
+                    onUpdate={(val) => {
+                      handleUpdate("dob", val);
+                      const newAge = calculateAge(String(val));
+                      if (newAge !== "") {
+                        handleUpdate("age", `${newAge} years`);
+                      }
+                    }}
                     canEdit={canEdit}
-                    className="w-32 justify-end"
-                    inputClassName="text-right"
+                    className="w-1/2 justify-end"
+                    inputClassName="text-right w-full bg-gray-900/50 border-gray-700 focus:border-primary transition-all px-3 py-1.5 rounded-lg"
                   />
                 </div>
                 <div className="flex justify-between items-center gap-4">
                   <span className="text-gray-400">Age</span>
-                  <CMSField
-                    value={coachData.age}
-                    onUpdate={(val) => handleUpdate("age", val)}
-                    canEdit={canEdit}
-                    className="w-24 justify-end"
-                    inputClassName="text-right"
-                  />
+                  <div className="flex items-center gap-1">
+                    <span>{coachData.age || 0}</span>
+                  </div>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-400">Birth Country</span>
@@ -302,16 +521,18 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
                       value={coachData.birthCountry}
                       onUpdate={(val) => handleUpdate("birthCountry", val)}
                       canEdit={canEdit}
+                      type="combobox"
+                      options={ALL_COUNTRIES}
                       className="w-24 justify-end"
                       inputClassName="text-right"
                     />
-                    <div className="relative w-5 h-4">
-                      <EditableImage
-                        src={coachData.birthCountryFlag}
-                        alt="country flag"
-                        field="birthCountryFlag"
-                        width={20}
+                    <div className="relative w-6 h-4 overflow-hidden rounded-sm border border-border">
+                      <Image
+                        src={getFlagUrl(coachData.birthCountry)}
+                        alt="birth country flag"
+                        width={24}
                         height={16}
+                        className="object-cover"
                       />
                     </div>
                   </div>
@@ -323,16 +544,18 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
                       value={coachData.dualNationality}
                       onUpdate={(val) => handleUpdate("dualNationality", val)}
                       canEdit={canEdit}
+                      type="combobox"
+                      options={ALL_COUNTRIES}
                       className="w-24 justify-end"
                       inputClassName="text-right"
                     />
-                    <div className="relative w-5 h-4">
-                      <EditableImage
-                        src={coachData.dualNationalityFlag}
-                        alt="nationality flag"
-                        field="dualNationalityFlag"
-                        width={20}
+                    <div className="relative w-6 h-4 overflow-hidden rounded-sm border border-border">
+                      <Image
+                        src={getFlagUrl(coachData.dualNationality)}
+                        alt="dual nationality flag"
+                        width={24}
                         height={16}
+                        className="object-cover"
                       />
                     </div>
                   </div>
@@ -446,6 +669,8 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
                         handleUpdate("languages", newLangs);
                       }}
                       canEdit={canEdit}
+                      type="select"
+                      options={["Native", "Fluent", "Intermediate", "Beginner"]}
                       className="w-28 justify-end"
                       inputClassName="text-right"
                     />
@@ -501,30 +726,47 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
           <div className="col-span-12 xl:col-span-4 flex flex-col items-center">
             {/* Player Name */}
             <div className="text-center mb-8">
-              <div className="flex items-center mb-8 justify-center gap-2">
-                <EditableImage
-                  src={coachData.mainFlag}
-                  alt="flag"
-                  className="w-60"
-                  field="mainFlag"
-                />
+              <div className="flex items-center mb-8 justify-center">
+                <div className="relative w-32 h-20">
+                  <Image
+                    src={getFlagUrl(coachData.birthCountry)}
+                    alt="Birth Country"
+                    layout="fill"
+                    className="object-cover rounded shadow-lg border border-border"
+                  />
+                  {coachData.dualNationality && (
+                    <div className="absolute -bottom-2 -right-2 w-12 h-8 border-2 border-white rounded shadow-md overflow-hidden">
+                      <Image
+                        src={getFlagUrl(coachData.dualNationality)}
+                        alt="Dual Nationality"
+                        layout="fill"
+                        className="object-cover"
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
 
-              <h1 className="text-2xl font-bold font-heading mb-2">
-                {coachData.fullName} <span className="text-primary">[58]</span>
+              <h1 className="text-2xl font-bold font-heading mb-2 uppercase flex items-center justify-center gap-2">
+                <CMSField
+                  value={coachData.fullName}
+                  onUpdate={(val) => handleUpdate("fullName", val)}
+                  canEdit={canEdit}
+                  className="text-2xl font-bold font-heading uppercase"
+                />
+                <span className="text-primary">[{overallRating}]</span>
               </h1>
             </div>
 
             {/* Position Selector */}
-            <div className="mb-8 flex items-center justify-center">
+            <div className="mb-8">
               <CMSField
                 value={coachData.coachType}
                 onUpdate={(val) => handleUpdate("coachType", String(val))}
                 canEdit={canEdit}
-                type="select"
+                type="combobox"
                 options={COACH_TYPES}
-                className="w-fit"
-                inputClassName="w-48"
+                className="flex items-center gap-2 border border-border px-4 py-2 rounded hover:bg-gray-900 bg-transparent text-foreground h-auto w-fit mx-auto"
               />
             </div>
 
@@ -532,7 +774,7 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
               <EditableImage
                 src={coachData.coachImage}
                 alt={coachData.fullName}
-                className="object-contain w-auto h-full"
+                className="object-contain w-auto mx-auto h-full"
                 width={800}
                 height={800}
                 field="coachImage"
@@ -542,27 +784,66 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
             {/* Coach Style Section */}
             <div className="w-full space-y-6">
               <div className="text-center">
-                <h3 className="text-2xl font-bold font-heading mb-6">
-                  Coach Style
-                </h3>
-
-                <div className="mb-8 flex items-center justify-center">
-                  <CMSField
-                    value={coachData.coachStyle}
-                    onUpdate={(val) => handleUpdate("coachStyle", String(val))}
-                    canEdit={canEdit}
-                    type="select"
-                    options={COACH_STYLE_GROUPS.flatMap(g => g.styles)}
-                    className="w-fit"
-                    inputClassName="w-48"
-                  />
+                <div className="flex items-center justify-center gap-4 mb-6">
+                  <h3 className="text-2xl font-bold font-heading">
+                    Coach Style
+                  </h3>
+                  {canEdit && (
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-7 w-7 text-primary hover:bg-primary/10">
+                          <PencilIcon className="h-4 w-4" />
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="bg-cardBg border-border text-foreground">
+                        <DialogHeader>
+                          <DialogTitle>Select Coach Styles (Max 4)</DialogTitle>
+                        </DialogHeader>
+                        <div className="grid grid-cols-2 gap-4 py-4 max-h-[60vh] overflow-y-auto">
+                          {ALL_COACH_STYLES.map((style) => (
+                            <div
+                              key={style.id}
+                              className="flex items-center space-x-2"
+                            >
+                              <Checkbox
+                                id={style.id}
+                                checked={(coachData.selectedStyleIds || []).includes(
+                                  style.id
+                                )}
+                                onCheckedChange={() => toggleStyle(style.id)}
+                                disabled={
+                                  !(coachData.selectedStyleIds || []).includes(
+                                    style.id
+                                  ) && (coachData.selectedStyleIds || []).length >= 4
+                                }
+                              />
+                              <Label
+                                htmlFor={style.id}
+                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                              >
+                                {style.label}
+                              </Label>
+                            </div>
+                          ))}
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                  )}
                 </div>
 
                 <div className="space-y-4">
-                  <div className="flex justify-center">
-                    <Image src={badge1} className="w-20 h-20" alt="badge" />
-                  </div>
-                  <p className="text-lg font-heading">{coachData.coachStyle}</p>
+                  {orderedSelectedStyles.map((style: any, index: number) => (
+                    <div key={style.id} className="space-y-4">
+                      <div className="flex justify-center">
+                        <Image
+                          src={styleBadges[index % styleBadges.length]}
+                          className="w-20 h-20"
+                          alt={style.label}
+                        />
+                      </div>
+                      <p className="text-lg font-heading">{style.label}</p>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
@@ -667,22 +948,52 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
               <h2 className="text-lg text-center font-heading font-normal mb-4">
                 CUP PLAYED
               </h2>
-              <div className="space-y-2 text-xs text-gray-300 border-l border-green-500">
-                {coachData.cupHistory.map((cup, index) => (
-                  <div key={index} className="flex gap-2 items-center">
-                    <Image src={trophyIcon} alt="trophyImage" />
-                    <CMSField
-                      value={cup}
-                      onUpdate={(val) => {
-                        const newCups = [...coachData.cupHistory];
-                        newCups[index] = String(val);
-                        handleUpdate("cupHistory", newCups);
-                      }}
-                      canEdit={canEdit}
-                      className="flex-1"
-                    />
-                  </div>
-                ))}
+              <div className="space-y-6 border-l-2 border-green-600 pl-4 mt-6">
+                {coachData.cupHistory.map((cup, index) => {
+                  const parts = cup.split(" - ");
+                  const year = parts[0];
+                  const title = parts.slice(1).join(" - ");
+
+                  return (
+                    <div key={index} className="flex gap-4 items-center">
+                      <div className="relative w-10 h-10 shrink-0 flex items-center justify-center">
+                        <Image
+                          src={trophyIcon}
+                          alt="Achievement"
+                          width={36}
+                          height={36}
+                          className="object-contain drop-shadow-md"
+                        />
+                      </div>
+                      <div className="flex flex-col gap-0.5 w-full">
+                        <CMSField
+                          value={year}
+                          onUpdate={(val) => {
+                            const newCups = [...coachData.cupHistory];
+                            newCups[index] = `${val} - ${title}`;
+                            handleUpdate("cupHistory", newCups);
+                          }}
+                          canEdit={canEdit}
+                          type="textarea"
+                          className="text-xs font-black text-primary/80 tracking-widest leading-relaxed uppercase"
+                          inputClassName="text-xs font-black min-h-[30px] py-0.5 uppercase"
+                        />
+                        <CMSField
+                          value={title}
+                          onUpdate={(val) => {
+                            const newCups = [...coachData.cupHistory];
+                            newCups[index] = `${year} - ${val}`;
+                            handleUpdate("cupHistory", newCups);
+                          }}
+                          canEdit={canEdit}
+                          type="textarea"
+                          className="text-sm md:text-base text-gray-400 leading-relaxed tracking-tight uppercase"
+                          inputClassName="text-base font-black min-h-[40px] py-1 uppercase"
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
@@ -692,58 +1003,220 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
                 Key Skills
               </h2>
               <div className="space-y-4">
-                {coachData.keySkills.map((skill, index) => (
-                  <div key={index} className="text-center border-b pb-3">
-                    <CMSField
-                      value={skill}
-                      onUpdate={(val) => {
-                        const newSkills = [...coachData.keySkills];
-                        newSkills[index] = String(val);
-                        handleUpdate("keySkills", newSkills);
-                      }}
-                      canEdit={canEdit}
-                      className="justify-center"
-                      inputClassName="text-center"
-                    />
+                {coachData.keySkills.map((skill, idx) => (
+                  <div key={idx} className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <CMSField
+                        value={skill.name}
+                        onUpdate={(val) => {
+                          const newSkills = [...coachData.keySkills];
+                          newSkills[idx] = { ...newSkills[idx], name: String(val) };
+                          handleUpdate("keySkills", newSkills);
+                        }}
+                        canEdit={canEdit}
+                        className="text-sm font-bold text-gray-200 uppercase"
+                      />
+                      <Badge className={cn(getBadgeVariant(getBadgeStatus(skill.value)), "text-[10px] uppercase font-black py-0 px-2")}>
+                        {getBadgeStatus(skill.value)}
+                      </Badge>
+                    </div>
+
+                    <div className="flex items-center gap-4">
+                      <div className="flex-1 transition-all duration-300">
+                        {canEdit ? (
+                          <div className="relative flex items-center h-2 group">
+                            <input
+                              type="range"
+                              min="0"
+                              max="100"
+                              value={skill.value}
+                              onChange={(e) => handleAttrUpdate(idx, parseInt(e.target.value))}
+                              style={{
+                                background: `linear-gradient(to right, ${getHexColor(skill.value)} ${skill.value}%, #333 ${skill.value}%)`,
+                              }}
+                              className="w-full h-2 rounded-full appearance-none cursor-pointer accent-primary hover:accent-primary transition-all absolute inset-0 z-10 opacity-0 group-hover:opacity-100"
+                            />
+                            <div className="w-full h-2 bg-[#333] rounded-full overflow-hidden relative">
+                              <div
+                                className={cn("h-full transition-all duration-300 ease-out", getIndicatorColor(skill.value))}
+                                style={{ width: `${skill.value}%` }}
+                              />
+                            </div>
+                            <input
+                              type="range"
+                              min="0"
+                              max="100"
+                              value={skill.value}
+                              onChange={(e) => handleAttrUpdate(idx, parseInt(e.target.value))}
+                              className="w-full h-8 opacity-0 cursor-pointer absolute inset-0 z-20"
+                            />
+                          </div>
+                        ) : (
+                          <Progress
+                            value={skill.value}
+                            className="h-1.5"
+                            style={{ backgroundColor: '#333' }}
+                            indicatorClassName={getIndicatorColor(skill.value)}
+                          />
+                        )}
+                      </div>
+                      <div className="shrink-0 text-right min-w-[3rem]">
+                        <CMSField
+                          value={skill.value}
+                          onUpdate={(val) => handleAttrUpdate(idx, parseInt(String(val)))}
+                          canEdit={canEdit}
+                          type="number"
+                          editTrigger="doubleClick"
+                          className="text-sm font-black justify-end"
+                          style={{ color: getHexColor(skill.value) }}
+                          inputClassName="text-right h-6 w-12 text-xs bg-gray-900/50 border-gray-700 rounded uppercase"
+                        />
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
             {/* Clubs */}
             <div className="p-6">
-              <h2 className="text-lg text-center font-heading font-normal mb-6">
-                Clubs
-              </h2>
+              <div className="flex justify-between items-center mb-6">
+                <div className="w-10" /> {/* Spacer */}
+                <h2 className="text-lg text-center font-heading font-normal">
+                  Clubs
+                </h2>
+                {canEdit && (
+                  <Button
+                    onClick={() => setIsAddingClub(true)}
+                    size="sm"
+                    className="bg-primary text-black hover:bg-primary/90 h-8 w-8 p-0 rounded-full"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
+
               <div className="space-y-4">
                 {coachData.clubs.map((club, index) => (
-                  <Card key={index} className="p-5">
+                  <Card key={club.id || index} className="p-5 relative group">
+                    {canEdit && (
+                      <button
+                        onClick={() => removeClub(club.id)}
+                        className="absolute top-2 right-2 p-1 text-gray-500 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    )}
                     <div className="flex items-center gap-3">
-                      <Image src={clubImage} className="w-12" alt="clubs image" />
-                      <div className="w-full">
+                      <div className="relative w-12 h-12 flex-shrink-0">
+                        <Image
+                          src={club.logo || clubImage}
+                          className="object-contain w-full h-full"
+                          alt={club.name}
+                          width={48}
+                          height={48}
+                        />
+                      </div>
+                      <div className="w-full min-w-0">
                         <CMSField
                           value={club.name}
-                          onUpdate={(val) => {
-                            const newClubs = [...coachData.clubs];
-                            newClubs[index] = { ...newClubs[index], name: String(val) };
-                            handleUpdate("clubs", newClubs);
-                          }}
+                          onUpdate={(val) => updateClub(club.id, "name", val)}
                           canEdit={canEdit}
-                          className="font-bold"
+                          className="font-bold truncate uppercase"
                         />
-                        <CMSField
-                          value={club.period}
-                          onUpdate={(val) => {
-                            const newClubs = [...coachData.clubs];
-                            newClubs[index] = { ...newClubs[index], period: String(val) };
-                            handleUpdate("clubs", newClubs);
-                          }}
-                          canEdit={canEdit}
-                          className="text-[12px] text-gray-400"
-                        />
+                        <div className="flex items-center gap-1 text-[12px] text-gray-400">
+                          <CMSField
+                            value={club.from}
+                            onUpdate={(val) => updateClub(club.id, "from", val)}
+                            canEdit={canEdit}
+                            type="combobox"
+                            options={YEARS}
+                            editTrigger="doubleClick"
+                            hideIcon={true}
+                            className="w-12"
+                          />
+                          <span>-</span>
+                          <CMSField
+                            value={club.to}
+                            onUpdate={(val) => updateClub(club.id, "to", val)}
+                            canEdit={canEdit}
+                            type="combobox"
+                            options={TO_YEARS}
+                            editTrigger="doubleClick"
+                            hideIcon={true}
+                            className="w-16"
+                          />
+                        </div>
                       </div>
                     </div>
                   </Card>
                 ))}
+
+                {isAddingClub && (
+                  <Card className="p-5 border-dashed border-primary/50 bg-primary/5 animate-in fade-in zoom-in duration-200">
+                    <div className="flex justify-between items-center mb-4">
+                      <span className="text-[10px] font-bold text-primary uppercase">New Club</span>
+                      <button onClick={() => setIsAddingClub(false)} className="text-gray-400 hover:text-white">
+                        <X size={14} />
+                      </button>
+                    </div>
+
+                    <div className="space-y-4">
+                      <div className="flex flex-col items-center gap-2">
+                        <div
+                          onClick={() => fileInputRef.current?.click()}
+                          className="w-16 h-16 rounded-full border-2 border-dashed border-gray-700 bg-black/40 flex items-center justify-center cursor-pointer hover:border-primary overflow-hidden"
+                        >
+                          {newClubLogo ? (
+                            <Image src={newClubLogo} alt="Preview" width={64} height={64} className="object-contain p-2" />
+                          ) : (
+                            <Upload size={20} className="text-gray-500" />
+                          )}
+                        </div>
+                        <input
+                          type="file"
+                          ref={fileInputRef}
+                          className="hidden"
+                          accept="image/*"
+                          onChange={handleClubLogoUpload}
+                        />
+                      </div>
+
+                      <input
+                        type="text"
+                        placeholder="Club Name"
+                        className="w-full bg-gray-900 border border-gray-800 rounded px-3 py-1.5 text-sm text-white focus:outline-none focus:border-primary"
+                        value={newClubName}
+                        onChange={(e) => setNewClubName(e.target.value)}
+                      />
+
+                      <div className="grid grid-cols-2 gap-2">
+                        <select
+                          className="bg-gray-900 border border-gray-800 rounded px-2 py-1 text-xs text-white"
+                          value={fromYear}
+                          onChange={(e) => setFromYear(e.target.value)}
+                        >
+                          {YEARS.map(y => <option key={y} value={y}>{y}</option>)}
+                        </select>
+                        <select
+                          className="bg-gray-900 border border-gray-800 rounded px-2 py-1 text-xs text-white"
+                          value={toYear}
+                          onChange={(e) => setToYear(e.target.value)}
+                        >
+                          {TO_YEARS.map(y => <option key={y} value={y}>{y}</option>)}
+                        </select>
+                      </div>
+
+                      <Button
+                        onClick={addClub}
+                        disabled={!newClubName.trim()}
+                        className="w-full bg-primary text-black font-bold h-8"
+                        size="sm"
+                      >
+                        <Check className="h-4 w-4 mr-2" /> Add
+                      </Button>
+                    </div>
+                  </Card>
+                )}
               </div>
             </div>
           </div>

@@ -5,7 +5,7 @@ import GenerateCv from "@/components/user-wise-dashboard/academy-management/gene
 export default function MyCV() {
   return (
     <div>
-    <GenerateCv/>
+      <GenerateCv />
     </div>
   );
 }

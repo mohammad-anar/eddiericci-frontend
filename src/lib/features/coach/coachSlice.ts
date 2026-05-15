@@ -39,13 +39,13 @@ export interface CoachData {
   agency: string;
   majorTrophies: { name: string; count: number }[];
   cupHistory: string[];
-  keySkills: string[];
-  clubs: { name: string; period: string }[];
+  keySkills: { name: string; value: number }[];
+  clubs: { id: string; name: string; from: string; to: string; logo?: any }[];
   qualifications: { id: number; text: string }[];
   coachImage: any;
   mainFlag: any;
   coachType: string;
-  coachStyle: string;
+  selectedStyleIds: string[];
 }
 
 const initialState: CoachData = {
@@ -93,15 +93,15 @@ const initialState: CoachData = {
     "2016 - K10 FOOTBALL CUP - K10 FOOTBALL FC",
   ],
   keySkills: [
-    "Youth Development",
-    "Leadership",
-    "Adaptability",
-    "Constructive Feedback",
+    { name: "Youth Development", value: 92 },
+    { name: "Leadership", value: 88 },
+    { name: "Adaptability", value: 85 },
+    { name: "Constructive Feedback", value: 80 },
   ],
   clubs: [
-    { name: "Manchester City", period: "2020-present" },
-    { name: "Manchester City", period: "2020-present" },
-    { name: "Manchester City", period: "2020-present" },
+    { id: "1", name: "Manchester City", from: "2020", to: "Present", logo: clubImage },
+    { id: "2", name: "Manchester City", from: "2020", to: "Present", logo: clubImage },
+    { id: "3", name: "Manchester City", from: "2020", to: "Present", logo: clubImage },
   ],
   qualifications: [
     {
@@ -118,7 +118,7 @@ const initialState: CoachData = {
     },
   ],
   coachType: "Head Coach",
-  coachStyle: "Tactics",
+  selectedStyleIds: ["tiki-taka", "motivator", "youth-development"],
 };
 
 export const coachSlice = createSlice({

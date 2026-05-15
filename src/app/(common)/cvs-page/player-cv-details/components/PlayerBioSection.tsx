@@ -824,7 +824,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
             </div>
 
             {/* Player Image */}
-            <div className="relative w-full h-[523px] mb-8 flex  items-end justify-center">
+            <div className="relative w-full h-[523px]  mb-8 flex  items-end justify-center">
               <EditableImage
                 src={playerData.playerImage}
                 alt={playerData.fullName}

@@ -238,6 +238,7 @@ export function MetricsAnalysis({ editable = false }: { editable?: boolean }) {
                               canEdit={editable}
                               isNumeric
                               className="font-medium text-sm justify-end"
+                              style={{ color: metric.score >= 80 ? '#22c55e' : metric.score >= 60 ? '#eab308' : '#ef4444' }}
                               inputClassName="text-right w-12 bg-gray-900 border-gray-700"
                             />
                           </div>

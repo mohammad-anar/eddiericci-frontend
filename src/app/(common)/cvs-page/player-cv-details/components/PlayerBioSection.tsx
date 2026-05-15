@@ -3,15 +3,10 @@
 import badge1 from "@/assets/cvs-page/id/badge-image1.png";
 import badge2 from "@/assets/cvs-page/id/badge-image2.png";
 import badge3 from "@/assets/cvs-page/id/badge-image3.png";
-import flagFr from "@/assets/cvs-page/id/flag-fr.png";
-import flagIt from "@/assets/cvs-page/id/flag-itally.png";
-import flagImage from "@/assets/cvs-page/id/flag.png";
-import leftLeg from "@/assets/cvs-page/id/left-leg-image.png";
-import playerImage from "@/assets/cvs-page/id/player-image.png";
-import positionMap from "@/assets/cvs-page/id/positionmap.png";
-import futsal from "@/assets/cvs-page/id/positionmap.png";
-import right from "@/assets/cvs-page/id/right-legt-image.png";
+import positionMap from "@/assets/cvs-page/id/position-map.png";
+import positionIcon from "@/assets/cvs-page/id/positionIcon.png";
 import trofeeIcon from "@/assets/cvs-page/id/trofeeIcon.png";
+import { CMSField } from "@/components/shared/CMSField";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -21,27 +16,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { IconShare } from "@tabler/icons-react";
+import { usePlayer } from "@/lib/hooks/usePlayer";
+import { cn } from "@/lib/utils";
+import { PencilIcon } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { usePlayerStats } from "./FullEditablePage";
-import { PencilIcon, ChevronDown } from "lucide-react";
-import { CMSField } from "@/components/shared/CMSField";
-import { usePlayer } from "@/lib/hooks/usePlayer";
 
 const ALL_STYLES = [
   { id: "technical", label: "Technical" },
@@ -129,6 +112,62 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
   }, [playerData.rating, setBioRating]);
 
   const [isPositionMap, setIsPositionMap] = useState(true);
+  const [activeMarker, setActiveMarker] = useState<{ id: string, type: 'position' | 'futsal' } | null>(null);
+  const mapContainerRef = useRef<HTMLDivElement>(null);
+
+  const addMarker = () => {
+    const field = isPositionMap ? 'positionMarkers' : 'futsalMarkers';
+    const markers = (isPositionMap ? playerData.positionMarkers : playerData.futsalMarkers) || [];
+    const newMarker = {
+      id: Math.random().toString(36).substr(2, 9),
+      x: 50,
+      y: 50
+    };
+    handleUpdate(field, [...markers, newMarker]);
+  };
+
+  const updateMarkerPosition = (e: MouseEvent | React.MouseEvent) => {
+    if (!activeMarker || !mapContainerRef.current) return;
+
+    const rect = mapContainerRef.current.getBoundingClientRect();
+    let x = ((e.clientX - rect.left) / rect.width) * 100;
+    let y = ((e.clientY - rect.top) / rect.height) * 100;
+
+    // Constrain to bounds
+    x = Math.max(0, Math.min(100, x));
+    y = Math.max(0, Math.min(100, y));
+
+    const field = activeMarker.type === 'position' ? 'positionMarkers' : 'futsalMarkers';
+    const markers = (activeMarker.type === 'position' ? playerData.positionMarkers : playerData.futsalMarkers) || [];
+    
+    const newMarkers = markers.map(m => 
+      m.id === activeMarker.id ? { ...m, x, y } : m
+    );
+
+    handleUpdate(field, newMarkers);
+  };
+
+  useEffect(() => {
+    const handleGlobalMouseMove = (e: MouseEvent) => {
+      if (activeMarker) {
+        updateMarkerPosition(e);
+      }
+    };
+
+    const handleGlobalMouseUp = () => {
+      setActiveMarker(null);
+    };
+
+    if (activeMarker) {
+      window.addEventListener('mousemove', handleGlobalMouseMove);
+      window.addEventListener('mouseup', handleGlobalMouseUp);
+    }
+
+    return () => {
+      window.removeEventListener('mousemove', handleGlobalMouseMove);
+      window.removeEventListener('mouseup', handleGlobalMouseUp);
+    };
+  }, [activeMarker]);
 
   const getIndicatorColor = (val: number) => {
     if (val >= 80) return "bg-green-500";
@@ -654,21 +693,70 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                   Futsal Map
                 </button>
               </div>
-              {
-                isPositionMap ? (
-                  <EditableImage
-                    src={playerData.positionMap || positionMap}
-                    alt="position map"
-                    field="positionMap"
-                  />
-                ) : (
-                  <EditableImage
-                    src={playerData.futsalMap || positionMap}
-                    alt="futsal map"
-                    field="futsalMap"
-                  />
-                )
-              }
+
+              <div className="text-end mb-2 w-full">
+                <Button 
+                  size={"sm"} 
+                  variant={"outline"}
+                  onClick={addMarker}
+                >
+                  + Add position icon
+                </Button>
+              </div>
+              
+              <div 
+                ref={mapContainerRef}
+                className="relative w-full h-auto overflow-hidden select-none"
+              >
+                <Image
+                  src={isPositionMap ? (playerData.positionMap || positionMap) : (playerData.futsalMap || positionMap)}
+                  alt={isPositionMap ? "position map" : "futsal map"}
+                  width={800}
+                  height={600}
+                  className="w-full h-auto rounded"
+                  draggable={false}
+                />
+
+                {/* Render markers */}
+                {( (isPositionMap ? playerData.positionMarkers : playerData.futsalMarkers) || [] ).map((marker: any, idx: number) => (
+                  <div
+                    key={marker.id}
+                    className="absolute z-20 cursor-move group/marker"
+                    style={{
+                      left: `${marker.x}%`,
+                      top: `${marker.y}%`,
+                      transform: 'translate(-50%, -50%)'
+                    }}
+                    onMouseDown={(e) => {
+                      e.stopPropagation();
+                      setActiveMarker({ id: marker.id, type: isPositionMap ? 'position' : 'futsal' });
+                    }}
+                  >
+                    <Image
+                      src={positionIcon}
+                      alt="position icon"
+                      width={idx === 0 ? 60 : 40}
+                      height={idx === 0 ? 60 : 40}
+                      className={cn(
+                        "pointer-events-none drop-shadow-lg transition-transform group-hover/marker:scale-110",
+                        idx === 0 ? "w-12 h-12 md:w-16 md:h-16" : "w-8 h-8 md:w-10 md:h-10"
+                      )}
+                    />
+                    {/* Delete button on hover */}
+                    <button
+                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-[10px] opacity-0 group-hover/marker:opacity-100 transition-opacity"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const field = isPositionMap ? 'positionMarkers' : 'futsalMarkers';
+                        const markers = isPositionMap ? playerData.positionMarkers : playerData.futsalMarkers;
+                        handleUpdate(field, markers.filter(m => m.id !== marker.id));
+                      }}
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
@@ -878,7 +966,8 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                         canEdit={canEditEvaluation}
                         type="number"
                         editTrigger="doubleClick"
-                        className="text-primary font-bold text-xs justify-end"
+                        className="font-bold text-xs justify-end"
+                        style={{ color: getHexColor(value as number) }}
                         inputClassName="text-right h-7 w-16 bg-gray-900 border-primary/50 focus:border-primary transition-all px-2 rounded-md"
                         hideIcon={true}
                       />
@@ -950,7 +1039,8 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                           canEdit={canEditEvaluation}
                           type="number"
                           editTrigger="doubleClick"
-                          className="text-primary font-bold text-xs justify-end"
+                          className="font-bold text-xs justify-end"
+                          style={{ color: getHexColor(value as number) }}
                           inputClassName="text-right h-7 w-16 bg-gray-900 border-primary/50 focus:border-primary transition-all px-2 rounded-md"
                           hideIcon={true}
                         />

@@ -1,16 +1,13 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import badge1 from "@/assets/cvs-page/id/badge-image1.png";
-import badge2 from "@/assets/cvs-page/id/badge-image2.png";
-import badge3 from "@/assets/cvs-page/id/badge-image3.png";
 import flagFr from "@/assets/cvs-page/id/flag-fr.png";
 import flagIt from "@/assets/cvs-page/id/flag-itally.png";
 import flagImage from "@/assets/cvs-page/id/flag.png";
-import leftLeg from "@/assets/cvs-page/id/left-leg-image.png";
-import right from "@/assets/cvs-page/id/right-legt-image.png";
-import playerImage from "@/assets/cvs-page/id/player-image.png";
-import trofeeIcon from "@/assets/cvs-page/id/trofeeIcon.png";
-import positionMap from "@/assets/cvs-page/id/positionmap.png";
 import futsalMap from "@/assets/cvs-page/id/Futsal Pitch.jpg";
+import leftLeg from "@/assets/cvs-page/id/left-leg-image.png";
+import playerImage from "@/assets/cvs-page/id/player-image.png";
+import positionMap from "@/assets/cvs-page/id/position-map.png";
+import right from "@/assets/cvs-page/id/right-legt-image.png";
+import trofeeIcon from "@/assets/cvs-page/id/trofeeIcon.png";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface Club {
   id: string;
@@ -83,6 +80,14 @@ export interface PlayerData {
   skillsCategories: SkillCategory[];
   futsalMap?: any;
   positionMap?: any;
+  positionMarkers: Marker[];
+  futsalMarkers: Marker[];
+}
+
+export interface Marker {
+  id: string;
+  x: number; // percentage from left
+  y: number; // percentage from top
 }
 
 export interface Skill {
@@ -277,6 +282,8 @@ const initialState: PlayerData = {
   ],
   futsalMap: futsalMap,
   positionMap: positionMap,
+  positionMarkers: [{ id: "1", x: 50, y: 50 }],
+  futsalMarkers: [{ id: "1", x: 50, y: 50 }],
 };
 
 export const playerSlice = createSlice({

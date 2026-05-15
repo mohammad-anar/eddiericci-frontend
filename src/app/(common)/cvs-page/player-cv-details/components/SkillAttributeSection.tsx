@@ -81,7 +81,7 @@ export function SkillsAttributes({ editable = false }: { editable?: boolean }) {
         { name: "Leadership", value: 79 },
         { name: "Bravery", value: 73 },
         { name: "Determination", value: 88 },
-        { name: "Flair", value: 85 },
+        { name: "Heading", value: 85 },
         { name: "Influence", value: 82 },
       ],
     },

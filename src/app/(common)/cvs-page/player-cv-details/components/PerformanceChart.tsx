@@ -31,6 +31,9 @@ const CustomTooltip = ({ active, payload }: any) => {
 const PerformanceChart = ({ title, percentage, data }: PerformanceChartProps) => {
   return (
     <div className="flex flex-col items-center w-full">
+      <h3 className="text-xl md:text-2xl font-heading font-normal mb-6 uppercase tracking-widest text-primary/90">
+        {title}
+      </h3>
       <div className="w-full aspect-square max-w-[400px]">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
@@ -52,7 +55,7 @@ const PerformanceChart = ({ title, percentage, data }: PerformanceChartProps) =>
                 value={`${percentage}%`}
                 position="center"
                 fill="white"
-                className="text-4xl md:text-5xl font-bold"
+                className="text-4xl md:text-6xl font-black"
               />
             </Pie>
             <Tooltip content={<CustomTooltip />} />
@@ -60,15 +63,15 @@ const PerformanceChart = ({ title, percentage, data }: PerformanceChartProps) =>
         </ResponsiveContainer>
       </div>
 
-      {/* ✅ Added Legend */}
-      <div className="flex flex-wrap justify-center gap-4 mt-4">
+      {/* ✅ Enhanced Legend */}
+      <div className="flex flex-wrap justify-center gap-6 mt-8">
         {data.map((item, index) => (
-          <div key={index} className="flex items-center gap-2">
+          <div key={index} className="flex items-center gap-3 bg-white/5 px-3 py-1.5 rounded-full border border-white/10 hover:bg-white/10 transition-colors">
             <div
-              className="w-3 h-3"
+              className="w-2.5 h-2.5 rounded-full"
               style={{ backgroundColor: item.color }}
             />
-            <span className="text-sm text-white">{item.name}</span>
+            <span className="text-sm md:text-base font-bold text-white uppercase tracking-wider">{item.name}</span>
           </div>
         ))}
       </div>

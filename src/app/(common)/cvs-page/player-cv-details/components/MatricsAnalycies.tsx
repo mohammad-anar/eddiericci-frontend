@@ -57,7 +57,7 @@ const getProgressColor = (grade: string) => {
   }
 };
 
-const METRIC_CATEGORIES = ['Perception', 'Vision', 'Intelligence']
+const METRIC_CATEGORIES = ['Perception', 'Vision']
 
 export function MetricsAnalysis({ editable = false }: { editable?: boolean }) {
   const [updatePlayer] = useUpdatePlayerProfileMutation();
@@ -76,13 +76,6 @@ export function MetricsAnalysis({ editable = false }: { editable?: boolean }) {
       { category: 'Decision Speed', score: 91, trend: 5, grade: 'Excellent' },
       { category: 'Visual Acuity', score: 86, trend: 1, grade: 'Good' },
     ],
-    Intelligence: [
-      { category: 'Tactical Analysis', score: 94, trend: 3, grade: 'Excellent' },
-      { category: 'Strategy Planning', score: 89, trend: 2, grade: 'Good' },
-      { category: 'Adaptation Rate', score: 91, trend: 4, grade: 'Excellent' },
-      { category: 'Risk Assessment', score: 88, trend: 5, grade: 'Good' },
-      { category: 'Learning Curve', score: 90, trend: 3, grade: 'Excellent' },
-    ],
   })
 
   const { setMetricsAvg, role } = usePlayerStats();
@@ -95,11 +88,11 @@ export function MetricsAnalysis({ editable = false }: { editable?: boolean }) {
 
   const handleUpdate = async (tab: string, idx: number, field: keyof MetricRow, value: any) => {
     const metricName = metricsData[tab][idx].category;
-    
+
     setMetricsData(prev => {
       const newData = { ...prev };
       const row = { ...newData[tab][idx] };
-      
+
       if (field === 'score') {
         const score = Math.max(0, Math.min(100, parseInt(value) || 0));
         row.score = score;
@@ -109,7 +102,7 @@ export function MetricsAnalysis({ editable = false }: { editable?: boolean }) {
       } else {
         (row as any)[field] = value;
       }
-      
+
       newData[tab][idx] = row;
       return newData;
     });
@@ -133,7 +126,7 @@ export function MetricsAnalysis({ editable = false }: { editable?: boolean }) {
 
         <div className="border border-border rounded-lg  p-8">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-3 mb-8 p-1 rounded-full">
+            <TabsList className="grid w-full grid-cols-2 mb-8 p-1 rounded-full">
               {METRIC_CATEGORIES.map((category) => (
                 <TabsTrigger
                   key={category}
@@ -185,7 +178,7 @@ export function MetricsAnalysis({ editable = false }: { editable?: boolean }) {
                             {editable ? (
                               <>
                                 <div className="w-full h-1.5 bg-[#333] rounded-full overflow-hidden relative">
-                                  <div 
+                                  <div
                                     className={cn(
                                       "h-full transition-all duration-300 ease-out",
                                       metric.score >= 80 ? "bg-[#22c55e]" : metric.score >= 60 ? "bg-[#eab308]" : "bg-[#ef4444]"
@@ -223,11 +216,11 @@ export function MetricsAnalysis({ editable = false }: { editable?: boolean }) {
                                 />
                               </>
                             ) : (
-                              <Progress 
-                                value={metric.score} 
+                              <Progress
+                                value={metric.score}
                                 className="w-full h-1.5"
                                 style={{ backgroundColor: '#333' }}
-                                indicatorClassName={metric.score >= 80 ? "bg-[#22c55e]" : metric.score >= 60 ? "bg-[#eab308]" : "bg-[#ef4444]"} 
+                                indicatorClassName={metric.score >= 80 ? "bg-[#22c55e]" : metric.score >= 60 ? "bg-[#eab308]" : "bg-[#ef4444]"}
                               />
                             )}
                           </div>

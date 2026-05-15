@@ -25,6 +25,59 @@ import FullEditableCv from "@/app/(common)/cvs-page/coach-cv-details/components/
 import { useCoach } from "@/lib/hooks/useCoach";
 import { usePlayerStats } from "@/app/(common)/cvs-page/player-cv-details/components/FullEditablePage";
 
+const COUNTRY_CODES: Record<string, string> = {
+  "afghanistan": "af", "albania": "al", "algeria": "dz", "andorra": "ad", "angola": "ao",
+  "antigua and barbuda": "ag", "argentina": "ar", "armenia": "am", "australia": "au",
+  "austria": "at", "azerbaijan": "az", "bahamas": "bs", "bahrain": "bh", "bangladesh": "bd",
+  "barbados": "bb", "belarus": "by", "belgium": "be", "belize": "bz", "benin": "bj",
+  "bhutan": "bt", "bolivia": "bo", "bosnia and herzegovina": "ba", "botswana": "bw",
+  "brazil": "br", "brunei": "bn", "bulgaria": "bg", "burkina faso": "bf", "burundi": "bi",
+  "cambodia": "kh", "cameroon": "cm", "canada": "ca", "cape verde": "cv",
+  "central african republic": "cf", "chad": "td", "chile": "cl", "china": "cn",
+  "colombia": "co", "comoros": "km", "congo": "cg", "costa rica": "cr", "croatia": "hr",
+  "cuba": "cu", "cyprus": "cy", "czech republic": "cz", "denmark": "dk", "djibouti": "dj",
+  "dominica": "dm", "dominican republic": "do", "ecuador": "ec", "egypt": "eg",
+  "el salvador": "sv", "equatorial guinea": "gq", "eritrea": "er", "estonia": "ee",
+  "ethiopia": "et", "fiji": "fj", "finland": "fi", "france": "fr", "gabon": "ga",
+  "gambia": "gm", "georgia": "ge", "germany": "de", "ghana": "gh", "greece": "gr",
+  "grenada": "gd", "guatemala": "gt", "guinea": "gn", "guinea-bissau": "gw",
+  "guyana": "gy", "haiti": "ht", "honduras": "hn", "hungary": "hu", "iceland": "is",
+  "india": "in", "indonesia": "id", "iran": "ir", "iraq": "iq", "ireland": "ie",
+  "israel": "il", "italy": "it", "jamaica": "jm", "japan": "jp", "jordan": "jo",
+  "kazakhstan": "kz", "kenya": "ke", "kiribati": "ki", "korea, north": "kp",
+  "korea, south": "kr", "kuwait": "kw", "kyrgyzstan": "kg", "laos": "la", "latvia": "lv",
+  "lebanon": "lb", "lesotho": "ls", "liberia": "lr", "libya": "ly", "liechtenstein": "li",
+  "lithuania": "lt", "luxembourg": "lu", "macedonia": "mk", "madagascar": "mg",
+  "malawi": "mw", "malaysia": "my", "maldives": "mv", "mali": "ml", "malta": "mt",
+  "marshall islands": "mh", "mauritania": "mr", "mauritius": "mu", "mexico": "mx",
+  "micronesia": "fm", "moldova": "md", "monaco": "mc", "mongolia": "mn", "montenegro": "me",
+  "morocco": "ma", "mozambique": "mz", "myanmar": "mm", "namibia": "na", "nauru": "nr",
+  "nepal": "np", "netherlands": "nl", "new zealand": "nz", "nicaragua": "ni",
+  "niger": "ne", "nigeria": "ng", "norway": "no", "oman": "om", "pakistan": "pk",
+  "palau": "pw", "panama": "pa", "papua new guinea": "pg", "paraguay": "py", "peru": "pe",
+  "philippines": "ph", "poland": "pl", "portugal": "pt", "qatar": "qa", "romania": "ro",
+  "russia": "ru", "rwanda": "rw", "saint kitts and nevis": "kn", "saint lucia": "lc",
+  "saint vincent and the grenadines": "vc", "samoa": "ws", "san marino": "sm",
+  "sao tome and principe": "st", "saudi arabia": "sa", "senegal": "sn", "serbia": "rs",
+  "seychelles": "sc", "sierra leone": "sl", "singapore": "sg", "slovakia": "sk",
+  "slovenia": "si", "solomon islands": "sb", "somalia": "so", "south africa": "za",
+  "spain": "es", "sri lanka": "lk", "sudan": "sd", "suriname": "sr", "swaziland": "sz",
+  "sweden": "se", "switzerland": "ch", "syria": "sy", "taiwan": "tw", "tajikistan": "tj",
+  "tanzania": "tz", "thailand": "th", "timor-leste": "tl", "togo": "tg", "tonga": "to",
+  "trinidad and tobago": "tt", "tunisia": "tn", "turkey": "tr", "turkmenistan": "tm",
+  "tuvalu": "tv", "uganda": "ug", "ukraine": "ua", "united arab emirates": "ae",
+  "united kingdom": "gb", "united states": "us", "uruguay": "uy", "uzbekistan": "uz",
+  "vanuatu": "vu", "vatican city": "va", "venezuela": "ve", "vietnam": "vn", "yemen": "ye",
+  "zambia": "zm", "zimbabwe": "zw"
+};
+
+const getFlagUrl = (countryName: string) => {
+  if (!countryName) return "";
+  const code = COUNTRY_CODES[countryName.toLowerCase()];
+  if (!code) return "";
+  return `https://flagcdn.com/w160/${code}.png`;
+};
+
 const pendingReports = [
   { id: 1, name: "Marcus Silva", position: "Forward", rating: 9.2, avatar: "https://i.pravatar.cc/150?u=1" },
   { id: 2, name: "David Chen", position: "Midfielder", rating: 8.8, avatar: "https://i.pravatar.cc/150?u=2" },
@@ -54,9 +107,9 @@ const GenerateCvCoach = () => {
   const { bioRating, skillsAvg, metricsAvg, attributesAvg } = usePlayerStats();
   const [role, setRole] = useState<string>("coach");
 
-  const overallRating = Math.round(
-    (bioRating + skillsAvg + metricsAvg + attributesAvg) / 4
-  );
+  const overallRating = coachData.keySkills?.length > 0 
+    ? Math.round(coachData.keySkills.reduce((acc, skill) => acc + skill.value, 0) / coachData.keySkills.length)
+    : 0;
 
   useEffect(() => {
     const userRole = localStorage.getItem("userRole") || "coach";
@@ -321,8 +374,8 @@ const GenerateCvCoach = () => {
 
             <div className="absolute right-0 bottom-0 h-full w-[70%] md:w-[55%] flex items-end justify-end pointer-events-none opacity-60 md:opacity-100">
               <img
-                src="/ronaldo.png"
-                alt="Coach"
+                src={coachData.coachImage?.src || coachData.coachImage}
+                alt={coachData.fullName}
                 className="h-[90%] md:h-[105%] object-contain drop-shadow-[0_40px_80px_rgba(0,0,0,0.9)]"
               />
             </div>
@@ -342,7 +395,11 @@ const GenerateCvCoach = () => {
                       <span className="text-white">15+ Years Experience</span>
                       <span className="text-white/20 hidden md:inline">/</span>
                       <span className="flex items-center gap-3 text-white">
-                        <img src="https://flagcdn.com/br.svg" alt={coachData.birthCountry} className="w-4 h-3 md:w-5 md:h-3.5 object-cover rounded-sm shadow-sm" /> {coachData.birthCountry}
+                        <img 
+                          src={getFlagUrl(coachData.birthCountry)} 
+                          alt={coachData.birthCountry} 
+                          className="w-4 h-3 md:w-5 md:h-3.5 object-cover rounded-sm shadow-sm" 
+                        /> {coachData.birthCountry}
                       </span>
                     </div>
                   </div>

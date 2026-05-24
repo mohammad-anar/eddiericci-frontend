@@ -28,7 +28,7 @@ export function SiteHeader({ showToggle = false, customToggle }: { showToggle?: 
   return (
     <header className="flex h-(--header-height) shrink-0 items-center justify-between gap-4 px-4 lg:px-8 border-b border-white/5 bg-[#0A0A0A]/50 backdrop-blur-sm sticky top-0 z-50">
       <div className="flex flex-1 items-center gap-4">
-        <SidebarTrigger className="lg:hidden text-white" />
+        <SidebarTrigger className="text-white" />
         
         <div className="hidden sm:relative sm:block w-full max-w-2xl">
           <svg

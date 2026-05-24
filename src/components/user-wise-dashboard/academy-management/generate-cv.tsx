@@ -23,6 +23,7 @@ import { Button } from "@/components/ui/button";
 import FullEditablePage from "@/app/(common)/cvs-page/player-cv-details/components/FullEditablePage";
 import { usePlayer } from "@/lib/hooks/usePlayer";
 import { usePlayerStats } from "@/app/(common)/cvs-page/player-cv-details/components/FullEditablePage";
+import { getFullWithShortForm } from "@/lib/utils";
 import { FileText } from 'lucide-react';
 import { SHARED_REPORTS_DATA } from "@/lib/constants/reports";
 
@@ -159,7 +160,7 @@ const GenerateCv = () => {
             <div>
               <div class="brand">Eddie Ricci Football Management</div>
               <h1 class="player-name">${playerData.fullName}</h1>
-              <div class="player-title">${playerData.position} • ${playerData.clubs[0]?.name || 'Unattached'} • ${playerData.birthCountry}</div>
+              <div class="player-title">${getFullWithShortForm(playerData.position)} • ${playerData.clubs[0]?.name || 'Unattached'} • ${playerData.birthCountry}</div>
             </div>
             <div class="rating-circle">
               <span class="rating-label">Overall</span>
@@ -329,7 +330,7 @@ const GenerateCv = () => {
                   <div className="space-y-2">
                     <h1 className="text-3xl md:text-6xl font-black text-white font-orbitron uppercase tracking-tighter leading-none">{playerData.fullName}</h1>
                     <div className="flex flex-wrap items-center gap-3 md:gap-6 text-[9px] md:text-[11px] font-black uppercase tracking-[0.2em] pt-1">
-                      <span className="text-[#E31B23]">{playerData.position}</span>
+                      <span className="text-[#E31B23]">{getFullWithShortForm(playerData.position)}</span>
                       <span className="text-white/20 hidden md:inline">/</span>
                       <span className="text-white">{playerData.age} Years Old</span>
                       <span className="text-white/20 hidden md:inline">/</span>

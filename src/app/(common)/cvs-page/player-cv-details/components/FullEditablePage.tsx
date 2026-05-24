@@ -36,13 +36,13 @@ export const usePlayerStats = () => {
     if (!context) {
         return {
             bioRating: 0,
-            setBioRating: () => {},
+            setBioRating: () => { },
             skillsAvg: 0,
-            setSkillsAvg: () => {},
+            setSkillsAvg: () => { },
             metricsAvg: 0,
-            setMetricsAvg: () => {},
+            setMetricsAvg: () => { },
             attributesAvg: 0,
-            setAttributesAvg: () => {},
+            setAttributesAvg: () => { },
             role: "player" as UserRole,
         };
     }
@@ -80,7 +80,7 @@ export const PlayerStatsProvider = ({ children }: { children: React.ReactNode })
 };
 
 const FullEditablePage = ({ editable = false }: { editable?: boolean }) => {
-    const { role } = usePlayerStats() || { role: 'player' }; 
+    const { role } = usePlayerStats() || { role: 'player' };
     const { accessToken } = useAppSelector((state) => state.auth as AuthState);
 
     // If no access token, force view mode
@@ -96,13 +96,14 @@ const FullEditablePage = ({ editable = false }: { editable?: boolean }) => {
 
     return (
         <>
+            <div id="player-bio"></div>
             <PlayerBioSection editable={isActuallyEditable} />
             <ClubSection />
             <SkillsAttributes editable={canEditEvaluations} />
             <PerformanceAnalytics />
             <AttributesAnalysis editable={canEditEvaluations} />
             <MetricsAnalysis editable={canEditEvaluations} />
-            <SportsAnalytics editable={canEditEvaluations}/>
+            <SportsAnalytics editable={canEditEvaluations} />
             <PlayerProfile editable={canEditEvaluations} />
             <DocSection editable={canEditMedia} />
             <MyImagesSection editable={canEditMedia} />

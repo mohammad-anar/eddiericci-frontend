@@ -11,7 +11,7 @@ import { usePlayerStats } from "./FullEditablePage";
 import { useUpdatePlayerProfileMutation } from "@/lib/features/cv/cvApi";
 import { CMSField } from "@/components/shared/CMSField";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
+import { cn, getShortForm, getFullWithShortForm } from "@/lib/utils";
 import { usePlayer } from "@/lib/hooks/usePlayer";
 import goldCard from "@/assets/cvs-page/gold-card.png";
 import pinkCard from "@/assets/cvs-page/pink-card.png";
@@ -121,39 +121,25 @@ export default function PlayerProfile({
   const { playerData, handleUpdate: updatePlayerData } = usePlayer();
   const [updatePlayer] = useUpdatePlayerProfileMutation();
 
-  const overallRating = Math.round(
-    (bioRating + skillsAvg + metricsAvg + attributesAvg) / 4,
-  );
 
-  const getStatValue = (names: string[]) => {
-    const values = names.map(name => {
-      for (const cat of playerData.skillsCategories || []) {
-        const skill = cat.skills.find(s => s.name.toLowerCase() === name.toLowerCase());
-        if (skill) return skill.value;
+
+  const getFlagUrlWithFallback = () => {
+    const url = getFlagUrl(playerData.birthCountry);
+    return url || flag1.src;
+  };
+
+  const getClubLogoUrl = () => {
+    const firstClub = playerData.clubs?.[0];
+    if (firstClub && firstClub.logo) {
+      if (firstClub.logo.startsWith('bg-')) {
+        return club1.src;
       }
-      return 75; // baseline
-    });
-    return Math.round(values.reduce((a, b) => a + b, 0) / values.length);
+      return firstClub.logo;
+    }
+    return club1.src;
   };
 
-  const currentStats = {
-    pac: getStatValue(["Acceleration", "Sprint Speed"]),
-    sho: getStatValue(["Shooting", "Finishing", "Long Shots"]),
-    pas: getStatValue(["Short Passing", "Long Passing", "Crossing"]),
-    dri: getStatValue(["Dribbling", "Ball Control", "Agility"]),
-    def: getStatValue(["Marking", "Interceptions", "Tackling", "Heading"]),
-    phy: getStatValue(["Strength", "Stamina", "Aggression", "Jumping"])
-  };
-
-  const currentPlayer = {
-    name: playerData.fullName?.split(' ').pop()?.toUpperCase() || "PLAYER",
-    rating: overallRating,
-    position: playerData.position || "ST",
-    stats: currentStats,
-    cardType: (overallRating >= 80 ? "gold" : overallRating >= 60 ? "pink" : "white") as "gold" | "white" | "pink"
-  };
-
-  const attrData: Attribute[] = playerData.skillsCategories
+  const attrData: Attribute[] = (playerData.skillsCategories || [])
     .flatMap(c => c.skills)
     .slice(0, 12) // Keep it to 12 as before
     .map(s => ({
@@ -161,6 +147,27 @@ export default function PlayerProfile({
       score: s.value,
       status: getBadgeStatus(s.value)
     }));
+
+  const overallRating = attrData.length > 0
+    ? Math.round(attrData.reduce((sum, attr) => sum + attr.score, 0) / attrData.length)
+    : 75;
+
+  const currentStats = {
+    pac: playerData.strengths?.pace ?? 75,
+    sho: playerData.strengths?.shooting ?? 75,
+    pas: playerData.strengths?.passing ?? 75,
+    dri: playerData.strengths?.dribbling ?? 75,
+    def: playerData.strengths?.defending ?? 75,
+    phy: playerData.strengths?.physical ?? 75
+  };
+
+  const currentPlayer = {
+    name: playerData.fullName?.split(' ').pop()?.toUpperCase() || "PLAYER",
+    rating: overallRating,
+    position: getShortForm(playerData.position) || "ST",
+    stats: currentStats,
+    cardType: (overallRating >= 80 ? "gold" : overallRating >= 60 ? "pink" : "white") as "gold" | "white" | "pink"
+  };
 
   const [editingField, setEditingField] = useState<string | null>(null);
 
@@ -204,11 +211,11 @@ export default function PlayerProfile({
                     alt="card background"
                   />
                   {/* top values */}
-                  <div className="absolute top-[15%] left-7 text-black">
-                    <h2 className="text-3xl font-semibold">{currentPlayer.rating}</h2>
-                    <h2 className="text-lg">{currentPlayer.position}</h2>
-                    <Image src={flag1} className="w-6 mt-2" alt="flag image" />
-                    <Image src={club1} className="w-6 mt-2" alt="club image image" />
+                  <div className="absolute top-[15%] left-7 text-black flex flex-col items-center">
+                    <h2 className="text-3xl font-semibold leading-none">{currentPlayer.rating}</h2>
+                    <h2 className="text-xs font-bold leading-none mt-1">{currentPlayer.position}</h2>
+                    <img src={getFlagUrlWithFallback()} className="w-6 h-4 object-cover mt-2.5 rounded-xs" alt="flag" />
+                    <img src={getClubLogoUrl()} className="w-6 h-6 object-contain mt-1.5" alt="club logo" />
                   </div>
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className=" relative w-[90%] h-[90%] ">
@@ -356,7 +363,7 @@ export default function PlayerProfile({
                 </div>
               </div>
               <CMSField
-                value={playerData.position}
+                value={getFullWithShortForm(playerData.position)}
                 onUpdate={(val) => handleInfoChange("position", val)}
                 canEdit={false}
                 className="text-base text-primary/80 font-black justify-center uppercase tracking-[0.2em]"

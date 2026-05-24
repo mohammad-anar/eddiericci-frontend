@@ -19,7 +19,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { usePlayer } from "@/lib/hooks/usePlayer";
-import { cn } from "@/lib/utils";
+import { cn, getShortForm, getFullWithShortForm } from "@/lib/utils";
 import { PencilIcon } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
@@ -97,6 +97,160 @@ const ALL_COUNTRIES = Object.keys(COUNTRY_CODES).map(c =>
   c.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
 ).sort();
 
+const getMarkersForPosition = (position: string, isFutsal: boolean) => {
+  const pos = position?.trim() || "";
+  const cleanPos = pos.toLowerCase();
+
+  if (isFutsal) {
+    if (cleanPos.includes("goalkeeper") || cleanPos.includes("gk")) {
+      return [
+        { id: "gk-1", name: "Goalkeeper", x: 50, y: 90 },
+        { id: "gk-2", name: "Sweeper Keeper", x: 50, y: 80 },
+        { id: "gk-3", name: "Shot Stopper", x: 42, y: 88 }
+      ];
+    }
+    if (cleanPos.includes("fixo")) {
+      return [
+        { id: "fixo-1", name: "Fixo (Defender)", x: 50, y: 75 },
+        { id: "fixo-2", name: "Center Back", x: 50, y: 82 },
+        { id: "fixo-3", name: "Defensive Midfielder", x: 50, y: 62 }
+      ];
+    }
+    if (cleanPos.includes("alas") && (cleanPos.includes("right") || cleanPos.includes("rw") || cleanPos.includes("(r)"))) {
+      return [
+        { id: "alasr-1", name: "Alas (Right Wing)", x: 80, y: 45 },
+        { id: "alasr-2", name: "Right Winger", x: 82, y: 25 },
+        { id: "alasr-3", name: "Right Midfielder", x: 75, y: 58 }
+      ];
+    }
+    if (cleanPos.includes("alas") && (cleanPos.includes("left") || cleanPos.includes("lw") || cleanPos.includes("(l)"))) {
+      return [
+        { id: "alasl-1", name: "Alas (Left Wing)", x: 20, y: 45 },
+        { id: "alasl-2", name: "Left Winger", x: 18, y: 25 },
+        { id: "alasl-3", name: "Left Midfielder", x: 25, y: 58 }
+      ];
+    }
+    if (cleanPos.includes("pivot")) {
+      return [
+        { id: "pivot-1", name: "Pivot (Forward)", x: 50, y: 20 },
+        { id: "pivot-2", name: "Striker", x: 50, y: 12 },
+        { id: "pivot-3", name: "Center Forward", x: 50, y: 32 }
+      ];
+    }
+    // Fallbacks if a soccer position is selected but Futsal map is showing:
+    return [
+      { id: "f-1", name: pos || "Futsal Player", x: 50, y: 50 },
+      { id: "f-2", name: "Fixo", x: 50, y: 75 },
+      { id: "f-3", name: "Pivot", x: 50, y: 25 }
+    ];
+  } else {
+    // Football (soccer) positions:
+    const basePos = pos.split("(")[0].trim();
+    switch (basePos) {
+      case "Goalkeeper":
+        return [
+          { id: "gk-1", name: "Goalkeeper", x: 50, y: 92 },
+          { id: "gk-2", name: "Sweeper Keeper", x: 50, y: 82 },
+          { id: "gk-3", name: "Shot Stopper", x: 42, y: 90 }
+        ];
+      case "Center Back":
+        return [
+          { id: "cb-1", name: "Center Back", x: 50, y: 78 },
+          { id: "cb-2", name: "Sweeper", x: 50, y: 88 },
+          { id: "cb-3", name: "Defensive Midfielder", x: 50, y: 62 }
+        ];
+      case "Right Back":
+        return [
+          { id: "rb-1", name: "Right Back", x: 80, y: 78 },
+          { id: "rb-2", name: "Right Wing-Back", x: 85, y: 65 },
+          { id: "rb-3", name: "Center Back", x: 50, y: 78 }
+        ];
+      case "Left Back":
+        return [
+          { id: "lb-1", name: "Left Back", x: 20, y: 78 },
+          { id: "lb-2", name: "Left Wing-Back", x: 15, y: 65 },
+          { id: "lb-3", name: "Center Back", x: 50, y: 78 }
+        ];
+      case "Wing Back":
+      case "Left Wing Back":
+      case "Right Wing Back":
+        return [
+          { id: "wb-1", name: basePos, x: 82, y: 65 },
+          { id: "wb-2", name: "Full-Back", x: 80, y: 78 },
+          { id: "wb-3", name: "Side Midfielder", x: 80, y: 50 }
+        ];
+      case "Defensive Midfielder":
+        return [
+          { id: "dm-1", name: "Defensive Midfielder", x: 50, y: 62 },
+          { id: "dm-2", name: "Central Midfielder", x: 50, y: 50 },
+          { id: "dm-3", name: "Center Back", x: 50, y: 78 }
+        ];
+      case "Central Midfielder":
+        return [
+          { id: "cm-1", name: "Central Midfielder", x: 50, y: 50 },
+          { id: "cm-2", name: "Attacking Midfielder", x: 50, y: 35 },
+          { id: "cm-3", name: "Defensive Midfielder", x: 50, y: 62 }
+        ];
+      case "Attacking Midfielder":
+        return [
+          { id: "am-1", name: "Attacking Midfielder", x: 50, y: 35 },
+          { id: "am-2", name: "Central Midfielder", x: 50, y: 50 },
+          { id: "am-3", name: "Second Striker", x: 50, y: 25 }
+        ];
+      case "Left Midfielder":
+        return [
+          { id: "lm-1", name: "Left Midfielder", x: 20, y: 50 },
+          { id: "lm-2", name: "Left Winger", x: 18, y: 25 },
+          { id: "lm-3", name: "Central Midfielder", x: 50, y: 50 }
+        ];
+      case "Right Midfielder":
+        return [
+          { id: "rm-1", name: "Right Midfielder", x: 80, y: 50 },
+          { id: "rm-2", name: "Right Winger", x: 82, y: 25 },
+          { id: "rm-3", name: "Central Midfielder", x: 50, y: 50 }
+        ];
+      case "Striker":
+        return [
+          { id: "st-1", name: "Striker", x: 50, y: 15 },
+          { id: "st-2", name: "Center Forward", x: 50, y: 25 },
+          { id: "st-3", name: "Second Striker", x: 50, y: 32 }
+        ];
+      case "Center Forward":
+        return [
+          { id: "cf-1", name: "Center Forward", x: 50, y: 25 },
+          { id: "cf-2", name: "Striker", x: 50, y: 15 },
+          { id: "cf-3", name: "Attacking Midfielder", x: 50, y: 38 }
+        ];
+      case "Second Striker":
+      case "Left Forward":
+      case "Right Forward":
+        return [
+          { id: "ss-1", name: basePos, x: 50, y: 28 },
+          { id: "ss-2", name: "Center Forward", x: 50, y: 20 },
+          { id: "ss-3", name: "Attacking Midfielder", x: 50, y: 38 }
+        ];
+      case "Left Winger":
+        return [
+          { id: "lw-1", name: "Left Winger", x: 18, y: 25 },
+          { id: "lw-2", name: "Left Midfielder", x: 20, y: 50 },
+          { id: "lw-3", name: "Forward", x: 50, y: 20 }
+        ];
+      case "Right Winger":
+        return [
+          { id: "rw-1", name: "Right Winger", x: 82, y: 25 },
+          { id: "rw-2", name: "Right Midfielder", x: 80, y: 50 },
+          { id: "rw-3", name: "Forward", x: 50, y: 20 }
+        ];
+      default:
+        return [
+          { id: "def-1", name: basePos || "Player", x: 50, y: 50 },
+          { id: "def-2", name: "Central Defender", x: 50, y: 75 },
+          { id: "def-3", name: "Central Midfielder", x: 50, y: 50 }
+        ];
+    }
+  }
+};
+
 const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
   const { playerData, handleUpdate } = usePlayer();
 
@@ -115,15 +269,42 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
   const [activeMarker, setActiveMarker] = useState<{ id: string, type: 'position' | 'futsal' } | null>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
 
-  const addMarker = () => {
+  const prevPositionRef = useRef<string>("");
+
+  // Auto-switch maps when position changes
+  useEffect(() => {
+    if (!playerData || !playerData.position) return;
+
+    const cleanPos = playerData.position.toLowerCase();
+    const shouldBeFutsal = cleanPos.includes("goalkeeper") || cleanPos.includes("fixo") || cleanPos.includes("alas") || cleanPos.includes("pivot");
+    
+    // Only auto-switch the map if the position itself has changed
+    if (playerData.position !== prevPositionRef.current) {
+      setIsPositionMap(!shouldBeFutsal);
+      prevPositionRef.current = playerData.position;
+    } else if (!shouldBeFutsal && !isPositionMap) {
+      // Force Position Map if it's a soccer position and Futsal Map is active
+      setIsPositionMap(true);
+    }
+  }, [playerData.position, isPositionMap]);
+
+  // Synchronize markers for the active map
+  useEffect(() => {
+    if (!playerData || !playerData.position) return;
+
+    const expected = getMarkersForPosition(playerData.position, !isPositionMap);
     const field = isPositionMap ? 'positionMarkers' : 'futsalMarkers';
-    const markers = (isPositionMap ? playerData.positionMarkers : playerData.futsalMarkers) || [];
-    const newMarker = {
-      id: Math.random().toString(36).substr(2, 9),
-      x: 50,
-      y: 50
-    };
-    handleUpdate(field, [...markers, newMarker]);
+    const current = (isPositionMap ? playerData.positionMarkers : playerData.futsalMarkers) || [];
+
+    const needsReset = current.length !== 3 || current.some((m, idx) => m.name !== expected[idx]?.name);
+
+    if (needsReset) {
+      handleUpdate(field, expected);
+    }
+  }, [playerData.position, isPositionMap]);
+
+  const addMarker = () => {
+    // Fixed to 3 markers, disabled manual addition
   };
 
   const updateMarkerPosition = (e: MouseEvent | React.MouseEvent) => {
@@ -678,31 +859,37 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
 
             {/* Position Map */}
             <div className="p-6">
-              <div className="flex gap-2 mb-4">
-                <button
-                  onClick={() => setIsPositionMap(true)}
-                  className={`${isPositionMap ? "px-3 py-1 bg-primary text-black text-xs text-center font-heading font-normal rounded" : "px-3 py-1 border border-border text-xs rounded hover:bg-gray-900"}`}
-                >
-                  Position Map
-                </button>
+              {(() => {
+                const cleanPos = (playerData.position || "").toLowerCase();
+                const isFutsalPos = cleanPos.includes("goalkeeper") || cleanPos.includes("fixo") || cleanPos.includes("alas") || cleanPos.includes("pivot");
 
-                <button
-                  onClick={() => setIsPositionMap(false)}
-                  className={`${!isPositionMap ? "px-3 py-1 bg-primary text-black text-xs text-center font-heading font-normal rounded" : "px-3 py-1 border border-border text-xs rounded hover:bg-gray-900"}`}
-                >
-                  Futsal Map
-                </button>
-              </div>
+                return (
+                  <div className="flex gap-2 mb-4">
+                    <button
+                      onClick={() => setIsPositionMap(true)}
+                      className={`${isPositionMap ? "px-3 py-1 bg-primary text-black text-xs text-center font-heading font-normal rounded" : "px-3 py-1 border border-border text-xs rounded hover:bg-gray-900"}`}
+                    >
+                      Position Map
+                    </button>
 
-              <div className="text-end mb-2 w-full">
-                <Button 
-                  size={"sm"} 
-                  variant={"outline"}
-                  onClick={addMarker}
-                >
-                  + Add position icon
-                </Button>
-              </div>
+                    <button
+                      disabled={!isFutsalPos}
+                      onClick={() => setIsPositionMap(false)}
+                      className={cn(
+                        "px-3 py-1 text-xs rounded transition-all",
+                        !isPositionMap
+                          ? "bg-primary text-black font-heading font-normal"
+                          : "border border-border hover:bg-gray-900",
+                        !isFutsalPos && "opacity-40 cursor-not-allowed hover:bg-transparent"
+                      )}
+                    >
+                      Futsal Map
+                    </button>
+                  </div>
+                );
+              })()}
+
+              {/* Add position icon button removed to keep exactly 3 markers */}
               
               <div 
                 ref={mapContainerRef}
@@ -721,7 +908,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                 {( (isPositionMap ? playerData.positionMarkers : playerData.futsalMarkers) || [] ).map((marker: any, idx: number) => (
                   <div
                     key={marker.id}
-                    className="absolute z-20 cursor-move group/marker"
+                    className="absolute z-20 cursor-move group/marker flex flex-col items-center"
                     style={{
                       left: `${marker.x}%`,
                       top: `${marker.y}%`,
@@ -735,25 +922,21 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                     <Image
                       src={positionIcon}
                       alt="position icon"
-                      width={idx === 0 ? 60 : 40}
-                      height={idx === 0 ? 60 : 40}
+                      width={idx === 0 ? 32 : 30}
+                      height={idx === 0 ? 32 : 30}
                       className={cn(
                         "pointer-events-none drop-shadow-lg transition-transform group-hover/marker:scale-110",
-                        idx === 0 ? "w-12 h-12 md:w-16 md:h-16" : "w-8 h-8 md:w-10 md:h-10"
+                        idx === 0 ? "w-[30px] h-[30px] md:w-[32px] md:h-[32px]" : "w-[28px] h-[28px] md:w-[30px] md:h-[30px]"
                       )}
                     />
-                    {/* Delete button on hover */}
-                    <button
-                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-[10px] opacity-0 group-hover/marker:opacity-100 transition-opacity"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        const field = isPositionMap ? 'positionMarkers' : 'futsalMarkers';
-                        const markers = isPositionMap ? playerData.positionMarkers : playerData.futsalMarkers;
-                        handleUpdate(field, markers.filter(m => m.id !== marker.id));
-                      }}
-                    >
-                      ×
-                    </button>
+                    {marker.name && (
+                      <div className={cn(
+                        "mt-1 px-1.5 py-0.5 rounded bg-black/85 border border-white/10 text-white text-[9px] font-medium text-center whitespace-nowrap shadow-md pointer-events-none tracking-wide select-none transition-all",
+                        idx === 0 ? "text-[10px] px-2 font-semibold border-primary/40 bg-primary/10 text-primary backdrop-blur-sm" : ""
+                      )}>
+                        {marker.name}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -798,26 +981,32 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
 
             <div className="mb-8">
               <CMSField
-                value={playerData.position}
+                value={getFullWithShortForm(playerData.position)}
                 onUpdate={(val) => handleUpdate("position", val)}
                 canEdit={canEditBio}
                 type="combobox"
                 options={[
-                  "Goalkeeper",
-                  "Center Back",
-                  "Right Back",
-                  "Left Back",
-                  "Wing Back",
-                  "Defensive Midfielder",
-                  "Central Midfielder",
-                  "Attacking Midfielder",
-                  "Left Midfielder",
-                  "Right Midfielder",
-                  "Striker",
-                  "Center Forward",
-                  "Second Striker",
-                  "Left Winger",
-                  "Right Winger"
+                  "Goalkeeper (GK)",
+                  "Fixo (Defender / CB)",
+                  "Alas (Right Wing / RW)",
+                  "Alas (Left Wing / LW)",
+                  "Pivot (Forward / CF)",
+                  "Center Back (CB)",
+                  "Right Back (RB)",
+                  "Left Back (LB)",
+                  "Left Wing Back (LWB)",
+                  "Right Wing Back (RWB)",
+                  "Defensive Midfielder (CDM)",
+                  "Central Midfielder (CM)",
+                  "Attacking Midfielder (CAM)",
+                  "Left Midfielder (LM)",
+                  "Right Midfielder (RM)",
+                  "Striker (ST)",
+                  "Center Forward (CF)",
+                  "Left Forward (LF)",
+                  "Right Forward (RF)",
+                  "Left Winger (LW)",
+                  "Right Winger (RW)"
                 ]}
                 className="flex items-center gap-2 border border-border px-4 py-2 rounded hover:bg-gray-900 bg-transparent text-foreground h-auto w-fit mx-auto"
               />

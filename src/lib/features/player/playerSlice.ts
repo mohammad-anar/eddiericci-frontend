@@ -88,6 +88,7 @@ export interface Marker {
   id: string;
   x: number; // percentage from left
   y: number; // percentage from top
+  name?: string;
 }
 
 export interface Skill {

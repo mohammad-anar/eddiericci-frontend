@@ -5,6 +5,7 @@ import { Clock, Mail, Phone, Shield } from 'lucide-react';
 import Image from 'next/image';
 
 import { usePlayer } from "@/lib/hooks/usePlayer";
+import { getFullWithShortForm } from "@/lib/utils";
 
 export default function PlayerBioSection() {
   const { playerData } = usePlayer();
@@ -42,7 +43,7 @@ export default function PlayerBioSection() {
 
             {/* Position, Age, Country */}
             <div className="flex items-center gap-4 mb-8">
-              <span className="text-red-500 text-lg font-semibold">{playerData.position}</span>
+              <span className="text-red-500 text-lg font-semibold">{getFullWithShortForm(playerData.position)}</span>
               <span className="text-gray-400">•</span>
               <span className="text-gray-300">{playerData.age} Years Old</span>
               <span className="text-gray-400">•</span>

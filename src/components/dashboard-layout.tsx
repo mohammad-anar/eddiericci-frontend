@@ -17,14 +17,7 @@ interface DashboardLayoutProps {
 
 export function DashboardLayout({ children, sidebarItems, tier, showToggle = false, customToggle }: DashboardLayoutProps) {
   return (
-    <SidebarProvider
-      style={
-        {
-          "--sidebar-width": "18rem",
-          "--header-height": "4rem",
-        } as React.CSSProperties
-      }
-    >
+    <SidebarProvider>
       <AppSidebar variant="inset" sidebarItems={sidebarItems} tier={tier} />
       <SidebarInset className="bg-[#0A0A0A] text-white">
         <SiteHeader showToggle={showToggle} customToggle={customToggle} />

@@ -208,9 +208,9 @@ export function SkillsAttributes({ editable = false }: { editable?: boolean }) {
                           canEdit={editable}
                           type="number"
                           editTrigger="doubleClick"
-                          className="font-bold text-xs justify-end uppercase"
+                          className="font-bold text-base justify-end uppercase"
                           style={{ color: getHexColor(skill.value) }}
-                          inputClassName="text-right h-6 w-14 text-xs bg-gray-900 uppercase"
+                          inputClassName="text-right h-6 w-14 text-base bg-gray-900 uppercase"
                           hideIcon={true}
                         />
                       </div>

@@ -48,6 +48,7 @@ Medical reports indicate excellent physical condition 💪 with no recurring inj
             onUpdate={(val) => handleUpdate(String(val))}
             canEdit={editable}
             type="textarea"
+            showEmojis={true}
             className="whitespace-pre-wrap leading-relaxed"
           />
         </div>

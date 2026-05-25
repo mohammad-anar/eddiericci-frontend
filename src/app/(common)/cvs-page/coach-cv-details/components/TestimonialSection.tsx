@@ -14,6 +14,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
+import { toast } from "sonner"
 
 const DEFAULT_TESTIMONIALS = [
   {
@@ -178,6 +179,42 @@ export default function TestimonialSection({ editable }: { editable?: boolean })
                   <DialogTitle className="text-xl font-bold font-orbitron uppercase italic text-primary">New Testimonial</DialogTitle>
                 </DialogHeader>
                 <div className="grid gap-6 py-4">
+                  <div className="flex flex-col items-center gap-2">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">Profile Image</Label>
+                    <div className="relative group w-20 h-20 cursor-pointer overflow-hidden rounded-full border-2 border-dashed border-gray-800 hover:border-primary/50 transition-all flex items-center justify-center bg-black/50">
+                      {formData.avatar ? (
+                        <img 
+                          src={formData.avatar} 
+                          alt="Avatar Preview" 
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <Plus className="text-gray-400 group-hover:text-primary transition-colors" size={24} />
+                      )}
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                        <span className="text-[8px] text-white font-black uppercase tracking-widest">Upload</span>
+                      </div>
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            if (file.size > 2 * 1024 * 1024) {
+                              toast.error("File size too large. Max 2MB.");
+                              return;
+                            }
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
+                              setFormData({ ...formData, avatar: reader.result as string });
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                        className="absolute inset-0 opacity-0 cursor-pointer"
+                      />
+                    </div>
+                  </div>
                   <div className="grid gap-2">
                     <Label htmlFor="name" className="text-[10px] font-black uppercase tracking-widest text-white/40">Full Name</Label>
                     <Input 

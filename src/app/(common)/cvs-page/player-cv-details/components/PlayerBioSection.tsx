@@ -1308,7 +1308,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
 
             <div className="p-6">
               <h2 className="text-lg text-center font-heading font-normal mb-4">
-                Career Highlights
+                Accomplishments
               </h2>
               <div className="space-y-6 border-l-2 border-green-600 pl-4 mt-6">
                 {playerData.careerHighlights.map((highlight: any, idx: number) => (

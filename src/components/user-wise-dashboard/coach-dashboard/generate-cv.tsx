@@ -107,9 +107,7 @@ const GenerateCvCoach = () => {
   const { bioRating, skillsAvg, metricsAvg, attributesAvg } = usePlayerStats();
   const [role, setRole] = useState<string>("coach");
 
-  const overallRating = coachData.keySkills?.length > 0 
-    ? Math.round(coachData.keySkills.reduce((acc, skill) => acc + skill.value, 0) / coachData.keySkills.length)
-    : 0;
+  const overallRating = 88;
 
   useEffect(() => {
     const userRole = localStorage.getItem("userRole") || "coach";

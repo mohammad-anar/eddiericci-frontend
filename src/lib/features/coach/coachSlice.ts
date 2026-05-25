@@ -35,17 +35,20 @@ export interface CoachData {
   seasonStats: {
     matches: number;
     wins: number;
+    losses: number;
+    draws: number;
     cleanSheets: number;
   };
   transferStatus: string;
   contractUntil: string;
   agent: string;
   agency: string;
+  salary: string;
   majorTrophies: { name: string; count: number }[];
   cupHistory: string[];
-  keySkills: { name: string; value: number }[];
+  keySkills: { id: number; text: string; icon?: string }[];
   clubs: { id: string; name: string; from: string; to: string; logo?: any }[];
-  qualifications: { id: number; text: string }[];
+  qualifications: { id: number; text: string; icon?: string }[];
   coachImage: any;
   mainFlag: any;
   coachType: string;
@@ -59,7 +62,7 @@ export interface CoachData {
 const initialState: CoachData = {
   fullName: "Marcus Silva",
   dob: "15/03/1996",
-  age: "24 years",
+  age: "24",
   birthCountry: "France",
   birthCountryFlag: flagFr,
   dualNationality: "Italy",
@@ -76,12 +79,15 @@ const initialState: CoachData = {
   seasonStats: {
     matches: 32,
     wins: 21,
+    losses: 7,
+    draws: 4,
     cleanSheets: 9,
   },
   transferStatus: "Active",
   contractUntil: "June, 2026",
   agent: "John Morrison",
   agency: "Elite Sports Mgmt",
+  salary: "$ 20,000.00",
   majorTrophies: [
     { name: "K10 FOOTBALL CHAMPIONSHIP", count: 3 },
     { name: "K10 FOOTBALL CUP", count: 7 },
@@ -101,10 +107,10 @@ const initialState: CoachData = {
     "2016 - K10 FOOTBALL CUP - K10 FOOTBALL FC",
   ],
   keySkills: [
-    { name: "Youth Development", value: 92 },
-    { name: "Leadership", value: 88 },
-    { name: "Adaptability", value: 85 },
-    { name: "Constructive Feedback", value: 80 },
+    { id: 1, text: "Tactical planning and game strategy", icon: "target" },
+    { id: 2, text: "Player development and mentoring", icon: "users" },
+    { id: 3, text: "Match analysis and opponent scouting", icon: "trendingUp" },
+    { id: 4, text: "Training session design", icon: "calendar" },
   ],
   clubs: [
     { id: "1", name: "Manchester City", from: "2020", to: "Present", logo: clubImage },
@@ -115,14 +121,17 @@ const initialState: CoachData = {
     {
       id: 1,
       text: "Strong communication skills, empathy and high expectations combine to create strong individuals and winning teams.",
+      icon: "users",
     },
     {
       id: 2,
       text: "Highly skilled professional with 15 years of experience developing improvement programs for athletes of all age groups.",
+      icon: "activity",
     },
     {
       id: 3,
       text: "Five years of experience assistant coach at the college level",
+      icon: "graduationCap",
     },
   ],
   coachType: "Head Coach",

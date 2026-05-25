@@ -1,10 +1,10 @@
 "use client";
 import { DashboardLayout } from "@/components/dashboard-layout";
-import { 
-  IconDashboard, 
-  IconFileText, 
-  IconPhotoVideo, 
-  IconChartBar, 
+import {
+  IconDashboard,
+  IconFileText,
+  IconPhotoVideo,
+  IconChartBar,
   IconSettings,
   IconUsers,
   IconReport,
@@ -40,30 +40,30 @@ export default function CoachLayout({ children }: { children: ReactNode }) {
 
   const customToggle = (
     <div className="flex items-center bg-[#1a1a1a] rounded-lg p-1.5 gap-1.5 border border-white/5 ml-2">
-      <button 
+      <button
         onClick={() => setHasAcademy(false)}
         className={`px-4 py-1.5 rounded-md text-[11px] font-bold uppercase tracking-wider transition-all ${!hasAcademy ? 'bg-[#E31B23] text-white' : 'text-white/40 hover:text-white/60'}`}
       >
-        Without Academy
+        Individual Coach
       </button>
-      <div 
+      <div
         onClick={() => setHasAcademy(!hasAcademy)}
         className="w-10 h-5 bg-white/10 rounded-full relative cursor-pointer group border border-white/5"
       >
         <div className={`absolute top-1/2 -translate-y-1/2 w-3.5 h-3.5 bg-white rounded-full transition-all duration-300 shadow-sm ${hasAcademy ? 'right-0.5' : 'left-0.5'}`}></div>
       </div>
-      <button 
+      <button
         onClick={() => setHasAcademy(true)}
         className={`px-4 py-1.5 rounded-md text-[11px] font-bold uppercase tracking-wider transition-all ${hasAcademy ? 'bg-[#E31B23] text-white' : 'text-white/40 hover:text-white/60'}`}
       >
-        With Academy
+        Club Coach
       </button>
     </div>
   );
 
   return (
     <CoachContext.Provider value={{ hasAcademy }}>
-      <DashboardLayout 
+      <DashboardLayout
         sidebarItems={currentSidebarItems}
         tier={{ name: "Silver", color: "#C0C0C0" }}
         customToggle={customToggle}

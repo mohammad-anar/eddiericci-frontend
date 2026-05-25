@@ -149,7 +149,7 @@ export const CoachDashboard = () => {
             title={coachData.fullName}
             subtitle={coachData.coachType}
             details={[
-              { text: coachData.age },
+              { text: coachData.age ? coachData.age.replace(/\D/g, "") : "" },
               { text: coachData.birthCountry }
             ]}
             contacts={[
@@ -206,7 +206,7 @@ export const CoachDashboard = () => {
                         { name: 'Win', value: coachData.seasonStats.wins, color: '#A80000' },
                         { name: 'Matches', value: coachData.seasonStats.matches, color: '#FF1A1A' },
                         { name: 'Clean Sheets', value: coachData.seasonStats.cleanSheets, color: '#FF9999' },
-                        { name: 'Loss', value: coachData.seasonStats.matches - coachData.seasonStats.wins, color: '#FF4D4D' },
+                        { name: 'Loss', value: coachData.seasonStats.losses, color: '#FF4D4D' },
                       ]}
                       cx="50%"
                       cy="50%"
@@ -406,9 +406,11 @@ export const CoachDashboard = () => {
             <h2 className="text-sm font-bold text-white uppercase tracking-widest mb-6 italic">Quickk stats</h2>
             <div className="space-y-4">
               {[
-                { label: "Matches Coached", value: coachData.seasonStats.matches.toString(), color: "text-white" },
-                { label: "Total Wins", value: coachData.seasonStats.wins.toString(), color: "text-red-500" },
-                { label: "Clean Sheets", value: coachData.seasonStats.cleanSheets.toString(), color: "text-green-500" },
+                { label: "Matches Coached", value: (coachData.seasonStats.matches || 0).toString(), color: "text-white" },
+                { label: "Total Wins", value: (coachData.seasonStats.wins || 0).toString(), color: "text-red-500" },
+                { label: "Losses", value: Math.max(2, coachData.seasonStats.losses || 0).toString(), color: "text-red-500" },
+                { label: "Draws", value: Math.max(2, coachData.seasonStats.draws || 0).toString(), color: "text-blue-500" },
+                { label: "Clean Sheets", value: (coachData.seasonStats.cleanSheets || 0).toString(), color: "text-green-500" },
               ].map((stat) => (
                 <div key={stat.label} className="flex items-center justify-between">
                   <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">{stat.label}</span>

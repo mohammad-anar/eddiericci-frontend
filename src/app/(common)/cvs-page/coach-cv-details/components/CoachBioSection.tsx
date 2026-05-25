@@ -11,7 +11,27 @@ import trophyIcon from "@/assets/cvs-page/id/trofeeIcon.png";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { IconTrophy } from "@tabler/icons-react";
-import { ChevronDown, PencilIcon, Plus, Trash2, X, Check, Upload } from "lucide-react";
+import { 
+  ChevronDown, 
+  PencilIcon, 
+  Plus, 
+  Trash2, 
+  X, 
+  Check, 
+  Upload,
+  Trophy, 
+  Award, 
+  Star, 
+  Target, 
+  Users, 
+  TrendingUp, 
+  Activity, 
+  Shield, 
+  GraduationCap, 
+  Calendar,
+  Medal,
+  Sparkles
+} from "lucide-react";
 import Image, { type StaticImageData } from "next/image";
 import { useState, useRef, useEffect } from "react";
 import { cn } from "@/lib/utils";
@@ -41,15 +61,72 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 
+const ACCOMPLISHMENT_ICONS: Record<string, React.ComponentType<any>> = {
+  trophy: Trophy,
+  award: Award,
+  star: Star,
+  target: Target,
+  users: Users,
+  trendingUp: TrendingUp,
+  activity: Activity,
+  shield: Shield,
+  graduationCap: GraduationCap,
+  calendar: Calendar,
+  medal: Medal,
+  sparkles: Sparkles,
+};
+
+const PREDEFINED_ACCOMPLISHMENTS = [
+  { text: "Led team to league, district, or tournament championships", icon: "trophy" },
+  { text: "Improved team win-loss record over multiple seasons", icon: "trendingUp" },
+  { text: "Developed successful training and match strategies", icon: "target" },
+  { text: "Increased player performance, fitness, and discipline", icon: "activity" },
+  { text: "Mentored players who advanced to professional or collegiate levels", icon: "graduationCap" },
+  { text: "Built strong team culture and sportsmanship standards", icon: "users" },
+  { text: "Organized effective practice sessions and development programs", icon: "calendar" },
+  { text: "Recruited and retained talented athletes", icon: "medal" },
+  { text: "Reduced injury rates through conditioning and safety programs", icon: "shield" },
+  { text: "Managed match preparation, analysis, and tactical adjustments", icon: "sparkles" },
+  { text: "Coordinated with staff, parents, and club management effectively", icon: "users" },
+  { text: "Achieved promotion to higher divisions or competitive levels", icon: "trendingUp" },
+  { text: "Implemented data analysis and performance tracking systems", icon: "activity" },
+  { text: "Won Coach of the Year or similar recognition awards", icon: "award" },
+  { text: "Successfully managed budgets, schedules, and team logistics", icon: "calendar" }
+];
+
+const PREDEFINED_KEY_SKILLS = [
+  { text: "Tactical planning and game strategy", icon: "target" },
+  { text: "Player development and mentoring", icon: "users" },
+  { text: "Match analysis and opponent scouting", icon: "trendingUp" },
+  { text: "Training session design", icon: "calendar" },
+  { text: "Offensive and defensive coordination", icon: "shield" },
+  { text: "Performance evaluation", icon: "activity" },
+  { text: "Fitness and conditioning knowledge", icon: "activity" },
+  { text: "Injury prevention awareness", icon: "shield" },
+  { text: "Sports psychology and motivation", icon: "sparkles" },
+  { text: "Leadership and team management", icon: "users" },
+  { text: "Communication and interpersonal skills", icon: "users" },
+  { text: "Conflict resolution", icon: "star" },
+  { text: "Decision-making under pressure", icon: "target" },
+  { text: "Time management", icon: "calendar" },
+  { text: "Goal setting and performance monitoring", icon: "trendingUp" },
+  { text: "Discipline and accountability management", icon: "medal" },
+  { text: "Staff coordination and delegation", icon: "users" },
+  { text: "Motivational leadership", icon: "award" },
+  { text: "Adaptability and resilience", icon: "sparkles" },
+  { text: "Patience and professionalism", icon: "star" },
+  { text: "Strong work ethic", icon: "activity" },
+  { text: "Strategic thinking", icon: "target" },
+  { text: "Problem-solving ability", icon: "sparkles" }
+];
+
 const COACH_TYPES = [
   "Head Coach",
   "Assistant Coach",
   "Goalkeeping Coach",
   "Fitness Coach",
   "Youth Coach",
-  "Technical Coach",
-  "Performance Analyst",
-  "Scout",
+  "Technical Coach"
 ];
 
 type CoachLanguage = {
@@ -74,17 +151,20 @@ type CoachData = {
   seasonStats: {
     matches: number;
     wins: number;
+    losses: number;
+    draws: number;
     cleanSheets: number;
   };
   transferStatus: string;
   contractUntil: string;
   agent: string;
   agency: string;
+  salary: string;
   majorTrophies: { name: string; count: number }[];
   cupHistory: string[];
-  keySkills: string[];
+  keySkills: { id: number; text: string; icon?: string }[];
   clubs: { name: string; period: string }[];
-  qualifications: { id: number; text: string }[];
+  qualifications: { id: number; text: string; icon?: string }[];
   playerImage: StaticImageData | string;
   mainFlag: StaticImageData | string;
 };
@@ -214,6 +294,10 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
   const [newClubLogo, setNewClubLogo] = useState<string | null>(null);
   const [fromYear, setFromYear] = useState(YEARS[0]);
   const [toYear, setToYear] = useState("Present");
+  const [isAddAccOpen, setIsAddAccOpen] = useState(false);
+  const [activeIconIndex, setActiveIconIndex] = useState<number | null>(null);
+  const [isAddSkillOpen, setIsAddSkillOpen] = useState(false);
+  const [activeSkillIconIndex, setActiveSkillIconIndex] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const styleBadges = [badge1, badge2, badge3];
@@ -225,17 +309,7 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
     (bioRating + skillsAvg + metricsAvg + attributesAvg) / 4,
   );
 
-  const attrData: Attribute[] = coachData.keySkills.map((skill) => ({
-    name: skill.name,
-    score: skill.value,
-    status: getBadgeStatus(skill.value)
-  }));
 
-  const handleAttrUpdate = async (index: number, value: number) => {
-    const newSkills = [...coachData.keySkills];
-    newSkills[index] = { ...newSkills[index], value };
-    handleUpdate("keySkills", newSkills);
-  };
 
   const calculateAge = (dobString: string) => {
     if (!dobString) return "";
@@ -413,61 +487,6 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
     );
   };
 
-  const qualificationsIcons = [
-    (
-      <svg
-        className="w-8 h-8 text-white"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <circle cx="12" cy="8" r="3" stroke="currentColor" strokeWidth="2" />
-        <path
-          d="M12 14c-4 0-6 2-6 2s0 3 6 3 6-3 6-3-2-2-6-2z"
-          stroke="currentColor"
-          strokeWidth="2"
-        />
-        <path
-          d="M3 8c0-2 1-3 3-3m12 0c2 0 3 1 3 3"
-          stroke="currentColor"
-          strokeWidth="2"
-        />
-      </svg>
-    ),
-    (
-      <svg
-        className="w-8 h-8 text-white"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          d="M12 2L15 8h6.5l-5.25 3.8 2 6.2L12 14.6 6.75 18l2-6.2L3.5 8H10l3-6z"
-          stroke="currentColor"
-          strokeWidth="2"
-        />
-      </svg>
-    ),
-    (
-      <svg
-        className="w-8 h-8 text-white"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          d="M12 1v6m0 6v10M7 7h10v10H7z"
-          stroke="currentColor"
-          strokeWidth="2"
-        />
-        <path
-          d="M3 10h2m12 0h2M5 19h14"
-          stroke="currentColor"
-          strokeWidth="2"
-        />
-      </svg>
-    ),
-  ];
 
   return (
     <>
@@ -500,7 +519,7 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
                       handleUpdate("dob", val);
                       const newAge = calculateAge(String(val));
                       if (newAge !== "") {
-                        handleUpdate("age", `${newAge} years`);
+                        handleUpdate("age", `${newAge}`);
                       }
                     }}
                     canEdit={canEdit}
@@ -511,7 +530,7 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
                 <div className="flex justify-between items-center gap-4">
                   <span className="text-gray-400">Age</span>
                   <div className="flex items-center gap-1">
-                    <span>{coachData.age || 0}</span>
+                    <span>{coachData.age ? coachData.age.replace(/\D/g, "") : 0}</span>
                   </div>
                 </div>
                 <div className="flex justify-between items-center">
@@ -615,29 +634,152 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
               </h2>
               <div className="max-w-2xl">
                 <div className="space-y-6">
-                  {coachData.qualifications.map((item, index) => (
-                    <div
-                      key={index}
-                      className="flex gap-4 border rounded-xl p-3"
-                    >
-                      <div className="shrink-0 pt-1">{qualificationsIcons[index]}</div>
-                      <div className="flex-1">
-                        <CMSField
-                          value={item.text}
-                          onUpdate={(val) => {
-                            const newQuals = [...coachData.qualifications];
-                            newQuals[index] = { ...newQuals[index], text: String(val) };
-                            handleUpdate("qualifications", newQuals);
+                  {coachData.qualifications.map((item, index) => {
+                    const IconComponent = ACCOMPLISHMENT_ICONS[item.icon || ""] || Trophy;
+                    return (
+                      <div
+                        key={index}
+                        className="flex gap-4 border border-white/10 rounded-xl p-3 relative group"
+                      >
+                        <div
+                          className={cn(
+                            "shrink-0 pt-1 text-white",
+                            canEdit ? "cursor-pointer hover:text-primary transition-colors" : ""
+                          )}
+                          onClick={() => {
+                            if (canEdit) {
+                              setActiveIconIndex(index);
+                            }
                           }}
-                          canEdit={canEdit}
-                          type="textarea"
-                          className="text-white text-[12px] leading-relaxed"
-                        />
+                        >
+                          <IconComponent className="w-5 h-5 text-white hover:scale-110 transition-transform" />
+                        </div>
+                        <div className="flex-1 pr-6">
+                          <CMSField
+                            value={item.text}
+                            onUpdate={(val) => {
+                              const newQuals = [...coachData.qualifications];
+                              newQuals[index] = { ...newQuals[index], text: String(val) };
+                              handleUpdate("qualifications", newQuals);
+                            }}
+                            canEdit={canEdit}
+                            type="textarea"
+                            className="text-white text-sm leading-relaxed"
+                          />
+                        </div>
+                        {canEdit && (
+                          <button
+                            onClick={() => {
+                              const newQuals = coachData.qualifications.filter((_, idx) => idx !== index);
+                              handleUpdate("qualifications", newQuals);
+                            }}
+                            className="absolute right-3 top-3 text-gray-500 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        )}
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
+
+                {canEdit && (
+                  <Dialog open={isAddAccOpen} onOpenChange={setIsAddAccOpen}>
+                    <DialogTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full mt-6 border-dashed border-white/20 hover:border-primary hover:bg-transparent text-gray-400 hover:text-white flex items-center justify-center gap-2"
+                      >
+                        <Plus size={16} /> Add Accomplishment
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="bg-[#0D0D0D] border-white/20 text-white max-w-md max-h-[80vh] overflow-y-auto">
+                      <DialogHeader>
+                        <DialogTitle className="font-heading uppercase italic">
+                          Select Accomplishment
+                        </DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-2 mt-4">
+                        {PREDEFINED_ACCOMPLISHMENTS.map((acc, idx) => {
+                          const Icon = ACCOMPLISHMENT_ICONS[acc.icon] || Trophy;
+                          return (
+                            <button
+                              key={idx}
+                              onClick={() => {
+                                const newAcc = {
+                                  id: Date.now() + idx,
+                                  text: acc.text,
+                                  icon: acc.icon,
+                                };
+                                handleUpdate("qualifications", [...coachData.qualifications, newAcc]);
+                                setIsAddAccOpen(false);
+                              }}
+                              className="flex items-center gap-3 w-full text-left p-3 rounded-lg border border-white/10 hover:border-primary/50 hover:bg-white/5 transition-all group"
+                            >
+                              <div className="shrink-0 p-2 rounded bg-white/5 group-hover:bg-primary/20 text-gray-400 group-hover:text-primary transition-all">
+                                <Icon size={18} />
+                              </div>
+                              <span className="text-xs text-gray-300 group-hover:text-white transition-colors">
+                                {acc.text}
+                              </span>
+                            </button>
+                          );
+                        })}
+                        <button
+                          onClick={() => {
+                            const newAcc = {
+                              id: Date.now(),
+                              text: "Double-click to edit accomplishment details.",
+                              icon: "trophy",
+                            };
+                            handleUpdate("qualifications", [...coachData.qualifications, newAcc]);
+                            setIsAddAccOpen(false);
+                          }}
+                          className="flex items-center gap-3 w-full text-left p-3 rounded-lg border border-dashed border-white/20 hover:border-primary/50 hover:bg-white/5 transition-all group text-gray-400 hover:text-white"
+                        >
+                          <div className="shrink-0 p-2 rounded bg-white/5 text-gray-400 group-hover:text-primary">
+                            <Plus size={18} />
+                          </div>
+                          <span className="text-xs">Add Custom Accomplishment</span>
+                        </button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                )}
               </div>
+
+              {/* Icon Picker Dialog */}
+              <Dialog
+                open={activeIconIndex !== null}
+                onOpenChange={(open) => !open && setActiveIconIndex(null)}
+              >
+                <DialogContent className="bg-[#0D0D0D] border-white/20 text-white max-w-sm">
+                  <DialogHeader>
+                    <DialogTitle className="font-heading uppercase italic">Select Icon</DialogTitle>
+                  </DialogHeader>
+                  <div className="grid grid-cols-4 gap-4 mt-4">
+                    {Object.entries(ACCOMPLISHMENT_ICONS).map(([name, Icon]) => (
+                      <button
+                        key={name}
+                        onClick={() => {
+                          if (activeIconIndex !== null) {
+                            const newQuals = [...coachData.qualifications];
+                            newQuals[activeIconIndex] = {
+                              ...newQuals[activeIconIndex],
+                              icon: name,
+                            };
+                            handleUpdate("qualifications", newQuals);
+                            setActiveIconIndex(null);
+                          }
+                        }}
+                        className="flex items-center justify-center p-3 rounded-lg border border-white/10 hover:border-primary hover:bg-white/5 text-gray-400 hover:text-white transition-all"
+                      >
+                        <Icon size={24} />
+                      </button>
+                    ))}
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
 
             {/* Languages */}
@@ -714,9 +856,36 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
                           inputClassName="text-center"
                         />
                         <IconTrophy />
+                        {canEdit && (
+                          <button
+                            onClick={() => {
+                              const newTrophies = coachData.majorTrophies.filter((_, idx) => idx !== index);
+                              handleUpdate("majorTrophies", newTrophies);
+                            }}
+                            className="text-gray-500 hover:text-red-500 transition-colors ml-1"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        )}
                       </div>
                     </div>
                   ))}
+
+                  {canEdit && (
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        const newTrophy = {
+                          name: "NEW TOURNAMENT CHAMPIONSHIP",
+                          count: 1
+                        };
+                        handleUpdate("majorTrophies", [...coachData.majorTrophies, newTrophy]);
+                      }}
+                      className="w-full mt-4 border-dashed border-white/20 hover:border-primary hover:bg-transparent text-gray-400 hover:text-white flex items-center justify-center gap-2"
+                    >
+                      <Plus size={16} /> Add Trophy
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>
@@ -754,7 +923,7 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
                   canEdit={canEdit}
                   className="text-2xl font-bold font-heading uppercase"
                 />
-                <span className="text-primary">[{overallRating}]</span>
+                <span className="text-primary">[{coachData.age ? coachData.age.replace(/\D/g, "") : ""}]</span>
               </h1>
             </div>
 
@@ -856,8 +1025,8 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
               <h2 className="text-lg text-center font-heading font-normal mb-4">
                 Current Season Stats
               </h2>
-              <div className="text-sm space-y-4">
-                <div className="border flex flex-col min-w-37.5 items-center justify-center p-3 rounded-xl w-fit mx-auto">
+              <div className="text-sm grid grid-cols-2 gap-4">
+                <div className="border flex flex-col min-w-37.5 items-center justify-center p-3 rounded-xl w-full mx-auto">
                   <CMSField
                     value={coachData.seasonStats.matches}
                     onUpdate={(val) => handleUpdate("seasonStats.matches", val)}
@@ -866,9 +1035,9 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
                     className="text-2xl font-medium text-primary mb-2 justify-center"
                     inputClassName="text-center w-20"
                   />
-                  <h3 className="text-[12px]">MATCHES COACHED</h3>
+                  <h3 className="text-[12px] uppercase">Matches Coached</h3>
                 </div>
-                <div className="border flex flex-col min-w-37.5 items-center justify-center p-3 rounded-xl w-fit mx-auto">
+                <div className="border flex flex-col min-w-37.5 items-center justify-center p-3 rounded-xl w-full mx-auto">
                   <CMSField
                     value={coachData.seasonStats.wins}
                     onUpdate={(val) => handleUpdate("seasonStats.wins", val)}
@@ -877,18 +1046,29 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
                     className="text-2xl font-medium text-primary mb-2 justify-center"
                     inputClassName="text-center w-20"
                   />
-                  <h3 className="text-[12px]">Win</h3>
+                  <h3 className="text-[12px] uppercase">Win</h3>
                 </div>
-                <div className="border flex flex-col min-w-37.5 items-center justify-center p-3 rounded-xl w-fit mx-auto">
+                <div className="border flex flex-col min-w-37.5 items-center justify-center p-3 rounded-xl w-full mx-auto">
                   <CMSField
-                    value={coachData.seasonStats.cleanSheets}
-                    onUpdate={(val) => handleUpdate("seasonStats.cleanSheets", val)}
+                    value={Math.max(2, coachData.seasonStats.losses || 0)}
+                    onUpdate={(val) => handleUpdate("seasonStats.losses", Number(val))}
                     canEdit={canEdit}
                     isNumeric
                     className="text-2xl font-medium text-primary mb-2 justify-center"
                     inputClassName="text-center w-20"
                   />
-                  <h3 className="text-[12px]">CLEAN SHEETS</h3>
+                  <h3 className="text-[12px] uppercase">Losses</h3>
+                </div>
+                <div className="border flex flex-col min-w-37.5 items-center justify-center p-3 rounded-xl w-full mx-auto">
+                  <CMSField
+                    value={Math.max(2, coachData.seasonStats.draws || 0)}
+                    onUpdate={(val) => handleUpdate("seasonStats.draws", Number(val))}
+                    canEdit={canEdit}
+                    isNumeric
+                    className="text-2xl font-medium text-primary mb-2 justify-center"
+                    inputClassName="text-center w-20"
+                  />
+                  <h3 className="text-[12px] uppercase">Draws</h3>
                 </div>
               </div>
             </div>
@@ -935,6 +1115,16 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
                   <CMSField
                     value={coachData.agency}
                     onUpdate={(val) => handleUpdate("agency", val)}
+                    canEdit={canEdit}
+                    className="w-28 justify-end"
+                    inputClassName="text-right"
+                  />
+                </div>
+                <div className="flex justify-between border-b pb-2">
+                  <span className="text-gray-400">Salary</span>
+                  <CMSField
+                    value={coachData.salary}
+                    onUpdate={(val) => handleUpdate("salary", val)}
                     canEdit={canEdit}
                     className="w-28 justify-end"
                     inputClassName="text-right"
@@ -999,83 +1189,157 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
 
             {/* Key Skills */}
             <div className="p-6">
-              <h2 className="text-lg text-center font-heading font-normal mb-6">
+              <h2 className="text-lg text-center font-heading font-normal mb-4">
                 Key Skills
               </h2>
-              <div className="space-y-4">
-                {coachData.keySkills.map((skill, idx) => (
-                  <div key={idx} className="space-y-2">
-                    <div className="flex justify-between items-center">
-                      <CMSField
-                        value={skill.name}
-                        onUpdate={(val) => {
-                          const newSkills = [...coachData.keySkills];
-                          newSkills[idx] = { ...newSkills[idx], name: String(val) };
-                          handleUpdate("keySkills", newSkills);
-                        }}
-                        canEdit={canEdit}
-                        className="text-sm font-bold text-gray-200 uppercase"
-                      />
-                      <Badge className={cn(getBadgeVariant(getBadgeStatus(skill.value)), "text-[10px] uppercase font-black py-0 px-2")}>
-                        {getBadgeStatus(skill.value)}
-                      </Badge>
-                    </div>
-
-                    <div className="flex items-center gap-4">
-                      <div className="flex-1 transition-all duration-300">
-                        {canEdit ? (
-                          <div className="relative flex items-center h-2 group">
-                            <input
-                              type="range"
-                              min="0"
-                              max="100"
-                              value={skill.value}
-                              onChange={(e) => handleAttrUpdate(idx, parseInt(e.target.value))}
-                              style={{
-                                background: `linear-gradient(to right, ${getHexColor(skill.value)} ${skill.value}%, #333 ${skill.value}%)`,
-                              }}
-                              className="w-full h-2 rounded-full appearance-none cursor-pointer accent-primary hover:accent-primary transition-all absolute inset-0 z-10 opacity-0 group-hover:opacity-100"
-                            />
-                            <div className="w-full h-2 bg-[#333] rounded-full overflow-hidden relative">
-                              <div
-                                className={cn("h-full transition-all duration-300 ease-out", getIndicatorColor(skill.value))}
-                                style={{ width: `${skill.value}%` }}
-                              />
-                            </div>
-                            <input
-                              type="range"
-                              min="0"
-                              max="100"
-                              value={skill.value}
-                              onChange={(e) => handleAttrUpdate(idx, parseInt(e.target.value))}
-                              className="w-full h-8 opacity-0 cursor-pointer absolute inset-0 z-20"
-                            />
-                          </div>
-                        ) : (
-                          <Progress
-                            value={skill.value}
-                            className="h-1.5"
-                            style={{ backgroundColor: '#333' }}
-                            indicatorClassName={getIndicatorColor(skill.value)}
+              <div className="max-w-2xl">
+                <div className="space-y-6">
+                  {coachData.keySkills.map((item, index) => {
+                    const IconComponent = ACCOMPLISHMENT_ICONS[item.icon || ""] || Trophy;
+                    return (
+                      <div
+                        key={index}
+                        className="flex gap-4 border border-white/10 rounded-xl p-3 relative group"
+                      >
+                        <div
+                          className={cn(
+                            "shrink-0 pt-1 text-white",
+                            canEdit ? "cursor-pointer hover:text-primary transition-colors" : ""
+                          )}
+                          onClick={() => {
+                            if (canEdit) {
+                              setActiveSkillIconIndex(index);
+                            }
+                          }}
+                        >
+                          <IconComponent className="w-5 h-5 text-white hover:scale-110 transition-transform" />
+                        </div>
+                        <div className="flex-1 pr-6">
+                          <CMSField
+                            value={item.text}
+                            onUpdate={(val) => {
+                              const newSkills = [...coachData.keySkills];
+                              newSkills[index] = { ...newSkills[index], text: String(val) };
+                              handleUpdate("keySkills", newSkills);
+                            }}
+                            canEdit={canEdit}
+                            type="textarea"
+                            className="text-white text-sm leading-relaxed"
                           />
+                        </div>
+                        {canEdit && (
+                          <button
+                            onClick={() => {
+                              const newSkills = coachData.keySkills.filter((_, idx) => idx !== index);
+                              handleUpdate("keySkills", newSkills);
+                            }}
+                            className="absolute right-3 top-3 text-gray-500 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                          >
+                            <Trash2 size={16} />
+                          </button>
                         )}
                       </div>
-                      <div className="shrink-0 text-right min-w-[3rem]">
-                        <CMSField
-                          value={skill.value}
-                          onUpdate={(val) => handleAttrUpdate(idx, parseInt(String(val)))}
-                          canEdit={canEdit}
-                          type="number"
-                          editTrigger="doubleClick"
-                          className="text-sm font-black justify-end"
-                          style={{ color: getHexColor(skill.value) }}
-                          inputClassName="text-right h-6 w-12 text-xs bg-gray-900/50 border-gray-700 rounded uppercase"
-                        />
+                    );
+                  })}
+                </div>
+
+                {canEdit && (
+                  <Dialog open={isAddSkillOpen} onOpenChange={setIsAddSkillOpen}>
+                    <DialogTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full mt-6 border-dashed border-white/20 hover:border-primary hover:bg-transparent text-gray-400 hover:text-white flex items-center justify-center gap-2"
+                      >
+                        <Plus size={16} /> Add Key Skill
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="bg-[#0D0D0D] border-white/20 text-white max-w-md max-h-[80vh] overflow-y-auto">
+                      <DialogHeader>
+                        <DialogTitle className="font-heading uppercase italic">
+                          Select Key Skill
+                        </DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-2 mt-4">
+                        {PREDEFINED_KEY_SKILLS.map((skill, idx) => {
+                          const Icon = ACCOMPLISHMENT_ICONS[skill.icon] || Trophy;
+                          return (
+                            <button
+                              key={idx}
+                              onClick={() => {
+                                const newSkill = {
+                                  id: Date.now() + idx,
+                                  text: skill.text,
+                                  icon: skill.icon,
+                                };
+                                handleUpdate("keySkills", [...coachData.keySkills, newSkill]);
+                                setIsAddSkillOpen(false);
+                              }}
+                              className="flex items-center gap-3 w-full text-left p-3 rounded-lg border border-white/10 hover:border-primary/50 hover:bg-white/5 transition-all group"
+                            >
+                              <div className="shrink-0 p-2 rounded bg-white/5 group-hover:bg-primary/20 text-gray-400 group-hover:text-primary transition-all">
+                                <Icon size={18} />
+                              </div>
+                              <span className="text-xs text-gray-300 group-hover:text-white transition-colors">
+                                {skill.text}
+                              </span>
+                            </button>
+                          );
+                        })}
+                        <button
+                          onClick={() => {
+                            const newSkill = {
+                              id: Date.now(),
+                              text: "Double-click to edit key skill details.",
+                              icon: "trophy",
+                            };
+                            handleUpdate("keySkills", [...coachData.keySkills, newSkill]);
+                            setIsAddSkillOpen(false);
+                          }}
+                          className="flex items-center gap-3 w-full text-left p-3 rounded-lg border border-dashed border-white/20 hover:border-primary/50 hover:bg-white/5 transition-all group text-gray-400 hover:text-white"
+                        >
+                          <div className="shrink-0 p-2 rounded bg-white/5 text-gray-400 group-hover:text-primary">
+                            <Plus size={18} />
+                          </div>
+                          <span className="text-xs">Add Custom Key Skill</span>
+                        </button>
                       </div>
-                    </div>
-                  </div>
-                ))}
+                    </DialogContent>
+                  </Dialog>
+                )}
               </div>
+
+              {/* Skill Icon Picker Dialog */}
+              <Dialog
+                open={activeSkillIconIndex !== null}
+                onOpenChange={(open) => !open && setActiveSkillIconIndex(null)}
+              >
+                <DialogContent className="bg-[#0D0D0D] border-white/20 text-white max-w-sm">
+                  <DialogHeader>
+                    <DialogTitle className="font-heading uppercase italic">Select Icon</DialogTitle>
+                  </DialogHeader>
+                  <div className="grid grid-cols-4 gap-4 mt-4">
+                    {Object.entries(ACCOMPLISHMENT_ICONS).map(([name, Icon]) => (
+                      <button
+                        key={name}
+                        onClick={() => {
+                          if (activeSkillIconIndex !== null) {
+                            const newSkills = [...coachData.keySkills];
+                            newSkills[activeSkillIconIndex] = {
+                              ...newSkills[activeSkillIconIndex],
+                              icon: name,
+                            };
+                            handleUpdate("keySkills", newSkills);
+                            setActiveSkillIconIndex(null);
+                          }
+                        }}
+                        className="flex items-center justify-center p-3 rounded-lg border border-white/10 hover:border-primary hover:bg-white/5 text-gray-400 hover:text-white transition-all"
+                      >
+                        <Icon size={24} />
+                      </button>
+                    ))}
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
             {/* Clubs */}
             <div className="p-6">

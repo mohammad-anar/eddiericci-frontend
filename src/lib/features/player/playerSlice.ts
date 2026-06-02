@@ -2,10 +2,12 @@ import flagFr from "@/assets/cvs-page/id/flag-fr.png";
 import flagIt from "@/assets/cvs-page/id/flag-itally.png";
 import flagImage from "@/assets/cvs-page/id/flag.png";
 import futsalMap from "@/assets/cvs-page/id/Futsal Pitch.jpg";
-import leftLeg from "@/assets/cvs-page/id/left-leg-image.png";
+// import leftLeg from "@/assets/cvs-page/id/left-leg-image.png";
+import leftLeg from "@/assets/cvs-page/id/left_foot.png";
 import playerImage from "@/assets/cvs-page/id/player-image.png";
 import positionMap from "@/assets/cvs-page/id/position-map.png";
-import right from "@/assets/cvs-page/id/right-legt-image.png";
+// import right from "@/assets/cvs-page/id/right-legt-image.png";
+import right from "@/assets/cvs-page/id/right_foot.png";
 import trofeeIcon from "@/assets/cvs-page/id/trofeeIcon.png";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
@@ -41,6 +43,7 @@ export interface PlayerData {
   languages: { name: string; level: string; color: string }[];
   rating: number;
   playerImage: any;
+  cardImage?: string;
   strengths: {
     pace: number;
     shooting: number;
@@ -103,7 +106,7 @@ export interface SkillCategory {
   borderColor: string;
 }
 
-const initialState: PlayerData = {
+const basePlayerData: PlayerData = {
   fullName: "Marcus Silva",
   dob: "15/03/1996",
   age: "24",
@@ -287,29 +290,134 @@ const initialState: PlayerData = {
   futsalMarkers: [{ id: "1", x: 50, y: 50 }],
 };
 
+export interface PlayerSliceState {
+  players: (PlayerData & {
+    id: number;
+    validationStatus: "pending" | "verified" | "expired" | "not_needed";
+    assignedMonthsAgo?: number;
+    requestedValidation?: boolean;
+    lastValidatedDate?: string;
+  })[];
+  selectedPlayerId: number;
+}
+
+const createMockPlayer = (
+  id: number,
+  fullName: string,
+  position: string,
+  birthCountry: string,
+  rating: number,
+  validationStatus: "pending" | "verified" | "expired" | "not_needed",
+  assignedMonthsAgo?: number,
+  requestedValidation?: boolean,
+  lastValidatedDate?: string
+) => {
+  // Clone base categories
+  const categories = JSON.parse(JSON.stringify(basePlayerData.skillsCategories));
+  // Set all skill values to rating to ensure average is exact
+  categories.forEach((cat: any) => {
+    cat.skills.forEach((skill: any) => {
+      skill.value = rating;
+    });
+  });
+
+  return {
+    ...basePlayerData,
+    id,
+    fullName,
+    position,
+    birthCountry,
+    rating,
+    validationStatus,
+    assignedMonthsAgo,
+    requestedValidation,
+    lastValidatedDate,
+    skillsCategories: categories,
+    // Add variations to make stats realistic
+    strengths: {
+      pace: Math.min(100, rating + 5),
+      shooting: Math.max(0, rating - 3),
+      passing: rating,
+      dribbling: Math.min(100, rating + 2),
+      defending: Math.max(0, rating - 5),
+      physical: rating,
+    },
+    // Keep player image same as original template
+    playerImage: basePlayerData.playerImage,
+    cardImage: "",
+  };
+};
+
+const playersDataList = [
+  createMockPlayer(1, "Marcus Silva", "Defensive Midfielder", "France", 88, "verified", 1, false),
+  createMockPlayer(2, "David Chen", "Forward", "China", 74, "pending", 4, false),
+  createMockPlayer(3, "Alex Jonson", "Defender", "United Kingdom", 52, "pending", 1, true),
+  createMockPlayer(4, "James Brown", "Goalkeeper", "United States", 68, "expired", 2, false, "2026-01-10"),
+  createMockPlayer(5, "Lucas Hernandez", "Forward", "Spain", 84, "verified", 2, false),
+  createMockPlayer(6, "Yuki Tanaka", "Midfielder", "Japan", 48, "pending", 5, false),
+  createMockPlayer(7, "Gabriel Barbosa", "Forward", "Brazil", 82, "pending", 1, true),
+  createMockPlayer(8, "Mateo Kovacic", "Midfielder", "Croatia", 78, "verified", 1, false),
+  createMockPlayer(9, "Kofi Mensah", "Defender", "Ghana", 56, "verified", 2, false),
+  createMockPlayer(10, "Liam O'Connor", "Goalkeeper", "Ireland", 71, "pending", 6, false),
+  createMockPlayer(11, "Antoine Dupont", "Midfielder", "France", 86, "expired", 2, false, "2026-02-15"),
+  createMockPlayer(12, "Santi Cazorla", "Forward", "Spain", 65, "verified", 1, false),
+  createMockPlayer(13, "Ivan Petrovic", "Defender", "Serbia", 45, "verified", 2, false),
+  createMockPlayer(14, "Diego Maradona", "Forward", "Argentina", 92, "verified", 1, false),
+  createMockPlayer(15, "John Doe", "Midfielder", "United States", 79, "pending", 1, true),
+];
+
+const initialState: PlayerSliceState = {
+  players: playersDataList,
+  selectedPlayerId: 1,
+};
+
 export const playerSlice = createSlice({
   name: "player",
   initialState,
   reducers: {
     setPlayerData: (state, action: PayloadAction<Partial<PlayerData>>) => {
-      return { ...state, ...action.payload };
+      const activePlayer = state.players.find((p) => p.id === state.selectedPlayerId);
+      if (activePlayer) {
+        Object.assign(activePlayer, action.payload);
+      }
     },
     updatePlayerField: (state, action: PayloadAction<{ field: string; value: any }>) => {
       const { field, value } = action.payload;
-      const keys = field.split(".");
-      if (keys.length === 1) {
-        (state as any)[field] = value;
-      } else {
-        let current = state as any;
-        for (let i = 0; i < keys.length - 1; i++) {
-          current = current[keys[i]];
+      const activePlayer = state.players.find((p) => p.id === state.selectedPlayerId);
+      if (activePlayer) {
+        const keys = field.split(".");
+        if (keys.length === 1) {
+          (activePlayer as any)[field] = value;
+        } else {
+          let current = activePlayer as any;
+          for (let i = 0; i < keys.length - 1; i++) {
+            current = current[keys[i]];
+          }
+          current[keys[keys.length - 1]] = value;
         }
-        current[keys[keys.length - 1]] = value;
+      }
+    },
+    setSelectedPlayerId: (state, action: PayloadAction<number>) => {
+      state.selectedPlayerId = action.payload;
+    },
+    validatePlayerCv: (state, action: PayloadAction<number>) => {
+      const player = state.players.find((p) => p.id === action.payload);
+      if (player) {
+        player.validationStatus = "verified";
+        player.requestedValidation = false;
+        player.lastValidatedDate = new Date().toISOString().split("T")[0];
+        player.assignedMonthsAgo = 0; // reset assignment counter
       }
     },
   },
 });
 
-export const { setPlayerData, updatePlayerField } = playerSlice.actions;
+export const {
+  setPlayerData,
+  updatePlayerField,
+  setSelectedPlayerId,
+  validatePlayerCv,
+} = playerSlice.actions;
 
 export default playerSlice.reducer;
+

@@ -9,29 +9,46 @@ import {
 } from "@tabler/icons-react";
 import { DashboardTable, Column } from "@/components/dashboard/dashboard-table";
 import { TableActionButtons } from "@/components/dashboard/table-action-buttons";
-
-const stats = [
-  { label: "Pending", value: "24", icon: IconClock },
-  { label: "Approved", value: "88.5", icon: IconCircleCheck },
-  { label: "This Month", value: "22", icon: IconCalendar },
-  { label: "Rejected", value: "2", icon: IconCircleX },
-];
-
-const validationData = [
-  { id: 1, name: "Marcus Silva", position: "Forward", rating: 92, match: "vs Chelsea U19", goals: 2, assists: 1, date: "2024-01-15", status: "Pending", avatar: "https://i.pravatar.cc/150?u=1" },
-  { id: 2, name: "David Chen", position: "Midfielder", rating: 88, match: "vs Chelsea U19", goals: 1, assists: 3, date: "2024-02-01", status: "Pending", avatar: "https://i.pravatar.cc/150?u=2" },
-  { id: 3, name: "Alex Jonson", position: "Defender", rating: 85, match: "vs Liverpool U19", goals: 3, assists: 0, date: "2023-12-01", status: "Verified", avatar: "https://i.pravatar.cc/150?u=3" },
-  { id: 4, name: "James Brown", position: "Goalkeeper", rating: 90, match: "vs City U19", goals: 0, assists: 0, date: "2024-03-10", status: "Pending", avatar: "https://i.pravatar.cc/150?u=4" },
-];
+import { usePlayer } from "@/lib/hooks/usePlayer";
+import { useRouter } from "next/navigation";
 
 export const PlayerCVValidations = () => {
+  const router = useRouter();
+  const { players, selectPlayer, validatePlayer } = usePlayer();
+
+  // Calculate dynamic stats
+  const pendingCount = players.filter((p) => p.validationStatus === "pending").length;
+  const verifiedCount = players.filter((p) => p.validationStatus === "verified").length;
+  const expiredCount = players.filter((p) => p.validationStatus === "expired").length;
+
+  const stats = [
+    { label: "Pending Validations", value: String(pendingCount), icon: IconClock },
+    { label: "Verified CVs", value: String(verifiedCount), icon: IconCircleCheck },
+    { label: "Updated This Month", value: String(verifiedCount), icon: IconCalendar },
+    { label: "Expired Status", value: String(expiredCount), icon: IconCircleX },
+  ];
+
+  const validationData = players.map((player) => ({
+    id: player.id,
+    name: player.fullName,
+    position: player.position,
+    rating: player.rating,
+    match: player.clubs[0]?.name || "N/A",
+    goals: player.seasonStats.goals,
+    assists: player.seasonStats.assists,
+    date: player.lastValidatedDate || "Never",
+    status: player.validationStatus === "verified" ? "Verified" :
+            player.validationStatus === "pending" ? "Pending" : "Expired",
+    avatar: player.playerImage,
+  }));
+
   const columns: Column<typeof validationData[0]>[] = [
     {
       header: "Name",
       key: "name",
       render: (player) => (
         <div className="flex items-center gap-3">
-          <img src={player.avatar} className="w-10 h-10 rounded-full object-cover" alt={player.name} />
+          <img src={player.avatar} className="w-10 h-10 rounded-full object-cover border border-white/10" alt={player.name} />
           <div>
             <div className="text-sm font-bold text-white">{player.name}</div>
             <div className="text-[10px] text-red-500 font-bold uppercase tracking-widest">{player.position}</div>
@@ -45,17 +62,17 @@ export const PlayerCVValidations = () => {
       align: "center",
       render: (player) => <span className="text-sm font-black text-red-600 italic">{player.rating}</span>,
     },
-    { header: "Matches", key: "match", align: "center", cellClassName: "text-sm text-gray-400" },
+    { header: "Club/Current", key: "match", align: "center", cellClassName: "text-sm text-gray-400" },
     { header: "Goals", key: "goals", align: "center", cellClassName: "text-sm text-gray-400" },
     { header: "Assists", key: "assists", align: "center", cellClassName: "text-sm text-gray-400" },
-    { header: "Date", key: "date", align: "center", cellClassName: "text-sm text-gray-400" },
+    { header: "Last Validated", key: "date", align: "center", cellClassName: "text-sm text-gray-400" },
     {
       header: "Status",
       key: "status",
       render: (player) => (
         <span className={`px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${
-          player.status === 'Verified' ? 'bg-green-500/10 text-green-500' : 
-          player.status === 'Pending' ? 'bg-orange-500/10 text-orange-500' : 'bg-red-500/10 text-red-500'
+          player.status === "Verified" ? "bg-green-500/10 text-green-500 border border-green-500/20" : 
+          player.status === "Pending" ? "bg-orange-500/10 text-orange-500 border border-orange-500/20" : "bg-yellow-500/10 text-yellow-500 border border-yellow-500/20"
         }`}>
           {player.status}
         </span>
@@ -65,11 +82,13 @@ export const PlayerCVValidations = () => {
       header: "Actions",
       key: "actions",
       align: "right",
-      render: () => (
+      render: (player) => (
         <TableActionButtons 
-          onView={() => console.log("View")} 
-          onVerify={() => console.log("Verify")}
-          onReject={() => console.log("Reject")}
+          onView={() => {
+            selectPlayer(player.id);
+            router.push("/cvs-page/player-cv-details");
+          }} 
+          onVerify={player.status !== "Verified" ? () => validatePlayer(player.id) : undefined}
         />
       ),
     },
@@ -109,3 +128,4 @@ export const PlayerCVValidations = () => {
     </div>
   );
 };
+

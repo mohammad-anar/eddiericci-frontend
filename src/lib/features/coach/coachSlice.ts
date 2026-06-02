@@ -54,7 +54,7 @@ export interface CoachData {
   coachType: string;
   selectedStyleIds: string[];
   complementaryLogos: { id: number; name: string; image: any }[];
-  complementaryCourses: { id: number; title: string }[];
+  complementaryCourses: { id: number; title: string; icon?: string }[];
   formationMarkers: { id: number; x: number; y: number }[][];
   testimonials: { id: number; name: string; role: string; text: string; avatar: string }[];
 }

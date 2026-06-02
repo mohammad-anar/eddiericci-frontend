@@ -24,6 +24,9 @@ import { Button } from "@/components/ui/button";
 import FullEditableCv from "@/app/(common)/cvs-page/coach-cv-details/components/FullEditableCv";
 import { useCoach } from "@/lib/hooks/useCoach";
 import { usePlayerStats } from "@/app/(common)/cvs-page/player-cv-details/components/FullEditablePage";
+import { usePlayer } from "@/lib/hooks/usePlayer";
+import { useRouter } from "next/navigation";
+import { IconUserCheck } from "@tabler/icons-react";
 
 const COUNTRY_CODES: Record<string, string> = {
   "afghanistan": "af", "albania": "al", "algeria": "dz", "andorra": "ad", "angola": "ao",
@@ -103,11 +106,30 @@ const CareerItem = ({ logo, name, role, years, type }: { logo: string; name: str
 );
 
 const GenerateCvCoach = () => {
+  const router = useRouter();
   const { coachData } = useCoach();
   const { bioRating, skillsAvg, metricsAvg, attributesAvg } = usePlayerStats();
+  const { players, selectPlayer } = usePlayer();
   const [role, setRole] = useState<string>("coach");
 
   const overallRating = 88;
+
+  // Filter players who need validation
+  const validationNeededPlayers = players.filter((player) => {
+    return (
+      player.validationStatus === "pending" ||
+      player.validationStatus === "expired" ||
+      player.requestedValidation ||
+      (player.assignedMonthsAgo && player.assignedMonthsAgo >= 3 && player.validationStatus !== "verified")
+    );
+  }).slice(0, 3); // Display top 3 pending
+
+  const getValidationReason = (player: any) => {
+    if (player.requestedValidation) return "Requested";
+    if (player.validationStatus === "expired") return "Expired";
+    if (player.assignedMonthsAgo && player.assignedMonthsAgo >= 3) return "Assigned > 3M";
+    return "Pending";
+  };
 
   useEffect(() => {
     const userRole = localStorage.getItem("userRole") || "coach";
@@ -370,7 +392,7 @@ const GenerateCvCoach = () => {
             <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/40 via-[45%] to-transparent" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
 
-            <div className="absolute right-0 bottom-0 h-full w-[70%] md:w-[55%] flex items-end justify-end pointer-events-none opacity-60 md:opacity-100">
+            <div className="absolute right-0 bottom-0 h-full w-[70%] p-8  md:w-[40%] flex items-center justify-center pointer-events-none opacity-60 md:opacity-100">
               <img
                 src={coachData.coachImage?.src || coachData.coachImage}
                 alt={coachData.fullName}
@@ -393,10 +415,10 @@ const GenerateCvCoach = () => {
                       <span className="text-white">15+ Years Experience</span>
                       <span className="text-white/20 hidden md:inline">/</span>
                       <span className="flex items-center gap-3 text-white">
-                        <img 
-                          src={getFlagUrl(coachData.birthCountry)} 
-                          alt={coachData.birthCountry} 
-                          className="w-4 h-3 md:w-5 md:h-3.5 object-cover rounded-sm shadow-sm" 
+                        <img
+                          src={getFlagUrl(coachData.birthCountry)}
+                          alt={coachData.birthCountry}
+                          className="w-4 h-3 md:w-5 md:h-3.5 object-cover rounded-sm shadow-sm"
                         /> {coachData.birthCountry}
                       </span>
                     </div>
@@ -471,27 +493,59 @@ const GenerateCvCoach = () => {
             </Button>
           </div>
 
-          {/* Pending Game Reports */}
+          {/* Player CV Validations */}
           <section className="p-6 rounded-2xl border border-white/20 bg-[#0D0D0D]">
             <div className="flex items-center gap-2 mb-6">
               <div className="p-2 rounded-lg bg-[#E31B23]/10 text-[#E31B23]">
-                <IconBallFootball size={20} />
+                <IconUserCheck size={20} />
               </div>
-              <h2 className="text-sm font-bold text-white uppercase tracking-widest">Pending Game Reports</h2>
+              <h2 className="text-sm font-bold text-white uppercase tracking-widest">Player CV Validations</h2>
             </div>
             <div className="space-y-4">
-              {pendingReports.map((report) => (
-                <div key={report.id} className="flex items-center justify-between p-3 rounded-xl bg-white/10 border border-white/20 group hover:border-[#E31B23]/50 transition-colors">
-                  <div className="flex items-center gap-3">
-                    <img src={report.avatar} className="w-10 h-10 rounded-full object-cover" alt={report.name} />
-                    <div>
-                      <div className="text-sm font-bold text-white">{report.name}</div>
-                      <div className="text-[10px] text-gray-500 uppercase tracking-widest">{report.position}</div>
+              {validationNeededPlayers.length > 0 ? (
+                validationNeededPlayers.map((player) => {
+                  const reason = getValidationReason(player);
+                  const reasonColors =
+                    reason === "Requested"
+                      ? "bg-blue-500/10 text-blue-400 border-blue-500/20"
+                      : reason === "Expired"
+                        ? "bg-yellow-500/10 text-yellow-400 border-yellow-500/20"
+                        : "bg-red-500/10 text-red-400 border-red-500/20";
+
+                  return (
+                    <div key={player.id} className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10 group hover:border-[#E31B23]/50 transition-colors">
+                      <div className="flex items-center gap-3">
+                        <img src={player.playerImage} className="w-10 h-10 rounded-full object-cover border border-white/10" alt={player.fullName} />
+                        <div>
+                          <div className="text-sm font-bold text-white">{player.fullName}</div>
+                          <div className="flex items-center gap-2 mt-0.5">
+                            <span className="text-[9px] text-gray-500 uppercase tracking-widest">{player.position}</span>
+                            <span className={`px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-wider border ${reasonColors}`}>
+                              {reason}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="text-lg font-black text-white italic">{player.rating}</div>
+                        <button
+                          onClick={() => {
+                            selectPlayer(player.id);
+                            router.push("/cvs-page/player-cv-details");
+                          }}
+                          className="px-3 py-1.5 bg-[#E31B23] hover:bg-[#ff2d35] text-white text-[9px] font-black uppercase tracking-widest rounded-lg transition-all border border-[#E31B23]/50 cursor-pointer"
+                        >
+                          Review
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                  <div className="text-lg font-black text-white italic">{report.rating}</div>
+                  );
+                })
+              ) : (
+                <div className="text-center py-6 text-xs text-white/40 uppercase tracking-wider font-bold">
+                  All Player CVs Validated
                 </div>
-              ))}
+              )}
             </div>
           </section>
         </div>

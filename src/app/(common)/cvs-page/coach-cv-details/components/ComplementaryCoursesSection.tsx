@@ -2,12 +2,114 @@
 
 import Image from 'next/image'
 import { useCoach } from '@/lib/hooks/useCoach'
-import { Award, Plus, Trash2, X, Check } from 'lucide-react'
+import {
+  Award,
+  Plus,
+  Trash2,
+  X,
+  Check,
+  Trophy,
+  Star,
+  Target,
+  Users,
+  TrendingUp,
+  Activity,
+  Shield,
+  GraduationCap,
+  Calendar,
+  Medal,
+  Sparkles
+} from 'lucide-react'
 import { useRef, useState } from 'react'
+import { cn } from "@/lib/utils"
+import { CMSField } from "@/components/shared/CMSField"
+import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+
+const COURSE_ICONS: Record<string, React.ComponentType<any>> = {
+  award: Award,
+  trophy: Trophy,
+  star: Star,
+  target: Target,
+  users: Users,
+  trendingUp: TrendingUp,
+  activity: Activity,
+  shield: Shield,
+  graduationCap: GraduationCap,
+  calendar: Calendar,
+  medal: Medal,
+  sparkles: Sparkles,
+};
+
+const PREDEFINED_COURSES_BY_CATEGORY = {
+  "Coaching Pathway Courses": [
+    "FA Introduction to Coaching Football",
+    "Grassroots Football Coaching",
+    "Youth Football Coaching",
+    "FA Emergency Aid",
+    "FA Safeguarding Children Course",
+    "UEFA C Licence",
+    "UEFA B Licence",
+    "UEFA A Licence",
+    "UEFA Pro Licence",
+    "FA Advanced Youth Award",
+    "FA Goalkeeping Courses",
+    "FA Futsal Coaching Courses",
+    "FA Talent Identification Courses"
+  ],
+  "Goalkeeper Courses": [
+    "Goalkeeping Coaching Level 1",
+    "Goalkeeping Coaching Level 2",
+    "Goalkeeping Coaching Level 3",
+    "Advanced Goalkeeper Development",
+    "Goalkeeper Match Analysis",
+    "Youth Goalkeeper Coaching",
+    "Elite Goalkeeping Tactics"
+  ],
+  "Strength & Conditioning Courses": [
+    "Football Fitness Coaching",
+    "Strength & Conditioning Level 1",
+    "Strength & Conditioning Level 2",
+    "Strength & Conditioning Level 3",
+    "Strength & Conditioning Level 4",
+    "Sports Rehabilitation",
+    "Injury Prevention in Football",
+    "Nutrition for Athletes",
+    "Sports Psychology",
+    "Recovery & Load Management",
+    "GPS Athlete Monitoring"
+  ],
+  "Talent Identification & Scouting Courses": [
+    "Introduction to Football Scouting",
+    "Talent Identification in Football",
+    "Opposition Analysis & Scouting",
+    "Recruitment Strategy",
+    "Youth Talent Scouting",
+    "Elite Player Assessment",
+    "Match Observation Techniques",
+    "Data-Led Recruitment",
+    "PFSA Level 1 Talent Identification",
+    "PFSA Level 2 Opposition Analysis",
+    "PFSA Level 3 Technical Scouting",
+    "PFSA Football Scouting Diploma",
+    "ISF Scouting Certification",
+    "IPSO Talent ID Courses",
+    "UEFA Talent Identification Programs"
+  ]
+};
 
 export default function ComplementaryCoursesSection({ editable }: { editable?: boolean }) {
   const { coachData, handleUpdate } = useCoach()
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const [isAddCourseOpen, setIsAddCourseOpen] = useState(false)
+  const [activeIconIndex, setActiveIconIndex] = useState<number | null>(null)
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -29,28 +131,13 @@ export default function ComplementaryCoursesSection({ editable }: { editable?: b
     handleUpdate('complementaryLogos', (coachData.complementaryLogos || []).filter(l => l.id !== id))
   }
 
-  const [newCourseTitle, setNewCourseTitle] = useState('')
-  const [isAddingCourse, setIsAddingCourse] = useState(false)
-
-  const addCourse = () => {
-    if (newCourseTitle.trim()) {
-      const newCourse = {
-        id: Date.now(),
-        title: newCourseTitle.trim()
-      }
-      handleUpdate('complementaryCourses', [...(coachData.complementaryCourses || []), newCourse])
-      setNewCourseTitle('')
-      setIsAddingCourse(false)
-    }
-  }
-
   const removeCourse = (id: number) => {
     handleUpdate('complementaryCourses', (coachData.complementaryCourses || []).filter(c => c.id !== id))
   }
 
   return (
     <div className="py-20 bg-black p-12">
-      <div className="container mx-auto">
+      <div className="container  mx-auto">
         {/* Title */}
         <h1 className="text-4xl font-heading text-white text-center mb-12 tracking-wide">
           COMPLEMENTARY COURSES
@@ -60,94 +147,197 @@ export default function ComplementaryCoursesSection({ editable }: { editable?: b
         <div className="flex justify-center gap-6 mb-16 flex-wrap">
           {(coachData.complementaryLogos || []).map((logo) => (
             <div key={logo.id} className='relative border border-gray-700 p-5 rounded-xl bg-gray-900/50 group'>
-                <Image src={logo.image} className='w-20 h-20 object-contain' alt={logo.name} width={80} height={80} />
-                {editable && (
-                  <button 
-                    onClick={() => removeLogo(logo.id)}
-                    className="absolute -top-2 -right-2 p-1 bg-red-500 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <Trash2 size={12} />
-                  </button>
-                )}
-            </div>
-          ))}
-          {editable && (
-            <div 
-              onClick={() => fileInputRef.current?.click()}
-              className='border border-dashed border-gray-600 p-5 rounded-xl w-[122px] h-[122px] flex items-center justify-center cursor-pointer hover:bg-gray-900 transition-colors'
-            >
-              <Plus className="text-gray-500" />
-              <input 
-                type="file" 
-                ref={fileInputRef} 
-                onChange={handleLogoUpload} 
-                className="hidden" 
-                accept="image/*"
-              />
-            </div>
-          )}
-        </div>
-
-        {/* Course Cards Grid */}
-        <div className="flex items-center flex-wrap gap-6 justify-center">
-          {(coachData.complementaryCourses || []).map((course) => (
-            <div
-              key={course.id}
-              className="relative border border-gray-700 rounded-lg p-6 bg-gray-900 hover:bg-gray-800 transition-colors flex items-center gap-4 group min-w-[280px]"
-            >
-              <Award className="w-6 h-6 text-white flex-shrink-0 group-hover:text-yellow-400 transition-colors" />
-              <p className="text-white text-sm font-medium">
-                {course.title}
-              </p>
+              <Image src={logo.image} className='w-20 h-20 object-contain' alt={logo.name} width={80} height={80} />
               {editable && (
-                <button 
-                  onClick={() => removeCourse(course.id)}
-                  className="absolute -top-2 -right-2 p-1 bg-red-500 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                <button
+                  onClick={() => removeLogo(logo.id)}
+                  className="absolute -top-2 -right-2 p-1 bg-red-500 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity"
                 >
                   <Trash2 size={12} />
                 </button>
               )}
             </div>
           ))}
-
           {editable && (
-            <div className="min-w-[280px]">
-              {isAddingCourse ? (
-                <div className="border border-primary rounded-lg p-4 bg-gray-900 flex items-center gap-3 animate-in fade-in zoom-in duration-200">
-                  <input
-                    autoFocus
-                    type="text"
-                    value={newCourseTitle}
-                    onChange={(e) => setNewCourseTitle(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') addCourse()
-                      if (e.key === 'Escape') setIsAddingCourse(false)
-                    }}
-                    placeholder="Course Title..."
-                    className="bg-transparent text-white text-sm outline-none w-full"
-                  />
-                  <div className="flex items-center gap-1">
-                    <button onClick={addCourse} className="p-1 hover:text-green-500 text-white/50 transition-colors">
-                      <Check size={16} />
-                    </button>
-                    <button onClick={() => setIsAddingCourse(false)} className="p-1 hover:text-red-500 text-white/50 transition-colors">
-                      <X size={16} />
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <button
-                  onClick={() => setIsAddingCourse(true)}
-                  className="w-full border border-dashed border-gray-600 rounded-lg p-6 hover:bg-gray-900 hover:border-gray-500 transition-all flex items-center justify-center gap-2 text-gray-500 hover:text-white group"
-                >
-                  <Plus size={18} className="group-hover:scale-110 transition-transform" />
-                  <span className="text-sm font-bold uppercase tracking-widest">Add Course</span>
-                </button>
-              )}
+            <div
+              onClick={() => fileInputRef.current?.click()}
+              className='border border-dashed border-gray-600 p-5 rounded-xl w-[122px] h-[122px] flex items-center justify-center cursor-pointer hover:bg-gray-900 transition-colors'
+            >
+              <Plus className="text-gray-500" />
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleLogoUpload}
+                className="hidden"
+                accept="image/*"
+              />
             </div>
           )}
         </div>
+
+        {/* Course Cards - Styled like Accomplishments Section */}
+        <div className="mx-auto">
+          <div className="flex items-center gap-5 flex-wrap">
+            {(coachData.complementaryCourses || []).map((course, index) => {
+              const IconComponent = COURSE_ICONS[course.icon || ""] || Award;
+              return (
+                <div
+                  key={course.id || index}
+                  className="flex gap-4 border border-white/10 rounded-xl p-4 bg-gray-900/40 relative group hover:border-primary/30 transition-all"
+                >
+                  <div
+                    className={cn(
+                      "shrink-0 pt-1 text-white",
+                      editable ? "cursor-pointer hover:text-primary transition-colors" : ""
+                    )}
+                    onClick={() => {
+                      if (editable) {
+                        setActiveIconIndex(index);
+                      }
+                    }}
+                  >
+                    <IconComponent className="w-5 h-5 text-white hover:scale-110 transition-transform" />
+                  </div>
+                  <div className="flex-1 pr-6">
+                    <CMSField
+                      value={course.title}
+                      onUpdate={(val) => {
+                        const newCourses = [...(coachData.complementaryCourses || [])];
+                        newCourses[index] = { ...newCourses[index], title: String(val) };
+                        handleUpdate("complementaryCourses", newCourses);
+                      }}
+                      canEdit={!!editable}
+                      type="textarea"
+                      className="text-white text-sm leading-relaxed"
+                    />
+                  </div>
+                  {editable && (
+                    <button
+                      onClick={() => removeCourse(course.id)}
+                      className="absolute right-3 top-3 text-gray-500 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {editable && (
+            <Dialog open={isAddCourseOpen} onOpenChange={setIsAddCourseOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="w-full mt-6 border-dashed border-white/20 hover:border-primary hover:bg-transparent text-gray-400 hover:text-white flex items-center justify-center gap-2"
+                >
+                  <Plus size={16} /> Add Complementary Course
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="bg-[#0D0D0D] border-white/20 text-white max-w-lg max-h-[80vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle className="font-heading uppercase italic">
+                    Select Complementary Course
+                  </DialogTitle>
+                </DialogHeader>
+
+                <div className="space-y-6 mt-4">
+                  {Object.entries(PREDEFINED_COURSES_BY_CATEGORY).map(([category, courses]) => (
+                    <div key={category} className="space-y-2">
+                      <h3 className="text-xs font-bold text-primary uppercase tracking-wider border-b border-white/10 pb-1">
+                        {category}
+                      </h3>
+                      <div className="grid grid-cols-1 gap-1">
+                        {courses.map((courseTitle, idx) => (
+                          <button
+                            key={idx}
+                            onClick={() => {
+                              const newCourse = {
+                                id: Date.now() + idx,
+                                title: courseTitle,
+                                icon: "award",
+                              };
+                              handleUpdate("complementaryCourses", [
+                                ...(coachData.complementaryCourses || []),
+                                newCourse,
+                              ]);
+                              setIsAddCourseOpen(false);
+                            }}
+                            className="flex items-center gap-3 w-full text-left p-2.5 rounded-lg border border-white/5 hover:border-primary/50 hover:bg-white/5 transition-all group"
+                          >
+                            <div className="shrink-0 p-1.5 rounded bg-white/5 group-hover:bg-primary/20 text-gray-400 group-hover:text-primary transition-all">
+                              <Award size={14} />
+                            </div>
+                            <span className="text-xs text-gray-300 group-hover:text-white transition-colors">
+                              {courseTitle}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+
+                  <div className="border-t border-white/10 pt-4">
+                    <button
+                      onClick={() => {
+                        const newCourse = {
+                          id: Date.now(),
+                          title: "Double-click to edit course details.",
+                          icon: "award",
+                        };
+                        handleUpdate("complementaryCourses", [
+                          ...(coachData.complementaryCourses || []),
+                          newCourse,
+                        ]);
+                        setIsAddCourseOpen(false);
+                      }}
+                      className="flex items-center gap-3 w-full text-left p-3 rounded-lg border border-dashed border-white/20 hover:border-primary/50 hover:bg-white/5 transition-all group text-gray-400 hover:text-white"
+                    >
+                      <div className="shrink-0 p-2 rounded bg-white/5 text-gray-400 group-hover:text-primary">
+                        <Plus size={18} />
+                      </div>
+                      <span className="text-xs">Add Custom Course</span>
+                    </button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
+          )}
+        </div>
       </div>
+
+      {/* Course Icon Picker Dialog */}
+      <Dialog
+        open={activeIconIndex !== null}
+        onOpenChange={(open) => !open && setActiveIconIndex(null)}
+      >
+        <DialogContent className="bg-[#0D0D0D] border-white/20 text-white max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="font-heading uppercase italic">Select Icon</DialogTitle>
+          </DialogHeader>
+          <div className="grid grid-cols-4 gap-4 mt-4">
+            {Object.entries(COURSE_ICONS).map(([name, Icon]) => (
+              <button
+                key={name}
+                onClick={() => {
+                  if (activeIconIndex !== null) {
+                    const newCourses = [...(coachData.complementaryCourses || [])];
+                    newCourses[activeIconIndex] = {
+                      ...newCourses[activeIconIndex],
+                      icon: name,
+                    };
+                    handleUpdate("complementaryCourses", newCourses);
+                    setActiveIconIndex(null);
+                  }
+                }}
+                className="flex items-center justify-center p-3 rounded-lg border border-white/10 hover:border-primary hover:bg-white/5 text-gray-400 hover:text-white transition-all"
+              >
+                <Icon size={24} />
+              </button>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

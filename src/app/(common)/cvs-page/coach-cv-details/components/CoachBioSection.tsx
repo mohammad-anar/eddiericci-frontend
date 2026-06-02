@@ -11,23 +11,23 @@ import trophyIcon from "@/assets/cvs-page/id/trofeeIcon.png";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { IconTrophy } from "@tabler/icons-react";
-import { 
-  ChevronDown, 
-  PencilIcon, 
-  Plus, 
-  Trash2, 
-  X, 
-  Check, 
+import {
+  ChevronDown,
+  PencilIcon,
+  Plus,
+  Trash2,
+  X,
+  Check,
   Upload,
-  Trophy, 
-  Award, 
-  Star, 
-  Target, 
-  Users, 
-  TrendingUp, 
-  Activity, 
-  Shield, 
-  GraduationCap, 
+  Trophy,
+  Award,
+  Star,
+  Target,
+  Users,
+  TrendingUp,
+  Activity,
+  Shield,
+  GraduationCap,
   Calendar,
   Medal,
   Sparkles
@@ -300,7 +300,16 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
   const [activeSkillIconIndex, setActiveSkillIconIndex] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const styleBadges = [badge1, badge2, badge3];
+  const styleBadges = [
+    badge1,
+    badge2,
+    badge3,
+    "https://cdn-icons-png.flaticon.com/128/5323/5323862.png", // whistle
+    "https://cdn-icons-png.flaticon.com/128/3002/3002655.png", // tactics board
+    "https://cdn-icons-png.flaticon.com/128/861/861506.png",    // trophy
+    "https://cdn-icons-png.flaticon.com/128/33/33736.png",      // soccer ball
+    "https://cdn-icons-png.flaticon.com/128/3126/3126588.png"   // strategy
+  ];
   const { role, bioRating, skillsAvg, metricsAvg, attributesAvg } = usePlayerStats();
 
   const canEdit = !!(editable && (role === "coach" || role === "admin" || !role));
@@ -801,7 +810,7 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
                         handleUpdate("languages", newLangs);
                       }}
                       canEdit={canEdit}
-                      className="flex-1"
+                      className="w-1/2"
                     />
                     <CMSField
                       value={lang.level}
@@ -813,7 +822,7 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
                       canEdit={canEdit}
                       type="select"
                       options={["Native", "Fluent", "Intermediate", "Beginner"]}
-                      className="w-28 justify-end"
+                      className="w-1/2 justify-end"
                       inputClassName="text-right"
                     />
                   </div>
@@ -1001,18 +1010,23 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
                 </div>
 
                 <div className="space-y-4">
-                  {orderedSelectedStyles.map((style: any, index: number) => (
-                    <div key={style.id} className="space-y-4">
-                      <div className="flex justify-center">
-                        <Image
-                          src={styleBadges[index % styleBadges.length]}
-                          className="w-20 h-20"
-                          alt={style.label}
-                        />
+                  {orderedSelectedStyles.map((style: any, index: number) => {
+                    const badge = styleBadges[index % styleBadges.length];
+                    const badgeSrc = typeof badge === "string" ? badge : badge.src;
+
+                    return (
+                      <div key={style.id} className="space-y-4">
+                        <div className="flex justify-center">
+                          <img
+                            src={badgeSrc}
+                            className="w-20 h-20 object-contain"
+                            alt={style.label}
+                          />
+                        </div>
+                        <p className="text-lg font-heading">{style.label}</p>
                       </div>
-                      <p className="text-lg font-heading">{style.label}</p>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -1341,148 +1355,7 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
                 </DialogContent>
               </Dialog>
             </div>
-            {/* Clubs */}
-            <div className="p-6">
-              <div className="flex justify-between items-center mb-6">
-                <div className="w-10" /> {/* Spacer */}
-                <h2 className="text-lg text-center font-heading font-normal">
-                  Clubs
-                </h2>
-                {canEdit && (
-                  <Button
-                    onClick={() => setIsAddingClub(true)}
-                    size="sm"
-                    className="bg-primary text-black hover:bg-primary/90 h-8 w-8 p-0 rounded-full"
-                  >
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                )}
-              </div>
 
-              <div className="space-y-4">
-                {coachData.clubs.map((club, index) => (
-                  <Card key={club.id || index} className="p-5 relative group">
-                    {canEdit && (
-                      <button
-                        onClick={() => removeClub(club.id)}
-                        className="absolute top-2 right-2 p-1 text-gray-500 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <Trash2 size={14} />
-                      </button>
-                    )}
-                    <div className="flex items-center gap-3">
-                      <div className="relative w-12 h-12 flex-shrink-0">
-                        <Image
-                          src={club.logo || clubImage}
-                          className="object-contain w-full h-full"
-                          alt={club.name}
-                          width={48}
-                          height={48}
-                        />
-                      </div>
-                      <div className="w-full min-w-0">
-                        <CMSField
-                          value={club.name}
-                          onUpdate={(val) => updateClub(club.id, "name", val)}
-                          canEdit={canEdit}
-                          className="font-bold truncate uppercase"
-                        />
-                        <div className="flex items-center gap-1 text-[12px] text-gray-400">
-                          <CMSField
-                            value={club.from}
-                            onUpdate={(val) => updateClub(club.id, "from", val)}
-                            canEdit={canEdit}
-                            type="combobox"
-                            options={YEARS}
-                            editTrigger="doubleClick"
-                            hideIcon={true}
-                            className="w-12"
-                          />
-                          <span>-</span>
-                          <CMSField
-                            value={club.to}
-                            onUpdate={(val) => updateClub(club.id, "to", val)}
-                            canEdit={canEdit}
-                            type="combobox"
-                            options={TO_YEARS}
-                            editTrigger="doubleClick"
-                            hideIcon={true}
-                            className="w-16"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </Card>
-                ))}
-
-                {isAddingClub && (
-                  <Card className="p-5 border-dashed border-primary/50 bg-primary/5 animate-in fade-in zoom-in duration-200">
-                    <div className="flex justify-between items-center mb-4">
-                      <span className="text-[10px] font-bold text-primary uppercase">New Club</span>
-                      <button onClick={() => setIsAddingClub(false)} className="text-gray-400 hover:text-white">
-                        <X size={14} />
-                      </button>
-                    </div>
-
-                    <div className="space-y-4">
-                      <div className="flex flex-col items-center gap-2">
-                        <div
-                          onClick={() => fileInputRef.current?.click()}
-                          className="w-16 h-16 rounded-full border-2 border-dashed border-gray-700 bg-black/40 flex items-center justify-center cursor-pointer hover:border-primary overflow-hidden"
-                        >
-                          {newClubLogo ? (
-                            <Image src={newClubLogo} alt="Preview" width={64} height={64} className="object-contain p-2" />
-                          ) : (
-                            <Upload size={20} className="text-gray-500" />
-                          )}
-                        </div>
-                        <input
-                          type="file"
-                          ref={fileInputRef}
-                          className="hidden"
-                          accept="image/*"
-                          onChange={handleClubLogoUpload}
-                        />
-                      </div>
-
-                      <input
-                        type="text"
-                        placeholder="Club Name"
-                        className="w-full bg-gray-900 border border-gray-800 rounded px-3 py-1.5 text-sm text-white focus:outline-none focus:border-primary"
-                        value={newClubName}
-                        onChange={(e) => setNewClubName(e.target.value)}
-                      />
-
-                      <div className="grid grid-cols-2 gap-2">
-                        <select
-                          className="bg-gray-900 border border-gray-800 rounded px-2 py-1 text-xs text-white"
-                          value={fromYear}
-                          onChange={(e) => setFromYear(e.target.value)}
-                        >
-                          {YEARS.map(y => <option key={y} value={y}>{y}</option>)}
-                        </select>
-                        <select
-                          className="bg-gray-900 border border-gray-800 rounded px-2 py-1 text-xs text-white"
-                          value={toYear}
-                          onChange={(e) => setToYear(e.target.value)}
-                        >
-                          {TO_YEARS.map(y => <option key={y} value={y}>{y}</option>)}
-                        </select>
-                      </div>
-
-                      <Button
-                        onClick={addClub}
-                        disabled={!newClubName.trim()}
-                        className="w-full bg-primary text-black font-bold h-8"
-                        size="sm"
-                      >
-                        <Check className="h-4 w-4 mr-2" /> Add
-                      </Button>
-                    </div>
-                  </Card>
-                )}
-              </div>
-            </div>
           </div>
         </div>
       </div>

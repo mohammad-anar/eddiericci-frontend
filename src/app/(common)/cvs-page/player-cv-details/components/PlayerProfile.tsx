@@ -19,6 +19,7 @@ import whiteCard from "@/assets/cvs-page/white-card.png";
 import flag1 from "@/assets/cvs-page/flag1.png";
 import club1 from "@/assets/cvs-page/club1.png";
 import { useRouter } from "next/navigation";
+import { IconCircleCheck } from "@tabler/icons-react";
 
 const COUNTRY_CODES: Record<string, string> = {
   "afghanistan": "af", "albania": "al", "algeria": "dz", "andorra": "ad", "angola": "ao",
@@ -118,7 +119,7 @@ export default function PlayerProfile({
   const router = useRouter();
   const { bioRating, skillsAvg, metricsAvg, attributesAvg, role } =
     usePlayerStats();
-  const { playerData, handleUpdate: updatePlayerData } = usePlayer();
+  const { playerData, handleUpdate: updatePlayerData, validatePlayer } = usePlayer();
   const [updatePlayer] = useUpdatePlayerProfileMutation();
 
 
@@ -166,7 +167,7 @@ export default function PlayerProfile({
     rating: overallRating,
     position: getShortForm(playerData.position) || "ST",
     stats: currentStats,
-    cardType: (overallRating >= 80 ? "gold" : overallRating >= 60 ? "pink" : "white") as "gold" | "white" | "pink"
+    cardType: (overallRating >= 80 ? "gold" : overallRating >= 60 ? "white" : "pink") as "gold" | "white" | "pink"
   };
 
   const [editingField, setEditingField] = useState<string | null>(null);
@@ -219,12 +220,13 @@ export default function PlayerProfile({
                   </div>
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className=" relative w-[90%] h-[90%] ">
-                      {/* player image */}
-                      <Image
-                        className="w-40 h-48 ml-10 object-cover"
-                        src={playerImage}
+                      {/* Render custom card image if uploaded, otherwise keep default short image */}
+                      <img
+                        className="w-40 h-48 ml-10 object-cover rounded-t-3xl"
+                        src={playerData.cardImage || playerImage.src}
                         alt="player Image"
                       />
+
 
                       {/* shadow */}
                       <div
@@ -369,6 +371,28 @@ export default function PlayerProfile({
                 className="text-base text-primary/80 font-black justify-center uppercase tracking-[0.2em]"
                 inputClassName="text-center"
               />
+              
+              {/* Validation / Verification Action */}
+              <div className="pt-4 border-t border-white/5 flex flex-col gap-2">
+                {role === "coach" && (playerData.validationStatus === "pending" || playerData.validationStatus === "expired") && (
+                  <button
+                    onClick={() => validatePlayer(playerData.id)}
+                    className="w-full py-2.5 bg-[#E31B23] hover:bg-[#ff2d35] text-white text-xs font-black uppercase tracking-widest rounded-xl transition-all shadow-[0_0_20px_rgba(227,27,35,0.3)] border border-[#E31B23]/50 flex items-center gap-2 justify-center cursor-pointer"
+                  >
+                    <IconCircleCheck size={16} /> Validate Player CV
+                  </button>
+                )}
+                {playerData.validationStatus === "verified" && (
+                  <div className="w-full py-2.5 bg-green-500/10 border border-green-500/20 text-green-500 text-xs font-black uppercase tracking-widest rounded-xl flex items-center gap-2 justify-center">
+                    <IconCircleCheck size={16} /> CV Verified & Active
+                  </div>
+                )}
+                {playerData.validationStatus === "expired" && (
+                  <div className="text-[10px] text-yellow-500 font-bold uppercase tracking-wider mt-1 text-center">
+                    Validation Expired - Requires Re-validation
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>

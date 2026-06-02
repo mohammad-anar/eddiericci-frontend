@@ -33,7 +33,7 @@ const DocSection = ({ editable = false }: { editable?: boolean }) => {
     <div className="py-20">
       <div className="container">
         <h3 className="text-center font-heading text-wrap text-xl sm:text-4xl mb-10">
-          Docs / Game Reports / Evaluations
+          Docs / Certificate
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mt-10">

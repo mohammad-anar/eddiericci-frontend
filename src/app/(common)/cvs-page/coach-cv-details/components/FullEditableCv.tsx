@@ -2,6 +2,7 @@
 
 import DocSection from "../../player-cv-details/components/DocSection";
 import CoachBioSection from "./CoachBioSection";
+import CoachClubsSection from "./CoachClubsSection";
 import ComplementaryCoursesSection from "./ComplementaryCoursesSection";
 import TestimonialSection from "./TestimonialSection";
 import Top3Formation from "./Top3Formation";
@@ -25,13 +26,14 @@ const FullEditableCv = ({ editable = true }: { editable?: boolean }) => {
   return (
     <>
       <CoachBioSection editable={canEdit} />
+      <CoachClubsSection editable={canEdit} />
       <ComplementaryCoursesSection editable={canEdit} />
       <Top3Formation editable={canEdit} />
       <TestimonialSection editable={canEdit} />
+      <DocSection editable={canEdit} />
       <MyImagesSection editable={canEdit} />
       <MyVideosSection editable={canEdit} />
       <AdditionalNotesSection editable={canEdit} />
-      <DocSection editable={canEdit} />
     </>
   );
 };

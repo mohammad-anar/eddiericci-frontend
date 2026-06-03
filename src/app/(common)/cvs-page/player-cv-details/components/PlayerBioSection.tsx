@@ -489,7 +489,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
 
     const showLogo = settings.showLogo;
     const logoPlacement = settings.logoPlacement;
-    
+
     let logoHtmlTop = "";
     let logoHtmlBottom = "";
     let logoHtmlWatermark = "";
@@ -792,7 +792,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
 
     const cleanPos = playerData.position.toLowerCase();
     const shouldBeFutsal = cleanPos.includes("goalkeeper") || cleanPos.includes("fixo") || cleanPos.includes("alas") || cleanPos.includes("pivot");
-    
+
     // Only auto-switch the map if the position itself has changed
     if (playerData.position !== prevPositionRef.current) {
       setIsPositionMap(!shouldBeFutsal);
@@ -835,8 +835,8 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
 
     const field = activeMarker.type === 'position' ? 'positionMarkers' : 'futsalMarkers';
     const markers = (activeMarker.type === 'position' ? playerData.positionMarkers : playerData.futsalMarkers) || [];
-    
-    const newMarkers = markers.map(m => 
+
+    const newMarkers = markers.map(m =>
       m.id === activeMarker.id ? { ...m, x, y } : m
     );
 
@@ -1434,8 +1434,8 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
               })()}
 
               {/* Add position icon button removed to keep exactly 3 markers */}
-              
-              <div 
+
+              <div
                 ref={mapContainerRef}
                 className="relative w-full h-auto overflow-hidden select-none"
               >
@@ -1449,7 +1449,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                 />
 
                 {/* Render markers */}
-                {( (isPositionMap ? playerData.positionMarkers : playerData.futsalMarkers) || [] ).map((marker: any, idx: number) => (
+                {((isPositionMap ? playerData.positionMarkers : playerData.futsalMarkers) || []).map((marker: any, idx: number) => (
                   <div
                     key={marker.id}
                     className="absolute z-20 cursor-move group/marker flex flex-col items-center"
@@ -1650,12 +1650,12 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
               <h2 className="text-sm font-black text-gray-500 uppercase tracking-widest mb-4">
                 Certification
               </h2>
-              
+
               {/* Outer certificate container fitting the sidebar */}
               {(() => {
                 const t = getThemeClasses(certTheme);
                 return (
-                  <div 
+                  <div
                     className={cn(
                       "w-full aspect-[1.41] p-4 rounded-xl flex flex-col justify-between items-center text-center relative overflow-hidden select-none border-box shadow-md transition-all duration-300 text-[8px] md:text-[9px] min-h-[220px]",
                       t.cardBg,
@@ -1739,11 +1739,11 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                         <span className={cn("font-heading italic text-[7px] leading-none", t.textColor)}>{certDirectorName}</span>
                         <span className="w-full border-t border-white/20 mt-0.5 pt-0.5 text-[5px] text-gray-500 uppercase tracking-wider leading-none">{certDirectorTitle}</span>
                       </div>
-                      
+
                       {certShowLogo && certLogoPlacement === "bottom" && (
                         <img src="/logo.png" alt="K10 Logo Bottom" className="h-3 w-auto object-contain self-end mb-0.5" />
                       )}
-                      
+
                       <div className="flex flex-col items-center w-[60px]">
                         <span className={cn("font-heading italic text-[7px] leading-none", t.textColor)}>{certCoachSignName}</span>
                         <span className="w-full border-t border-white/20 mt-0.5 pt-0.5 text-[5px] text-gray-500 uppercase tracking-wider leading-none">{certCoachTitle}</span>
@@ -1782,11 +1782,11 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                         <Award size={14} /> Customize Certificate
                       </Button>
                     </DialogTrigger>
-                    
+
                     <DialogContent className="max-w-5xl w-[95vw] h-[85vh] bg-[#0c0c0c] border border-border/40 text-white rounded-2xl flex flex-col p-0 overflow-hidden shadow-2xl">
                       <DialogHeader className="p-4 border-b border-border/20 bg-[#111111] flex flex-row items-center justify-between">
                         <DialogTitle className="text-md font-heading font-normal flex items-center gap-2">
-                          <Award className="text-primary w-5 h-5" /> 
+                          <Award className="text-primary w-5 h-5" />
                           EDDIE Certificate Designer (Canva Edition)
                         </DialogTitle>
                       </DialogHeader>
@@ -1794,7 +1794,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                       <div className="flex-1 flex overflow-hidden">
                         {/* LEFT COLUMN: CONTROLS */}
                         <div className="w-[340px] bg-[#111111] border-r border-border/20 p-5 flex flex-col overflow-y-auto space-y-6 scrollbar-thin select-none">
-                          
+
                           {/* Themes */}
                           <div className="space-y-2">
                             <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest block">1. Select Template Theme</label>
@@ -1823,37 +1823,37 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                           {/* Certificate Details */}
                           <div className="space-y-3">
                             <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest block">2. Text & Credentials</label>
-                            
+
                             <div className="space-y-1.5">
                               <span className="text-[10px] text-gray-400">Certificate Title</span>
-                              <Input 
+                              <Input
                                 value={certTitle}
                                 onChange={(e) => setCertTitle(e.target.value)}
                                 className="bg-[#181818] border-border/40 text-xs h-8 rounded-lg"
                               />
                             </div>
-                            
+
                             <div className="space-y-1.5">
                               <span className="text-[10px] text-gray-400">Subtitle</span>
-                              <Input 
+                              <Input
                                 value={certSubtitle}
                                 onChange={(e) => setCertSubtitle(e.target.value)}
                                 className="bg-[#181818] border-border/40 text-xs h-8 rounded-lg"
                               />
                             </div>
-                            
+
                             <div className="space-y-1.5">
                               <span className="text-[10px] text-gray-400">Academy Name</span>
-                              <Input 
+                              <Input
                                 value={certAcademyName}
                                 onChange={(e) => setCertAcademyName(e.target.value)}
                                 className="bg-[#181818] border-border/40 text-xs h-8 rounded-lg"
                               />
                             </div>
-                            
+
                             <div className="space-y-1.5">
                               <span className="text-[10px] text-gray-400">Assigned Coach</span>
-                              <Input 
+                              <Input
                                 value={certCoachName}
                                 onChange={(e) => setCertCoachName(e.target.value)}
                                 className="bg-[#181818] border-border/40 text-xs h-8 rounded-lg"
@@ -1862,7 +1862,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
 
                             <div className="space-y-1.5">
                               <span className="text-[10px] text-gray-400">Current Club</span>
-                              <Input 
+                              <Input
                                 value={certClubName}
                                 onChange={(e) => setCertClubName(e.target.value)}
                                 className="bg-[#181818] border-border/40 text-xs h-8 rounded-lg"
@@ -1873,11 +1873,11 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                           {/* Signatures */}
                           <div className="space-y-3">
                             <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest block">3. Signatures Config</label>
-                            
+
                             <div className="grid grid-cols-2 gap-2">
                               <div className="space-y-1">
                                 <span className="text-[9px] text-gray-400">Director Name</span>
-                                <Input 
+                                <Input
                                   value={certDirectorName}
                                   onChange={(e) => setCertDirectorName(e.target.value)}
                                   className="bg-[#181818] border-border/40 text-[11px] h-7 rounded-lg px-2"
@@ -1885,7 +1885,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                               </div>
                               <div className="space-y-1">
                                 <span className="text-[9px] text-gray-400">Director Title</span>
-                                <Input 
+                                <Input
                                   value={certDirectorTitle}
                                   onChange={(e) => setCertDirectorTitle(e.target.value)}
                                   className="bg-[#181818] border-border/40 text-[11px] h-7 rounded-lg px-2"
@@ -1896,7 +1896,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                             <div className="grid grid-cols-2 gap-2">
                               <div className="space-y-1">
                                 <span className="text-[9px] text-gray-400">Coach Name</span>
-                                <Input 
+                                <Input
                                   value={certCoachSignName}
                                   onChange={(e) => setCertCoachSignName(e.target.value)}
                                   className="bg-[#181818] border-border/40 text-[11px] h-7 rounded-lg px-2"
@@ -1904,7 +1904,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                               </div>
                               <div className="space-y-1">
                                 <span className="text-[9px] text-gray-400">Coach Title</span>
-                                <Input 
+                                <Input
                                   value={certCoachTitle}
                                   onChange={(e) => setCertCoachTitle(e.target.value)}
                                   className="bg-[#181818] border-border/40 text-[11px] h-7 rounded-lg px-2"
@@ -1916,9 +1916,9 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                           {/* Toggle Elements */}
                           <div className="space-y-3 bg-white/5 p-3 rounded-lg border border-border/30">
                             <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest block">4. Certificate Elements</label>
-                            
+
                             <div className="flex items-center gap-2">
-                              <Checkbox 
+                              <Checkbox
                                 id="showRating"
                                 checked={certShowRating}
                                 onCheckedChange={(val) => setCertShowRating(!!val)}
@@ -1928,7 +1928,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                             </div>
 
                             <div className="flex items-center gap-2">
-                              <Checkbox 
+                              <Checkbox
                                 id="showStats"
                                 checked={certShowStats}
                                 onCheckedChange={(val) => setCertShowStats(!!val)}
@@ -1938,7 +1938,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                             </div>
 
                             <div className="flex items-center gap-2">
-                              <Checkbox 
+                              <Checkbox
                                 id="showLogo"
                                 checked={certShowLogo}
                                 onCheckedChange={(val) => setCertShowLogo(!!val)}
@@ -1966,13 +1966,13 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
 
                         {/* RIGHT COLUMN: LIVE CANVAS PREVIEW */}
                         <div className="flex-1 bg-[#161616] p-6 flex flex-col items-center justify-between overflow-y-auto">
-                          
+
                           {/* Live Canvas Certificate */}
                           <div className="w-full flex items-center justify-center flex-1 my-2">
                             {(() => {
                               const t = getThemeClasses(certTheme);
                               return (
-                                <div 
+                                <div
                                   className={cn(
                                     "w-[640px] h-[448px] p-8 rounded-xl flex flex-col justify-between items-center text-center relative overflow-hidden select-none border-box shadow-xl transition-all duration-300 scale-90 md:scale-95 lg:scale-100",
                                     t.cardBg,
@@ -2056,11 +2056,11 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                                       <span className={cn("font-heading italic text-[11px]", t.textColor)}>{certDirectorName}</span>
                                       <span className="w-full border-t border-white/20 mt-1 pt-1 text-[7px] text-gray-500 uppercase tracking-wider">{certDirectorTitle}</span>
                                     </div>
-                                    
+
                                     {certShowLogo && certLogoPlacement === "bottom" && (
                                       <img src="/logo.png" alt="K10 Logo Bottom" className="h-6 w-auto object-contain self-end mb-1" />
                                     )}
-                                    
+
                                     <div className="flex flex-col items-center w-[120px]">
                                       <span className={cn("font-heading italic text-[11px]", t.textColor)}>{certCoachSignName}</span>
                                       <span className="w-full border-t border-white/20 mt-1 pt-1 text-[7px] text-gray-500 uppercase tracking-wider">{certCoachTitle}</span>
@@ -2194,7 +2194,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
               </div>
             </div>
 
-            <div className="p-6">
+            {/* <div className="p-6">
               <h2 className="text-lg text-center font-heading font-normal mb-4">
                 Performance Metrics
               </h2>
@@ -2266,7 +2266,8 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                   )
                 )}
               </div>
-            </div>
+            </div> */}
+
 
             <div className="p-6">
               <h2 className="text-lg text-center font-heading font-normal mb-4">
@@ -2431,7 +2432,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
       </div>
 
       {/* Hidden high-res certificate container for direct PDF download */}
-      <div 
+      <div
         ref={certificateRef}
         style={{
           position: 'absolute',
@@ -2608,11 +2609,11 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
             <span style={{ fontFamily: 'Playfair Display, serif', fontStyle: 'italic', fontSize: '18px', color: getOffscreenThemeStyles(certTheme).textColor }}>{certDirectorName}</span>
             <span style={{ width: '100%', borderTop: '1px solid rgba(255, 255, 255, 0.2)', marginTop: '8px', paddingTop: '4px', fontSize: '10px', color: '#888888', textTransform: 'uppercase', letterSpacing: '1px' }}>{certDirectorTitle}</span>
           </div>
-          
+
           {certShowLogo && certLogoPlacement === "bottom" && (
             <img src="/logo.png" alt="K10 Logo Bottom" style={{ height: '35px', width: 'auto', objectFit: 'contain', alignSelf: 'flex-end', marginBottom: '8px' }} />
           )}
-          
+
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '180px' }}>
             <span style={{ fontFamily: 'Playfair Display, serif', fontStyle: 'italic', fontSize: '18px', color: getOffscreenThemeStyles(certTheme).textColor }}>{certCoachSignName}</span>
             <span style={{ width: '100%', borderTop: '1px solid rgba(255, 255, 255, 0.2)', marginTop: '8px', paddingTop: '4px', fontSize: '10px', color: '#888888', textTransform: 'uppercase', letterSpacing: '1px' }}>{certCoachTitle}</span>

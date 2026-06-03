@@ -20,7 +20,7 @@ import {
   Medal,
   Sparkles
 } from 'lucide-react'
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import { cn } from "@/lib/utils"
 import { CMSField } from "@/components/shared/CMSField"
 import { Button } from "@/components/ui/button"
@@ -31,6 +31,29 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+
+// Static Logo Imports
+import courseLogo1 from "@/assets/cvs-page/id/courses-logo1.png";
+import courseLogo2 from "@/assets/cvs-page/id/courses-logo2.png";
+import courseLogo3 from "@/assets/cvs-page/id/courses-logo3.png";
+import courseLogo4 from "@/assets/cvs-page/id/courses-logo4.png";
+import courseLogo5 from "@/assets/cvs-page/id/courses-logo5.jpg";
+import courseLogo6 from "@/assets/cvs-page/id/courses-logo6.png";
+import courseLogo7 from "@/assets/cvs-page/id/courses-logo7.png";
+import courseLogo8 from "@/assets/cvs-page/id/courses-logo8.png";
+import courseLogo9 from "@/assets/cvs-page/id/courses-logo9.png";
+
+const STATIC_LOGOS = [
+  { id: 1, name: "Logo 1", image: courseLogo1 },
+  { id: 2, name: "Logo 2", image: courseLogo2 },
+  { id: 3, name: "Logo 3", image: courseLogo3 },
+  { id: 4, name: "Logo 4", image: courseLogo4 },
+  { id: 5, name: "Logo 5", image: courseLogo5 },
+  { id: 6, name: "Logo 6", image: courseLogo6 },
+  { id: 7, name: "Logo 7", image: courseLogo7 },
+  { id: 8, name: "Logo 8", image: courseLogo8 },
+  { id: 9, name: "Logo 9", image: courseLogo9 },
+];
 
 const COURSE_ICONS: Record<string, React.ComponentType<any>> = {
   award: Award,
@@ -106,30 +129,9 @@ const PREDEFINED_COURSES_BY_CATEGORY = {
 
 export default function ComplementaryCoursesSection({ editable }: { editable?: boolean }) {
   const { coachData, handleUpdate } = useCoach()
-  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const [isAddCourseOpen, setIsAddCourseOpen] = useState(false)
   const [activeIconIndex, setActiveIconIndex] = useState<number | null>(null)
-
-  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onload = (event) => {
-        const newLogo = {
-          id: Date.now(),
-          name: file.name,
-          image: event.target?.result as string
-        }
-        handleUpdate('complementaryLogos', [...(coachData.complementaryLogos || []), newLogo])
-      }
-      reader.readAsDataURL(file)
-    }
-  }
-
-  const removeLogo = (id: number) => {
-    handleUpdate('complementaryLogos', (coachData.complementaryLogos || []).filter(l => l.id !== id))
-  }
 
   const removeCourse = (id: number) => {
     handleUpdate('complementaryCourses', (coachData.complementaryCourses || []).filter(c => c.id !== id))
@@ -137,42 +139,19 @@ export default function ComplementaryCoursesSection({ editable }: { editable?: b
 
   return (
     <div className="py-20 bg-black p-12">
-      <div className="container  mx-auto">
+      <div className="container mx-auto">
         {/* Title */}
         <h1 className="text-4xl font-heading text-white text-center mb-12 tracking-wide">
           COMPLEMENTARY COURSES
         </h1>
 
-        {/* Logo Badges */}
+        {/* Logo Badges (Static 9 Logos) */}
         <div className="flex justify-center gap-6 mb-16 flex-wrap">
-          {(coachData.complementaryLogos || []).map((logo) => (
+          {STATIC_LOGOS.map((logo) => (
             <div key={logo.id} className='relative border border-gray-700 p-5 rounded-xl bg-gray-900/50 group'>
               <Image src={logo.image} className='w-20 h-20 object-contain' alt={logo.name} width={80} height={80} />
-              {editable && (
-                <button
-                  onClick={() => removeLogo(logo.id)}
-                  className="absolute -top-2 -right-2 p-1 bg-red-500 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity"
-                >
-                  <Trash2 size={12} />
-                </button>
-              )}
             </div>
           ))}
-          {editable && (
-            <div
-              onClick={() => fileInputRef.current?.click()}
-              className='border border-dashed border-gray-600 p-5 rounded-xl w-[122px] h-[122px] flex items-center justify-center cursor-pointer hover:bg-gray-900 transition-colors'
-            >
-              <Plus className="text-gray-500" />
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleLogoUpload}
-                className="hidden"
-                accept="image/*"
-              />
-            </div>
-          )}
         </div>
 
         {/* Course Cards - Styled like Accomplishments Section */}
@@ -183,7 +162,7 @@ export default function ComplementaryCoursesSection({ editable }: { editable?: b
               return (
                 <div
                   key={course.id || index}
-                  className="flex gap-4 border border-white/10 rounded-xl p-4 bg-gray-900/40 relative group hover:border-primary/30 transition-all"
+                  className="flex gap-4 border border-white/10 rounded-xl p-4 bg-gray-900/40 relative group hover:border-primary/30 transition-all animate-in fade-in duration-200"
                 >
                   <div
                     className={cn(

@@ -47,6 +47,7 @@ const ALL_STYLES = [
   { id: "whipped-cross", label: "Whipped Cross" },
 ];
 
+
 const COUNTRY_CODES: Record<string, string> = {
   "afghanistan": "af", "albania": "al", "algeria": "dz", "andorra": "ad", "angola": "ao",
   "antigua and barbuda": "ag", "argentina": "ar", "armenia": "am", "australia": "au",
@@ -97,7 +98,7 @@ const ALL_COUNTRIES = Object.keys(COUNTRY_CODES).map(c =>
   c.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
 ).sort();
 
-const getMarkersForPosition = (position: string, isFutsal: boolean) => {
+const _getMarkersForPosition = (position: string, isFutsal: boolean) => {
   const pos = position?.trim() || "";
   const cleanPos = pos.toLowerCase();
 
@@ -249,6 +250,14 @@ const getMarkersForPosition = (position: string, isFutsal: boolean) => {
         ];
     }
   }
+};
+
+const getMarkersForPosition = (position: string, isFutsal: boolean) => {
+  const markers = _getMarkersForPosition(position, isFutsal);
+  return markers.map((m, idx) => ({
+    ...m,
+    name: `position${idx + 1}`
+  }));
 };
 
 const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
@@ -534,7 +543,16 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
     return `https://flagcdn.com/w160/${code}.png`;
   };
 
-  const styleBadges = [badge1, badge2, badge3];
+  const styleBadges = [
+    badge1,
+    badge2,
+    badge3,
+    "https://cdn-icons-png.flaticon.com/128/5323/5323862.png", // whistle
+    "https://cdn-icons-png.flaticon.com/128/3002/3002655.png", // tactics board
+    "https://cdn-icons-png.flaticon.com/128/861/861506.png",    // trophy
+    "https://cdn-icons-png.flaticon.com/128/33/33736.png",      // soccer ball
+    "https://cdn-icons-png.flaticon.com/128/3126/3126588.png"   // strategy
+  ];
   return (
     <>
       <div className="container">
@@ -922,11 +940,11 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                     <Image
                       src={positionIcon}
                       alt="position icon"
-                      width={idx === 0 ? 32 : 30}
-                      height={idx === 0 ? 32 : 30}
+                      width={idx === 0 ? 34 : 30}
+                      height={idx === 0 ? 34 : 30}
                       className={cn(
                         "pointer-events-none drop-shadow-lg transition-transform group-hover/marker:scale-110",
-                        idx === 0 ? "w-[30px] h-[30px] md:w-[32px] md:h-[32px]" : "w-[28px] h-[28px] md:w-[30px] md:h-[30px]"
+                        idx === 0 ? "w-[32px] h-[32px] md:w-[34px] md:h-[34px]" : "w-[28px] h-[28px] md:w-[30px] md:h-[30px]"
                       )}
                     />
                     {marker.name && (
@@ -934,7 +952,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                         "mt-1 px-1.5 py-0.5 rounded bg-black/85 border border-white/10 text-white text-[9px] font-medium text-center whitespace-nowrap shadow-md pointer-events-none tracking-wide select-none transition-all",
                         idx === 0 ? "text-[10px] px-2 font-semibold border-primary/40 bg-primary/10 text-primary backdrop-blur-sm" : ""
                       )}>
-                        {marker.name}
+                        position{idx + 1}
                       </div>
                     )}
                   </div>
@@ -986,11 +1004,14 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                 canEdit={canEditBio}
                 type="combobox"
                 options={[
+                  "--Futsal Positions--",
                   "Goalkeeper (GK)",
                   "Fixo (Defender / CB)",
                   "Alas (Right Wing / RW)",
                   "Alas (Left Wing / LW)",
                   "Pivot (Forward / CF)",
+                  "--Football Positions--",
+                  "Goalkeeper (GK)",
                   "Center Back (CB)",
                   "Right Back (RB)",
                   "Left Back (LB)",
@@ -1075,18 +1096,22 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                 </div>
 
                 <div className="space-y-4">
-                  {orderedSelectedStyles.map((style: any, index: number) => (
-                    <div key={style.id} className="space-y-4">
-                      <div className="flex justify-center">
-                        <Image
-                          src={styleBadges[index % styleBadges.length]}
-                          className="w-20 h-20"
-                          alt={style.label}
-                        />
+                  {orderedSelectedStyles.map((style: any, index: number) => {
+                    const badge = styleBadges[index % styleBadges.length];
+                    const badgeSrc = typeof badge === "string" ? badge : badge.src;
+                    return (
+                      <div key={style.id} className="space-y-4">
+                        <div className="flex justify-center">
+                          <img
+                            src={badgeSrc}
+                            className="w-20 h-20 object-contain"
+                            alt={style.label}
+                          />
+                        </div>
+                        <p className="text-lg font-heading">{style.label}</p>
                       </div>
-                      <p className="text-lg font-heading">{style.label}</p>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             </div>

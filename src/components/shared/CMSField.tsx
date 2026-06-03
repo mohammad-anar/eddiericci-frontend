@@ -87,9 +87,13 @@ export const CMSField = ({
     setSearchTerm("");
   };
 
-  const filteredOptions = options.filter((opt) =>
-    opt.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredOptions = options.filter((opt) => {
+    const isHeading = opt.startsWith("--") && opt.endsWith("--");
+    if (isHeading) {
+      return !searchTerm; // Only show headings if search is empty
+    }
+    return opt.toLowerCase().includes(searchTerm.toLowerCase());
+  });
 
   if (isEditing && canEdit) {
     if (type === "combobox") {
@@ -114,15 +118,28 @@ export const CMSField = ({
           </div>
           <div className="absolute top-9 left-0 w-full max-h-40 overflow-y-auto bg-gray-900 border border-gray-800 rounded shadow-xl z-[100]">
             {filteredOptions.length > 0 ? (
-              filteredOptions.map((opt) => (
-                <div
-                  key={opt}
-                  className="px-3 py-2 text-xs hover:bg-primary/20 cursor-pointer text-white"
-                  onClick={() => handleSave(opt)}
-                >
-                  {opt}
-                </div>
-              ))
+              filteredOptions.map((opt, idx) => {
+                const isHeading = opt.startsWith("--") && opt.endsWith("--");
+                if (isHeading) {
+                  return (
+                    <div
+                      key={`${opt}-${idx}`}
+                      className="px-3 py-1.5 text-[10px] font-bold text-primary bg-black/45 tracking-wider uppercase select-none pointer-events-none border-b border-white/5"
+                    >
+                      {opt.replace(/--/g, "").trim()}
+                    </div>
+                  );
+                }
+                return (
+                  <div
+                    key={`${opt}-${idx}`}
+                    className="px-3 py-2 text-xs hover:bg-primary/20 cursor-pointer text-white"
+                    onClick={() => handleSave(opt)}
+                  >
+                    {opt}
+                  </div>
+                );
+              })
             ) : (
               <div className="px-3 py-2 text-xs text-gray-500">No results</div>
             )}

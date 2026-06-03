@@ -11,7 +11,7 @@ import { usePlayerStats } from "./FullEditablePage";
 import { useUpdatePlayerProfileMutation } from "@/lib/features/cv/cvApi";
 import { CMSField } from "@/components/shared/CMSField";
 import { toast } from "sonner";
-import { cn, getShortForm, getFullWithShortForm } from "@/lib/utils";
+import { cn, getShortForm, getFullWithShortForm, getVeryShortPosition } from "@/lib/utils";
 import { usePlayer } from "@/lib/hooks/usePlayer";
 import goldCard from "@/assets/cvs-page/gold-card.png";
 import pinkCard from "@/assets/cvs-page/pink-card.png";
@@ -365,7 +365,7 @@ export default function PlayerProfile({
                 </div>
               </div>
               <CMSField
-                value={getFullWithShortForm(playerData.position)}
+                value={getVeryShortPosition(playerData.position)}
                 onUpdate={(val) => handleInfoChange("position", val)}
                 canEdit={false}
                 className="text-base text-primary/80 font-black justify-center uppercase tracking-[0.2em]"

@@ -54,3 +54,22 @@ export const getFullWithShortForm = (position: string): string => {
   if (!short || short === pos || pos.includes(`(${short})`)) return pos;
   return `${pos} (${short})`;
 };
+
+export const getVeryShortPosition = (position: string): string => {
+  if (!position) return "";
+  const pos = position.trim();
+  if (pos.includes("(") && pos.includes(")")) {
+    const mainName = pos.split("(")[0].trim();
+    const matches = pos.match(/\(([^)]+)\)[^()]*$/);
+    if (matches && matches[1]) {
+      const content = matches[1];
+      if (content.includes("/")) {
+        const parts = content.split("/");
+        const shortForm = parts[parts.length - 1].trim();
+        return `${mainName} (${shortForm})`;
+      }
+      return `${mainName} (${content})`;
+    }
+  }
+  return pos;
+};

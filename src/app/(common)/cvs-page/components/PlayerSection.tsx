@@ -117,8 +117,8 @@ export default function Players() {
                       {displayLastName}
                     </div>
 
-                    <div className="text-black relative z-10 mt-6">
-                      <div className="flex items-center justify-between gap-4 p-3">
+                    <div className="text-black relative z-10 mt-4">
+                      <div className="flex items-center justify-between gap-4 p-3 pb-1">
                         {/* left */}
                         <div className="flex-1">
                           <div className="flex justify-between">
@@ -151,8 +151,16 @@ export default function Players() {
                           </div>
                         </div>
                       </div>
+                      <div className="w-[30%] border-b border-black/10 mx-auto my-1"></div>
+                      <div className="flex flex-col items-center justify-center text-[8px] font-bold text-gray-700 space-y-0.5 pb-2">
+                        <div className="truncate max-w-[170px] uppercase tracking-wider">
+                          ACADEMY: <span className="font-black text-black">{player.academyName || "N/A"}</span>
+                        </div>
+                        <div className="truncate max-w-[170px] uppercase tracking-wider">
+                          COACH: <span className="font-black text-black">{player.coachName || "N/A"}</span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="w-[30%] border-b border-border mx-auto"></div>
                   </div>
                 </div>
               </div>

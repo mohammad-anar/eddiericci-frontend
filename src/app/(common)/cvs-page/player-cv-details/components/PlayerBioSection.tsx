@@ -9,6 +9,7 @@ import trofeeIcon from "@/assets/cvs-page/id/trofeeIcon.png";
 import { CMSField } from "@/components/shared/CMSField";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
 import {
   Dialog,
   DialogContent,
@@ -19,12 +20,14 @@ import {
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { usePlayer } from "@/lib/hooks/usePlayer";
-import { cn, getShortForm, getFullWithShortForm } from "@/lib/utils";
-import { PencilIcon } from "lucide-react";
+import { cn, getShortForm, getFullWithShortForm, getVeryShortPosition } from "@/lib/utils";
+import { PencilIcon, Award, Printer, Download } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { usePlayerStats } from "./FullEditablePage";
+import html2canvas from "html2canvas";
+import { jsPDF } from "jspdf";
 
 const ALL_STYLES = [
   { id: "technical", label: "Technical" },
@@ -260,10 +263,513 @@ const getMarkersForPosition = (position: string, isFutsal: boolean) => {
   }));
 };
 
+const getThemeClasses = (theme: string) => {
+  switch (theme) {
+    case 'neon':
+      return {
+        cardBorder: "border-2 border-[#00FF62]/40 shadow-[0_0_20px_rgba(0,255,98,0.2)]",
+        cardBg: "bg-[#111111]",
+        textColor: "text-[#00FF62]",
+        titleColor: "text-white",
+        subtitleColor: "text-gray-400",
+        badgeBg: "bg-[#00FF62]/10 border-[#00FF62]/30 text-[#00FF62]",
+        accentBorder: "border-[#00FF62]/30",
+        accentText: "text-[#00FF62]",
+        watermarkColor: "text-[#00FF62]/5",
+      };
+    case 'sapphire':
+      return {
+        cardBorder: "border-4 border-double border-[#1e40af]/60 shadow-[0_0_25px_rgba(30,58,138,0.25)]",
+        cardBg: "bg-[#0b132b]",
+        textColor: "text-[#60a5fa]",
+        titleColor: "text-white",
+        subtitleColor: "text-gray-400",
+        badgeBg: "bg-blue-900/25 border-blue-500/30 text-[#60a5fa]",
+        accentBorder: "border-[#1e40af]/30",
+        accentText: "text-[#d4af37]",
+        watermarkColor: "text-[#1e40af]/5",
+      };
+    case 'crimson':
+      return {
+        cardBorder: "border-2 border-[#E31B23]/40 shadow-[0_0_20px_rgba(227,27,35,0.2)]",
+        cardBg: "bg-[#020202]",
+        textColor: "text-[#E31B23]",
+        titleColor: "text-white",
+        subtitleColor: "text-gray-400",
+        badgeBg: "bg-[#E31B23]/10 border-[#E31B23]/30 text-[#E31B23]",
+        accentBorder: "border-[#E31B23]/30",
+        accentText: "text-[#E31B23]",
+        watermarkColor: "text-[#E31B23]/5",
+      };
+    case 'gold':
+    default:
+      return {
+        cardBorder: "border-4 border-double border-[#d4af37]/60 shadow-[0_0_20px_rgba(212,175,55,0.1)]",
+        cardBg: "bg-[#0a0a0a]",
+        textColor: "text-[#d4af37]",
+        titleColor: "text-white",
+        subtitleColor: "text-gray-500",
+        badgeBg: "bg-[#d4af37]/10 border-[#d4af37]/30 text-[#d4af37]",
+        accentBorder: "border-white/5",
+        accentText: "text-[#d4af37]",
+        watermarkColor: "text-[#d4af37]/5",
+      };
+  }
+};
+
 const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
   const { playerData, handleUpdate } = usePlayer();
 
   const { setBioRating, role } = usePlayerStats();
+
+  // Canva Certificate Designer States
+  const [certTheme, setCertTheme] = useState<'gold' | 'neon' | 'sapphire' | 'crimson'>('gold');
+  const [certTitle, setCertTitle] = useState('CERTIFICATE OF CV VALIDATION');
+  const [certSubtitle, setCertSubtitle] = useState('PROFESSIONAL ATHLETIC RECORD');
+  const [certAcademyName, setCertAcademyName] = useState('EDDIE SOCCER ACADEMY');
+  const [certCoachName, setCertCoachName] = useState('N/A');
+  const [certClubName, setCertClubName] = useState('N/A');
+  const [certDirectorName, setCertDirectorName] = useState('John Doe');
+  const [certDirectorTitle, setCertDirectorTitle] = useState('Academy Director');
+  const [certCoachSignName, setCertCoachSignName] = useState('Marcus Silva');
+  const [certCoachTitle, setCertCoachTitle] = useState('Authorized Coach');
+  const [certShowRating, setCertShowRating] = useState(true);
+  const [certShowStats, setCertShowStats] = useState(true);
+  const [certShowLogo, setCertShowLogo] = useState(true);
+  const [certLogoPlacement, setCertLogoPlacement] = useState<'top' | 'bottom' | 'watermark'>('top');
+
+  useEffect(() => {
+    if (playerData) {
+      setCertAcademyName(playerData.academyName || "EDDIE SOCCER ACADEMY");
+      setCertCoachName(playerData.coachName || "N/A");
+      setCertClubName(playerData.clubs?.[0]?.name || "N/A");
+      setCertCoachSignName(playerData.coachName || "Marcus Silva");
+    }
+  }, [playerData]);
+
+  const certificateRef = useRef<HTMLDivElement>(null);
+
+  const getOffscreenThemeStyles = (theme: string) => {
+    switch (theme) {
+      case 'neon':
+        return {
+          containerBorder: "4px solid #00FF62",
+          containerBg: "#111111",
+          boxShadow: "0 0 25px rgba(0, 255, 98, 0.2)",
+          textColor: "#00FF62",
+          titleColor: "#ffffff",
+          subtitleColor: "#a3a3a3",
+          accentBorder: "1px solid rgba(0, 255, 98, 0.3)",
+          accentText: "#00FF62",
+        };
+      case 'sapphire':
+        return {
+          containerBorder: "12px double #1e40af",
+          containerBg: "#0b132b",
+          boxShadow: "0 0 25px rgba(30, 58, 138, 0.3)",
+          textColor: "#60a5fa",
+          titleColor: "#ffffff",
+          subtitleColor: "#a3a3a3",
+          accentBorder: "1px solid rgba(30, 58, 138, 0.3)",
+          accentText: "#d4af37",
+        };
+      case 'crimson':
+        return {
+          containerBorder: "4px solid #E31B23",
+          containerBg: "#020202",
+          boxShadow: "0 0 25px rgba(227, 27, 35, 0.2)",
+          textColor: "#E31B23",
+          titleColor: "#ffffff",
+          subtitleColor: "#a3a3a3",
+          accentBorder: "1px solid rgba(227, 27, 35, 0.3)",
+          accentText: "#E31B23",
+        };
+      case 'gold':
+      default:
+        return {
+          containerBorder: "12px double #d4af37",
+          containerBg: "#0a0a0a",
+          boxShadow: "0 0 35px rgba(212, 175, 55, 0.2)",
+          textColor: "#d4af37",
+          titleColor: "#ffffff",
+          subtitleColor: "#6b7280",
+          accentBorder: "1px solid rgba(255, 255, 255, 0.05)",
+          accentText: "#d4af37",
+        };
+    }
+  };
+
+  const handleDownloadPdf = async () => {
+    if (!certificateRef.current) return;
+    try {
+      toast.loading("Generating high-resolution PDF... Please wait.", { id: "pdf-gen" });
+      const canvas = await html2canvas(certificateRef.current, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: null
+      });
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF({
+        orientation: "landscape",
+        unit: "px",
+        format: [1123, 794]
+      });
+      pdf.addImage(imgData, "PNG", 0, 0, 1123, 794);
+      pdf.save(`certificate-${playerData.fullName.toLowerCase().replace(/\s+/g, "-")}.pdf`);
+      toast.success("PDF Certificate downloaded successfully!", { id: "pdf-gen" });
+    } catch (error) {
+      console.error("PDF generation failed:", error);
+      toast.error("Failed to generate PDF. Please try printing/saving instead.", { id: "pdf-gen" });
+    }
+  };
+
+  const handlePrintCustom = (settings: any) => {
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) return;
+
+    let themeStyles = "";
+    if (settings.theme === "neon") {
+      themeStyles = `
+        body { background-color: #0d0d0d; }
+        .certificate-container {
+          border: 4px solid #00FF62;
+          background-color: #111111;
+          box-shadow: 0 0 25px rgba(0, 255, 98, 0.2);
+        }
+        .academy-header { color: #00FF62; }
+        .player-name { color: #00FF62; border-bottom: 2px solid #00FF62; }
+        .highlight-text { color: #00FF62; }
+        .detail-val { color: #00FF62; }
+        .seal-decor { border: 2px solid #00FF62; color: #00FF62; }
+      `;
+    } else if (settings.theme === "sapphire") {
+      themeStyles = `
+        body { background-color: #050b18; }
+        .certificate-container {
+          border: 12px double #1e40af;
+          background-color: #0b132b;
+          box-shadow: 0 0 25px rgba(30, 58, 138, 0.3);
+        }
+        .academy-header { color: #60a5fa; }
+        .player-name { color: #60a5fa; border-bottom: 2px solid #1e40af; }
+        .highlight-text { color: #d4af37; }
+        .detail-val { color: #60a5fa; }
+        .seal-decor { border: 2px solid #1e40af; color: #60a5fa; }
+      `;
+    } else if (settings.theme === "crimson") {
+      themeStyles = `
+        body { background-color: #010101; }
+        .certificate-container {
+          border: 4px solid #E31B23;
+          background-color: #020202;
+          box-shadow: 0 0 25px rgba(227, 27, 35, 0.2);
+        }
+        .academy-header { color: #E31B23; }
+        .player-name { color: #E31B23; border-bottom: 2px solid #E31B23; }
+        .highlight-text { color: #E31B23; }
+        .detail-val { color: #E31B23; }
+        .seal-decor { border: 2px solid #E31B23; color: #E31B23; }
+      `;
+    } else {
+      themeStyles = `
+        body { background-color: #030303; }
+        .certificate-container {
+          border: 12px double #d4af37;
+          background-color: #0a0a0a;
+          box-shadow: 0 0 35px rgba(212, 175, 55, 0.2);
+        }
+        .academy-header { color: #d4af37; }
+        .player-name { color: #d4af37; border-bottom: 2px solid #d4af37; }
+        .highlight-text { color: #d4af37; }
+        .detail-val { color: #d4af37; }
+        .seal-decor { border: 2px solid #d4af37; color: #d4af37; }
+      `;
+    }
+
+    const showLogo = settings.showLogo;
+    const logoPlacement = settings.logoPlacement;
+    
+    let logoHtmlTop = "";
+    let logoHtmlBottom = "";
+    let logoHtmlWatermark = "";
+
+    if (showLogo) {
+      const logoTag = `<img src="/logo.png" alt="Website Logo" style="height: 35px; width: auto; object-fit: contain; margin-bottom: 5px;" />`;
+      if (logoPlacement === "top") {
+        logoHtmlTop = `<div style="margin-bottom: 10px; display: flex; justify-content: center; align-items: center;">${logoTag}</div>`;
+      } else if (logoPlacement === "bottom") {
+        logoHtmlBottom = `<div style="margin-top: 15px; margin-bottom: 10px; display: flex; justify-content: center; align-items: center;">${logoTag}</div>`;
+      } else if (logoPlacement === "watermark") {
+        logoHtmlWatermark = `
+          <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.05; pointer-events: none; z-index: 0; width: 450px; height: 450px; display: flex; justify-content: center; align-items: center;">
+            <img src="/logo.png" style="width: 100%; height: auto; object-fit: contain;" />
+          </div>
+        `;
+      }
+    }
+
+    let statsGridHtml = "";
+    if (settings.showStats) {
+      statsGridHtml = `
+        <div style="display: flex; gap: 15px; justify-content: center; margin-top: 10px; margin-bottom: 10px; font-size: 10px; z-index: 10;">
+          <span>PAC: <b>${playerData.strengths.pace}</b></span>
+          <span>SHO: <b>${playerData.strengths.shooting}</b></span>
+          <span>PAS: <b>${playerData.strengths.passing}</b></span>
+          <span>DRI: <b>${playerData.strengths.dribbling}</b></span>
+          <span>DEF: <b>${playerData.strengths.defending}</b></span>
+          <span>PHY: <b>${playerData.strengths.physical}</b></span>
+        </div>
+      `;
+    }
+
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>Certificate of Verification - ${playerData.fullName}</title>
+          <style>
+            @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Playfair+Display:ital,wght@0,700;1,400&family=Inter:wght@400;600&display=swap');
+            body {
+              margin: 0;
+              padding: 20px;
+              color: #ffffff;
+              font-family: 'Inter', sans-serif;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              height: 100vh;
+              box-sizing: border-box;
+            }
+            .certificate-container {
+              width: 800px;
+              height: 560px;
+              padding: 35px 45px;
+              border-radius: 8px;
+              box-sizing: border-box;
+              position: relative;
+              display: flex;
+              flex-direction: column;
+              justify-content: space-between;
+              align-items: center;
+              text-align: center;
+              z-index: 5;
+            }
+            ${themeStyles}
+            .academy-header {
+              font-family: 'Cinzel', serif;
+              font-size: 13px;
+              font-weight: 700;
+              letter-spacing: 4px;
+              margin-top: 5px;
+              z-index: 10;
+            }
+            .cert-title {
+              font-family: 'Cinzel', serif;
+              font-size: 24px;
+              color: #ffffff;
+              margin: 10px 0 3px 0;
+              letter-spacing: 2px;
+              z-index: 10;
+            }
+            .cert-subtitle {
+              font-size: 10px;
+              color: #888;
+              margin-bottom: 12px;
+              letter-spacing: 1px;
+              z-index: 10;
+            }
+            .player-name {
+              font-family: 'Playfair Display', serif;
+              font-size: 32px;
+              font-weight: 700;
+              text-transform: uppercase;
+              padding-bottom: 5px;
+              margin-bottom: 12px;
+              min-width: 320px;
+              z-index: 10;
+            }
+            .cert-text {
+              font-size: 12px;
+              color: #cccccc;
+              line-height: 1.5;
+              max-width: 620px;
+              margin-bottom: 15px;
+              z-index: 10;
+            }
+            .details-grid {
+              display: grid;
+              grid-template-columns: repeat(3, 1fr);
+              width: 100%;
+              border-top: 1px solid rgba(255,255,255,0.05);
+              border-bottom: 1px solid rgba(255,255,255,0.05);
+              padding: 10px 0;
+              margin-bottom: 15px;
+              z-index: 10;
+            }
+            .detail-item {
+              display: flex;
+              flex-direction: column;
+              gap: 4px;
+            }
+            .detail-label {
+              font-size: 8px;
+              color: #666666;
+              text-transform: uppercase;
+              letter-spacing: 1.5px;
+            }
+            .detail-val {
+              font-size: 11px;
+              font-weight: 600;
+            }
+            .footer-signatures {
+              display: flex;
+              justify-content: space-between;
+              width: 100%;
+              padding: 0 30px;
+              margin-top: 10px;
+              z-index: 10;
+            }
+            .signature-block {
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              width: 180px;
+            }
+            .sig-font {
+              font-family: 'Playfair Display', serif;
+              font-style: italic;
+              font-size: 16px;
+              color: #d4af37;
+              height: 25px;
+              line-height: 25px;
+            }
+            .signature-line {
+              border-top: 1px solid rgba(255, 255, 255, 0.2);
+              width: 100%;
+              margin-top: 5px;
+              padding-top: 3px;
+              font-size: 8px;
+              color: #888888;
+              text-transform: uppercase;
+              letter-spacing: 1px;
+            }
+            .seal-decor {
+              position: absolute;
+              bottom: 25px;
+              left: 50%;
+              transform: translateX(-50%);
+              width: 45px;
+              height: 45px;
+              border-radius: 50%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              background-color: #0a0a0a;
+              font-size: 14px;
+              z-index: 10;
+            }
+
+            @media print {
+              @page {
+                size: A4 landscape;
+                margin: 0;
+              }
+              body {
+                margin: 0;
+                padding: 0;
+                background-color: #000000 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
+                height: 100vh !important;
+              }
+              .certificate-container {
+                width: 297mm !important;
+                height: 210mm !important;
+                border-radius: 0 !important;
+                margin: 0 !important;
+                padding: 20mm 25mm !important;
+                box-sizing: border-box !important;
+                box-shadow: none !important;
+                page-break-inside: avoid !important;
+                position: relative !important;
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: space-between !important;
+                align-items: center !important;
+              }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="certificate-container">
+            ${logoHtmlWatermark}
+            
+            <div style="width: 100%; display: flex; flex-direction: column; align-items: center; z-index: 10;">
+              ${logoHtmlTop}
+              <div class="academy-header">${settings.academyName}</div>
+            </div>
+            
+            <div style="z-index: 10; margin-top: -5px;">
+              <div class="cert-title">${settings.title}</div>
+              <div class="cert-subtitle">${settings.subtitle}</div>
+            </div>
+            
+            <div style="z-index: 10; margin-top: -5px;">
+              <p style="font-size: 8px; font-style: italic; color: ${settings.theme === 'neon' ? '#888' : settings.theme === 'crimson' ? '#888' : settings.theme === 'sapphire' ? '#888' : '#555'}; margin: 0; text-transform: none;">This certifies the profile of</p>
+              <div class="player-name" style="margin-top: 5px; margin-bottom: 5px;">${playerData.fullName}</div>
+              <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: ${settings.theme === 'neon' ? '#00FF62' : settings.theme === 'crimson' ? '#E31B23' : settings.theme === 'sapphire' ? '#60a5fa' : '#d4af37'};">${getVeryShortPosition(playerData.position)}</div>
+            </div>
+            
+            <div class="cert-text">
+              This document officially validates that the athletic profile, performance stats, and position maps listed on this CV have been assessed and verified. The athlete has demonstrated an exceptional overall rating of <span class="highlight-text">${settings.showRating ? playerData.rating + ' OVR' : 'VALIDATED OVR'}</span> at the level of <span class="highlight-text">${getVeryShortPosition(playerData.position)}</span>.
+            </div>
+            
+            ${statsGridHtml}
+            
+            <div class="details-grid">
+              <div class="detail-item">
+                <span class="detail-label">Current Club</span>
+                <span class="detail-val">${settings.clubName}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Assigned Coach</span>
+                <span class="detail-val">${settings.coachName}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Status</span>
+                <span class="detail-val" style="color: #4ade80;">VERIFIED PROFILE</span>
+              </div>
+            </div>
+            
+            <div class="footer-signatures">
+              <div class="signature-block">
+                <div class="sig-font" style="color: ${settings.theme === 'neon' ? '#00FF62' : settings.theme === 'crimson' ? '#E31B23' : settings.theme === 'sapphire' ? '#60a5fa' : '#d4af37'}">${settings.directorName}</div>
+                <div class="signature-line">${settings.directorTitle}</div>
+              </div>
+              
+              ${logoHtmlBottom}
+              
+              <div class="signature-block">
+                <div class="sig-font" style="color: ${settings.theme === 'neon' ? '#00FF62' : settings.theme === 'crimson' ? '#E31B23' : settings.theme === 'sapphire' ? '#60a5fa' : '#d4af37'}">${settings.coachSignName}</div>
+                <div class="signature-line">${settings.coachTitle}</div>
+              </div>
+            </div>
+            
+            <div class="seal-decor">★</div>
+          </div>
+          <script>
+            window.onload = function() {
+              window.print();
+            };
+          </script>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+  };
 
   const [editingField, setEditingField] = useState<string | null>(null);
 
@@ -640,6 +1146,26 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                       />
                     </div>
                   </div>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400">Academy</span>
+                  <CMSField
+                    value={playerData.academyName || "N/A"}
+                    onUpdate={(val) => handleUpdate("academyName", val)}
+                    canEdit={canEditBio}
+                    className="w-40 justify-end"
+                    inputClassName="text-right"
+                  />
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400">Coach</span>
+                  <CMSField
+                    value={playerData.coachName || "N/A"}
+                    onUpdate={(val) => handleUpdate("coachName", val)}
+                    canEdit={canEditBio}
+                    className="w-40 justify-end"
+                    inputClassName="text-right"
+                  />
                 </div>
               </div>
             </div>
@@ -1119,6 +1645,483 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
 
           {/* RIGHT COLUMN */}
           <div className="col-span-1 xl:col-span-4 space-y-6 bg-cardBg">
+            {/* Certification Card */}
+            <div className="p-6 border border-border/50 bg-[#151515] rounded-2xl relative overflow-hidden group hover:border-primary/20 transition-all">
+              <h2 className="text-sm font-black text-gray-500 uppercase tracking-widest mb-4">
+                Certification
+              </h2>
+              
+              {/* Outer certificate container fitting the sidebar */}
+              {(() => {
+                const t = getThemeClasses(certTheme);
+                return (
+                  <div 
+                    className={cn(
+                      "w-full aspect-[1.41] p-4 rounded-xl flex flex-col justify-between items-center text-center relative overflow-hidden select-none border-box shadow-md transition-all duration-300 text-[8px] md:text-[9px] min-h-[220px]",
+                      t.cardBg,
+                      t.cardBorder
+                    )}
+                  >
+                    {/* Watermark Logo */}
+                    {certShowLogo && certLogoPlacement === "watermark" && (
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-5 z-0">
+                        <img src="/logo.png" alt="K10 Logo Watermark" className="w-[60%] h-auto object-contain" />
+                      </div>
+                    )}
+
+                    {/* Header Section */}
+                    <div className="w-full flex flex-col items-center gap-0.5 z-10">
+                      {certShowLogo && certLogoPlacement === "top" && (
+                        <img src="/logo.png" alt="K10 Logo Top" className="h-3.5 w-auto object-contain mb-0.5" />
+                      )}
+                      <p className={cn("text-[6px] font-bold uppercase tracking-[0.25em]", t.textColor)}>
+                        {certAcademyName}
+                      </p>
+                    </div>
+
+                    {/* Title & Subtitle */}
+                    <div className="z-10 -mt-1">
+                      <h3 className={cn("text-[9px] font-heading font-black tracking-wider uppercase leading-none", t.titleColor)}>
+                        {certTitle}
+                      </h3>
+                      <p className={cn("text-[5px] uppercase tracking-widest mt-0.5 leading-none", t.subtitleColor)}>
+                        {certSubtitle}
+                      </p>
+                    </div>
+
+                    {/* Athlete Name */}
+                    <div className="z-10 -mt-1">
+                      <p className={cn("text-[5px] italic leading-none", t.subtitleColor)}>This certifies the profile of</p>
+                      <h4 className={cn("text-xs font-bold font-heading uppercase tracking-wide border-b pb-0.5 mt-0.5 px-4 inline-block leading-none", t.accentText, t.accentBorder)}>
+                        {playerData.fullName}
+                      </h4>
+                      <p className={cn("text-[6px] font-medium mt-0.5 leading-none", t.titleColor)}>
+                        {getVeryShortPosition(playerData.position)}
+                      </p>
+                    </div>
+
+                    {/* Text Description */}
+                    <p className={cn("text-[6px] max-w-[95%] leading-relaxed z-10", t.subtitleColor)}>
+                      This document officially validates that the athletic profile, performance stats, and position maps listed on this CV have been assessed and verified. The athlete has demonstrated an exceptional overall rating of <span className={cn("font-bold", t.textColor)}>{certShowRating ? playerData.rating + ' OVR' : 'VALIDATED OVR'}</span> at the level of <span className={cn("font-bold", t.textColor)}>{getVeryShortPosition(playerData.position)}</span>.
+                    </p>
+
+                    {/* Technical Stats Block */}
+                    {certShowStats && (
+                      <div className={cn("flex gap-1.5 justify-center py-0.5 px-2 rounded bg-white/5 border text-[5.5px] leading-none z-10", t.accentBorder)}>
+                        <span>PAC: <strong className={t.titleColor}>{playerData.strengths.pace}</strong></span>
+                        <span>SHO: <strong className={t.titleColor}>{playerData.strengths.shooting}</strong></span>
+                        <span>PAS: <strong className={t.titleColor}>{playerData.strengths.passing}</strong></span>
+                        <span>DRI: <strong className={t.titleColor}>{playerData.strengths.dribbling}</strong></span>
+                        <span>DEF: <strong className={t.titleColor}>{playerData.strengths.defending}</strong></span>
+                        <span>PHY: <strong className={t.titleColor}>{playerData.strengths.physical}</strong></span>
+                      </div>
+                    )}
+
+                    {/* Credentials Grid */}
+                    <div className="w-full grid grid-cols-3 border-t border-b py-1 my-0.5 border-white/5 text-[6px] leading-none z-10">
+                      <div className="flex flex-col">
+                        <span className="text-[5px] text-gray-500 uppercase tracking-wider">Current Club</span>
+                        <span className={cn("font-semibold truncate max-w-[80px] mx-auto", t.titleColor)}>{certClubName}</span>
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-[5px] text-gray-500 uppercase tracking-wider">Assigned Coach</span>
+                        <span className={cn("font-semibold truncate max-w-[80px] mx-auto", t.titleColor)}>{certCoachName}</span>
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-[5px] text-gray-500 uppercase tracking-wider">Status</span>
+                        <span className="font-semibold text-green-400">VERIFIED PROFILE</span>
+                      </div>
+                    </div>
+
+                    {/* Signatures */}
+                    <div className="w-full flex justify-between px-2 z-10">
+                      <div className="flex flex-col items-center w-[60px]">
+                        <span className={cn("font-heading italic text-[7px] leading-none", t.textColor)}>{certDirectorName}</span>
+                        <span className="w-full border-t border-white/20 mt-0.5 pt-0.5 text-[5px] text-gray-500 uppercase tracking-wider leading-none">{certDirectorTitle}</span>
+                      </div>
+                      
+                      {certShowLogo && certLogoPlacement === "bottom" && (
+                        <img src="/logo.png" alt="K10 Logo Bottom" className="h-3 w-auto object-contain self-end mb-0.5" />
+                      )}
+                      
+                      <div className="flex flex-col items-center w-[60px]">
+                        <span className={cn("font-heading italic text-[7px] leading-none", t.textColor)}>{certCoachSignName}</span>
+                        <span className="w-full border-t border-white/20 mt-0.5 pt-0.5 text-[5px] text-gray-500 uppercase tracking-wider leading-none">{certCoachTitle}</span>
+                      </div>
+                    </div>
+
+                    {/* Gold Seal decoration */}
+                    <div className={cn("absolute bottom-3 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full border flex items-center justify-center text-[6px] font-bold bg-[#0a0a0a] z-10", t.cardBorder, t.textColor)}>
+                      ★
+                    </div>
+
+                    {/* Not Verified Overlay */}
+                    {playerData.validationStatus !== "verified" && (
+                      <div className="absolute inset-0 bg-black/85 flex flex-col items-center justify-center p-3 z-20 backdrop-blur-xs">
+                        <div className="text-[#E31B23] font-black uppercase text-[10px] tracking-widest mb-1.5 flex items-center gap-1">
+                          <span>⚠️</span> Pending Validation
+                        </div>
+                        <p className="text-[8px] text-gray-400 max-w-[180px]">
+                          A coach must validate your CV details from the academy dashboard to unlock your certificate.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
+
+              {/* Action Buttons below the Certificate Preview */}
+              {playerData.validationStatus === "verified" && (
+                <div className="flex flex-col gap-2 mt-4">
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button
+                        className="w-full bg-primary text-black font-bold h-8 text-xs hover:bg-primary/90 flex items-center justify-center gap-2 rounded-xl"
+                        size="sm"
+                      >
+                        <Award size={14} /> Customize Certificate
+                      </Button>
+                    </DialogTrigger>
+                    
+                    <DialogContent className="max-w-5xl w-[95vw] h-[85vh] bg-[#0c0c0c] border border-border/40 text-white rounded-2xl flex flex-col p-0 overflow-hidden shadow-2xl">
+                      <DialogHeader className="p-4 border-b border-border/20 bg-[#111111] flex flex-row items-center justify-between">
+                        <DialogTitle className="text-md font-heading font-normal flex items-center gap-2">
+                          <Award className="text-primary w-5 h-5" /> 
+                          EDDIE Certificate Designer (Canva Edition)
+                        </DialogTitle>
+                      </DialogHeader>
+
+                      <div className="flex-1 flex overflow-hidden">
+                        {/* LEFT COLUMN: CONTROLS */}
+                        <div className="w-[340px] bg-[#111111] border-r border-border/20 p-5 flex flex-col overflow-y-auto space-y-6 scrollbar-thin select-none">
+                          
+                          {/* Themes */}
+                          <div className="space-y-2">
+                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest block">1. Select Template Theme</label>
+                            <div className="grid grid-cols-2 gap-2">
+                              {[
+                                { id: 'gold', name: 'Classic Gold', color: 'bg-[#d4af37]', border: 'border-[#d4af37]' },
+                                { id: 'neon', name: 'Futuristic Neon', color: 'bg-[#00FF62]', border: 'border-[#00FF62]' },
+                                { id: 'sapphire', name: 'Royal Sapphire', color: 'bg-blue-600', border: 'border-blue-600' },
+                                { id: 'crimson', name: 'Cyber Crimson', color: 'bg-[#E31B23]', border: 'border-[#E31B23]' }
+                              ].map((t) => (
+                                <button
+                                  key={t.id}
+                                  onClick={() => setCertTheme(t.id as any)}
+                                  className={cn(
+                                    "flex items-center gap-2 p-2 rounded-lg border text-left text-xs transition-all hover:bg-white/5",
+                                    certTheme === t.id ? cn("bg-white/5", t.border) : "border-border/30 bg-transparent"
+                                  )}
+                                >
+                                  <span className={cn("w-2.5 h-2.5 rounded-full shrink-0", t.color)} />
+                                  <span className="truncate">{t.name}</span>
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Certificate Details */}
+                          <div className="space-y-3">
+                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest block">2. Text & Credentials</label>
+                            
+                            <div className="space-y-1.5">
+                              <span className="text-[10px] text-gray-400">Certificate Title</span>
+                              <Input 
+                                value={certTitle}
+                                onChange={(e) => setCertTitle(e.target.value)}
+                                className="bg-[#181818] border-border/40 text-xs h-8 rounded-lg"
+                              />
+                            </div>
+                            
+                            <div className="space-y-1.5">
+                              <span className="text-[10px] text-gray-400">Subtitle</span>
+                              <Input 
+                                value={certSubtitle}
+                                onChange={(e) => setCertSubtitle(e.target.value)}
+                                className="bg-[#181818] border-border/40 text-xs h-8 rounded-lg"
+                              />
+                            </div>
+                            
+                            <div className="space-y-1.5">
+                              <span className="text-[10px] text-gray-400">Academy Name</span>
+                              <Input 
+                                value={certAcademyName}
+                                onChange={(e) => setCertAcademyName(e.target.value)}
+                                className="bg-[#181818] border-border/40 text-xs h-8 rounded-lg"
+                              />
+                            </div>
+                            
+                            <div className="space-y-1.5">
+                              <span className="text-[10px] text-gray-400">Assigned Coach</span>
+                              <Input 
+                                value={certCoachName}
+                                onChange={(e) => setCertCoachName(e.target.value)}
+                                className="bg-[#181818] border-border/40 text-xs h-8 rounded-lg"
+                              />
+                            </div>
+
+                            <div className="space-y-1.5">
+                              <span className="text-[10px] text-gray-400">Current Club</span>
+                              <Input 
+                                value={certClubName}
+                                onChange={(e) => setCertClubName(e.target.value)}
+                                className="bg-[#181818] border-border/40 text-xs h-8 rounded-lg"
+                              />
+                            </div>
+                          </div>
+
+                          {/* Signatures */}
+                          <div className="space-y-3">
+                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest block">3. Signatures Config</label>
+                            
+                            <div className="grid grid-cols-2 gap-2">
+                              <div className="space-y-1">
+                                <span className="text-[9px] text-gray-400">Director Name</span>
+                                <Input 
+                                  value={certDirectorName}
+                                  onChange={(e) => setCertDirectorName(e.target.value)}
+                                  className="bg-[#181818] border-border/40 text-[11px] h-7 rounded-lg px-2"
+                                />
+                              </div>
+                              <div className="space-y-1">
+                                <span className="text-[9px] text-gray-400">Director Title</span>
+                                <Input 
+                                  value={certDirectorTitle}
+                                  onChange={(e) => setCertDirectorTitle(e.target.value)}
+                                  className="bg-[#181818] border-border/40 text-[11px] h-7 rounded-lg px-2"
+                                />
+                              </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-2">
+                              <div className="space-y-1">
+                                <span className="text-[9px] text-gray-400">Coach Name</span>
+                                <Input 
+                                  value={certCoachSignName}
+                                  onChange={(e) => setCertCoachSignName(e.target.value)}
+                                  className="bg-[#181818] border-border/40 text-[11px] h-7 rounded-lg px-2"
+                                />
+                              </div>
+                              <div className="space-y-1">
+                                <span className="text-[9px] text-gray-400">Coach Title</span>
+                                <Input 
+                                  value={certCoachTitle}
+                                  onChange={(e) => setCertCoachTitle(e.target.value)}
+                                  className="bg-[#181818] border-border/40 text-[11px] h-7 rounded-lg px-2"
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Toggle Elements */}
+                          <div className="space-y-3 bg-white/5 p-3 rounded-lg border border-border/30">
+                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest block">4. Certificate Elements</label>
+                            
+                            <div className="flex items-center gap-2">
+                              <Checkbox 
+                                id="showRating"
+                                checked={certShowRating}
+                                onCheckedChange={(val) => setCertShowRating(!!val)}
+                                className="border-border/60"
+                              />
+                              <label htmlFor="showRating" className="text-xs text-gray-300 cursor-pointer">Show Overall Rating (OVR)</label>
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                              <Checkbox 
+                                id="showStats"
+                                checked={certShowStats}
+                                onCheckedChange={(val) => setCertShowStats(!!val)}
+                                className="border-border/60"
+                              />
+                              <label htmlFor="showStats" className="text-xs text-gray-300 cursor-pointer">Show Technical Stats</label>
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                              <Checkbox 
+                                id="showLogo"
+                                checked={certShowLogo}
+                                onCheckedChange={(val) => setCertShowLogo(!!val)}
+                                className="border-border/60"
+                              />
+                              <label htmlFor="showLogo" className="text-xs text-gray-300 cursor-pointer">Show Website Brand Logo</label>
+                            </div>
+
+                            {certShowLogo && (
+                              <div className="space-y-1 pl-6 pt-1">
+                                <span className="text-[9px] text-gray-400 block">Logo Placement</span>
+                                <select
+                                  value={certLogoPlacement}
+                                  onChange={(e) => setCertLogoPlacement(e.target.value as any)}
+                                  className="bg-[#181818] border border-border/40 text-xs h-7 rounded-lg px-2 w-full text-white outline-none focus:border-primary"
+                                >
+                                  <option value="top">Top Center</option>
+                                  <option value="bottom">Bottom Center</option>
+                                  <option value="watermark">As Watermark (Center)</option>
+                                </select>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* RIGHT COLUMN: LIVE CANVAS PREVIEW */}
+                        <div className="flex-1 bg-[#161616] p-6 flex flex-col items-center justify-between overflow-y-auto">
+                          
+                          {/* Live Canvas Certificate */}
+                          <div className="w-full flex items-center justify-center flex-1 my-2">
+                            {(() => {
+                              const t = getThemeClasses(certTheme);
+                              return (
+                                <div 
+                                  className={cn(
+                                    "w-[640px] h-[448px] p-8 rounded-xl flex flex-col justify-between items-center text-center relative overflow-hidden select-none border-box shadow-xl transition-all duration-300 scale-90 md:scale-95 lg:scale-100",
+                                    t.cardBg,
+                                    t.cardBorder
+                                  )}
+                                >
+                                  {/* Watermark Logo */}
+                                  {certShowLogo && certLogoPlacement === "watermark" && (
+                                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-5 z-0">
+                                      <img src="/logo.png" alt="K10 Logo Watermark" className="w-[320px] h-auto object-contain" />
+                                    </div>
+                                  )}
+
+                                  {/* Header Section */}
+                                  <div className="w-full flex flex-col items-center gap-1 z-10">
+                                    {certShowLogo && certLogoPlacement === "top" && (
+                                      <img src="/logo.png" alt="K10 Logo Top" className="h-6 w-auto object-contain mb-1" />
+                                    )}
+                                    <p className={cn("text-[9px] font-bold uppercase tracking-[0.25em]", t.textColor)}>
+                                      {certAcademyName}
+                                    </p>
+                                  </div>
+
+                                  {/* Title & Subtitle */}
+                                  <div className="z-10 mt-1">
+                                    <h3 className={cn("text-lg font-heading font-black tracking-wider uppercase", t.titleColor)}>
+                                      {certTitle}
+                                    </h3>
+                                    <p className={cn("text-[8px] uppercase tracking-widest mt-1", t.subtitleColor)}>
+                                      {certSubtitle}
+                                    </p>
+                                  </div>
+
+                                  {/* Athlete Name */}
+                                  <div className="my-2 z-10">
+                                    <p className={cn("text-[8px] italic", t.subtitleColor)}>This certifies the profile of</p>
+                                    <h4 className={cn("text-2xl font-bold font-heading uppercase tracking-wide border-b pb-1 mt-1 px-8 inline-block", t.accentText, t.accentBorder)}>
+                                      {playerData.fullName}
+                                    </h4>
+                                    <p className={cn("text-[10px] font-medium mt-1", t.titleColor)}>
+                                      {getVeryShortPosition(playerData.position)}
+                                    </p>
+                                  </div>
+
+                                  {/* Text Description */}
+                                  <p className={cn("text-[10px] max-w-[500px] leading-relaxed z-10", t.subtitleColor)}>
+                                    This document officially validates that the athletic profile, performance stats, and position maps listed on this CV have been assessed and verified. The athlete has demonstrated an exceptional overall rating of <span className={cn("font-bold", t.textColor)}>{certShowRating ? playerData.rating + ' OVR' : 'VALIDATED OVR'}</span> at the level of <span className={cn("font-bold", t.textColor)}>{getVeryShortPosition(playerData.position)}</span>.
+                                  </p>
+
+                                  {/* Technical Stats Block */}
+                                  {certShowStats && (
+                                    <div className={cn("flex gap-4 justify-center py-1.5 px-4 rounded-lg bg-white/5 border text-[9px] z-10", t.accentBorder)}>
+                                      <span>PAC: <strong className={t.titleColor}>{playerData.strengths.pace}</strong></span>
+                                      <span>SHO: <strong className={t.titleColor}>{playerData.strengths.shooting}</strong></span>
+                                      <span>PAS: <strong className={t.titleColor}>{playerData.strengths.passing}</strong></span>
+                                      <span>DRI: <strong className={t.titleColor}>{playerData.strengths.dribbling}</strong></span>
+                                      <span>DEF: <strong className={t.titleColor}>{playerData.strengths.defending}</strong></span>
+                                      <span>PHY: <strong className={t.titleColor}>{playerData.strengths.physical}</strong></span>
+                                    </div>
+                                  )}
+
+                                  {/* Credentials Grid */}
+                                  <div className="w-full grid grid-cols-3 border-t border-b py-2 my-1 border-white/5 text-[9px] z-10">
+                                    <div className="flex flex-col">
+                                      <span className="text-[7px] text-gray-500 uppercase tracking-wider">Current Club</span>
+                                      <span className={cn("font-semibold truncate max-w-[120px] mx-auto", t.titleColor)}>{certClubName}</span>
+                                    </div>
+                                    <div className="flex flex-col">
+                                      <span className="text-[7px] text-gray-500 uppercase tracking-wider">Assigned Coach</span>
+                                      <span className={cn("font-semibold truncate max-w-[120px] mx-auto", t.titleColor)}>{certCoachName}</span>
+                                    </div>
+                                    <div className="flex flex-col">
+                                      <span className="text-[7px] text-gray-500 uppercase tracking-wider">Status</span>
+                                      <span className="font-semibold text-green-400">VERIFIED PROFILE</span>
+                                    </div>
+                                  </div>
+
+                                  {/* Signatures */}
+                                  <div className="w-full flex justify-between px-6 z-10">
+                                    <div className="flex flex-col items-center w-[120px]">
+                                      <span className={cn("font-heading italic text-[11px]", t.textColor)}>{certDirectorName}</span>
+                                      <span className="w-full border-t border-white/20 mt-1 pt-1 text-[7px] text-gray-500 uppercase tracking-wider">{certDirectorTitle}</span>
+                                    </div>
+                                    
+                                    {certShowLogo && certLogoPlacement === "bottom" && (
+                                      <img src="/logo.png" alt="K10 Logo Bottom" className="h-6 w-auto object-contain self-end mb-1" />
+                                    )}
+                                    
+                                    <div className="flex flex-col items-center w-[120px]">
+                                      <span className={cn("font-heading italic text-[11px]", t.textColor)}>{certCoachSignName}</span>
+                                      <span className="w-full border-t border-white/20 mt-1 pt-1 text-[7px] text-gray-500 uppercase tracking-wider">{certCoachTitle}</span>
+                                    </div>
+                                  </div>
+
+                                  {/* Gold Seal decoration */}
+                                  <div className={cn("absolute bottom-6 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full border flex items-center justify-center text-xs font-bold bg-[#0a0a0a] z-10", t.cardBorder, t.textColor)}>
+                                    ★
+                                  </div>
+                                </div>
+                              );
+                            })()}
+                          </div>
+
+                          {/* Control Bar Actions */}
+                          <div className="w-full border-t border-border/20 pt-4 flex justify-end gap-3 mt-auto">
+                            <DialogTrigger asChild>
+                              <Button variant="ghost" className="text-gray-400 hover:text-white text-xs hover:bg-transparent">
+                                Close Designer
+                              </Button>
+                            </DialogTrigger>
+                            <Button
+                              onClick={() => handlePrintCustom({
+                                theme: certTheme,
+                                title: certTitle,
+                                subtitle: certSubtitle,
+                                academyName: certAcademyName,
+                                coachName: certCoachName,
+                                clubName: certClubName,
+                                directorName: certDirectorName,
+                                directorTitle: certDirectorTitle,
+                                coachSignName: certCoachSignName,
+                                coachTitle: certCoachTitle,
+                                showRating: certShowRating,
+                                showStats: certShowStats,
+                                showLogo: certShowLogo,
+                                logoPlacement: certLogoPlacement
+                              })}
+                              className="bg-primary text-black font-bold text-xs px-6 hover:bg-primary/90 flex items-center gap-2 rounded-xl"
+                            >
+                              <Printer size={14} /> Print Certificate
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+
+                  <Button
+                    onClick={handleDownloadPdf}
+                    className="w-full bg-transparent hover:bg-white/5 border border-border/50 text-white font-bold h-8 text-xs flex items-center justify-center gap-2 rounded-xl"
+                    size="sm"
+                  >
+                    <Download size={14} /> Download Certificate (A4 PDF)
+                  </Button>
+                </div>
+              )}
+            </div>
+
+
             <div className="p-6">
               <h2 className="text-lg text-center font-heading font-normal mb-4">
                 Strength
@@ -1424,6 +2427,218 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
               </div>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Hidden high-res certificate container for direct PDF download */}
+      <div 
+        ref={certificateRef}
+        style={{
+          position: 'absolute',
+          left: '-9999px',
+          top: '-9999px',
+          width: '1123px',
+          height: '794px',
+          padding: '50px 60px',
+          boxSizing: 'border-box',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          textAlign: 'center',
+          backgroundColor: getOffscreenThemeStyles(certTheme).containerBg,
+          border: getOffscreenThemeStyles(certTheme).containerBorder,
+          boxShadow: getOffscreenThemeStyles(certTheme).boxShadow,
+          color: '#ffffff',
+          fontFamily: 'Inter, sans-serif',
+          zIndex: -100,
+        }}
+      >
+        {/* Watermark Logo */}
+        {certShowLogo && certLogoPlacement === "watermark" && (
+          <div style={{
+            position: 'absolute',
+            inset: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            opacity: 0.05,
+            pointerEvents: 'none',
+            zIndex: 0
+          }}>
+            <img src="/logo.png" alt="K10 Logo Watermark" style={{ width: '450px', height: 'auto', objectFit: 'contain' }} />
+          </div>
+        )}
+
+        {/* Header Section */}
+        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 10 }}>
+          {certShowLogo && certLogoPlacement === "top" && (
+            <img src="/logo.png" alt="K10 Logo Top" style={{ height: '40px', width: 'auto', objectFit: 'contain', marginBottom: '8px' }} />
+          )}
+          <p style={{
+            fontSize: '14px',
+            fontWeight: 'bold',
+            textTransform: 'uppercase',
+            letterSpacing: '0.25em',
+            margin: 0,
+            color: getOffscreenThemeStyles(certTheme).textColor
+          }}>
+            {certAcademyName}
+          </p>
+        </div>
+
+        {/* Title & Subtitle */}
+        <div style={{ zIndex: 10, marginTop: '-10px' }}>
+          <h3 style={{
+            fontFamily: 'Cinzel, serif',
+            fontSize: '28px',
+            fontWeight: 900,
+            letterSpacing: '2px',
+            textTransform: 'uppercase',
+            margin: '0 0 4px 0',
+            color: getOffscreenThemeStyles(certTheme).titleColor
+          }}>
+            {certTitle}
+          </h3>
+          <p style={{
+            fontSize: '11px',
+            textTransform: 'uppercase',
+            letterSpacing: '0.15em',
+            margin: 0,
+            color: getOffscreenThemeStyles(certTheme).subtitleColor
+          }}>
+            {certSubtitle}
+          </p>
+        </div>
+
+        {/* Athlete Name */}
+        <div style={{ zIndex: 10, marginTop: '-10px' }}>
+          <p style={{ fontSize: '11px', fontStyle: 'italic', margin: 0, color: getOffscreenThemeStyles(certTheme).subtitleColor }}>This certifies the profile of</p>
+          <h4 style={{
+            fontFamily: 'Playfair Display, serif',
+            fontSize: '36px',
+            fontWeight: 'bold',
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+            borderBottom: `2px solid ${getOffscreenThemeStyles(certTheme).textColor}`,
+            paddingBottom: '8px',
+            marginTop: '8px',
+            paddingLeft: '32px',
+            paddingRight: '32px',
+            display: 'inline-block',
+            margin: 0,
+            color: getOffscreenThemeStyles(certTheme).accentText
+          }}>
+            {playerData.fullName}
+          </h4>
+          <p style={{
+            fontSize: '14px',
+            fontWeight: 600,
+            marginTop: '8px',
+            margin: 0,
+            color: getOffscreenThemeStyles(certTheme).titleColor
+          }}>
+            {getVeryShortPosition(playerData.position)}
+          </p>
+        </div>
+
+        {/* Text Description */}
+        <p style={{
+          fontSize: '14px',
+          maxWidth: '850px',
+          lineHeight: '1.6',
+          margin: 0,
+          zIndex: 10,
+          color: getOffscreenThemeStyles(certTheme).subtitleColor
+        }}>
+          This document officially validates that the athletic profile, performance stats, and position maps listed on this CV have been assessed and verified. The athlete has demonstrated an exceptional overall rating of <span style={{ fontWeight: 'bold', color: getOffscreenThemeStyles(certTheme).textColor }}>{certShowRating ? playerData.rating + ' OVR' : 'VALIDATED OVR'}</span> at the level of <span style={{ fontWeight: 'bold', color: getOffscreenThemeStyles(certTheme).textColor }}>{getVeryShortPosition(playerData.position)}</span>.
+        </p>
+
+        {/* Technical Stats Block */}
+        {certShowStats && (
+          <div style={{
+            display: 'flex',
+            gap: '24px',
+            justifyContent: 'center',
+            padding: '10px 24px',
+            borderRadius: '8px',
+            backgroundColor: 'rgba(255, 255, 255, 0.05)',
+            border: getOffscreenThemeStyles(certTheme).accentBorder,
+            fontSize: '13px',
+            zIndex: 10
+          }}>
+            <span>PAC: <strong style={{ color: getOffscreenThemeStyles(certTheme).titleColor }}>{playerData.strengths.pace}</strong></span>
+            <span>SHO: <strong style={{ color: getOffscreenThemeStyles(certTheme).titleColor }}>{playerData.strengths.shooting}</strong></span>
+            <span>PAS: <strong style={{ color: getOffscreenThemeStyles(certTheme).titleColor }}>{playerData.strengths.passing}</strong></span>
+            <span>DRI: <strong style={{ color: getOffscreenThemeStyles(certTheme).titleColor }}>{playerData.strengths.dribbling}</strong></span>
+            <span>DEF: <strong style={{ color: getOffscreenThemeStyles(certTheme).titleColor }}>{playerData.strengths.defending}</strong></span>
+            <span>PHY: <strong style={{ color: getOffscreenThemeStyles(certTheme).titleColor }}>{playerData.strengths.physical}</strong></span>
+          </div>
+        )}
+
+        {/* Credentials Grid */}
+        <div style={{
+          width: '100%',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(3, 1fr)',
+          borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+          padding: '14px 0',
+          margin: '10px 0',
+          fontSize: '13px',
+          zIndex: 10
+        }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <span style={{ fontSize: '10px', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Current Club</span>
+            <span style={{ fontWeight: 'semibold', color: getOffscreenThemeStyles(certTheme).titleColor }}>{certClubName}</span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <span style={{ fontSize: '10px', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Assigned Coach</span>
+            <span style={{ fontWeight: 'semibold', color: getOffscreenThemeStyles(certTheme).titleColor }}>{certCoachName}</span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <span style={{ fontSize: '10px', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Status</span>
+            <span style={{ fontWeight: 'semibold', color: '#4ade80' }}>VERIFIED PROFILE</span>
+          </div>
+        </div>
+
+        {/* Signatures */}
+        <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', padding: '0 40px', boxSizing: 'border-box', zIndex: 10 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '180px' }}>
+            <span style={{ fontFamily: 'Playfair Display, serif', fontStyle: 'italic', fontSize: '18px', color: getOffscreenThemeStyles(certTheme).textColor }}>{certDirectorName}</span>
+            <span style={{ width: '100%', borderTop: '1px solid rgba(255, 255, 255, 0.2)', marginTop: '8px', paddingTop: '4px', fontSize: '10px', color: '#888888', textTransform: 'uppercase', letterSpacing: '1px' }}>{certDirectorTitle}</span>
+          </div>
+          
+          {certShowLogo && certLogoPlacement === "bottom" && (
+            <img src="/logo.png" alt="K10 Logo Bottom" style={{ height: '35px', width: 'auto', objectFit: 'contain', alignSelf: 'flex-end', marginBottom: '8px' }} />
+          )}
+          
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '180px' }}>
+            <span style={{ fontFamily: 'Playfair Display, serif', fontStyle: 'italic', fontSize: '18px', color: getOffscreenThemeStyles(certTheme).textColor }}>{certCoachSignName}</span>
+            <span style={{ width: '100%', borderTop: '1px solid rgba(255, 255, 255, 0.2)', marginTop: '8px', paddingTop: '4px', fontSize: '10px', color: '#888888', textTransform: 'uppercase', letterSpacing: '1px' }}>{certCoachTitle}</span>
+          </div>
+        </div>
+
+        {/* Gold Seal decoration */}
+        <div style={{
+          position: 'absolute',
+          bottom: '36px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: '45px',
+          height: '45px',
+          borderRadius: '50%',
+          border: `2px solid ${getOffscreenThemeStyles(certTheme).textColor}`,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#0a0a0a',
+          fontSize: '16px',
+          fontWeight: 'bold',
+          color: getOffscreenThemeStyles(certTheme).textColor,
+          zIndex: 10
+        }}>
+          ★
         </div>
       </div>
     </>

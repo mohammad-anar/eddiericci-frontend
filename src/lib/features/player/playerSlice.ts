@@ -85,6 +85,8 @@ export interface PlayerData {
   positionMap?: any;
   positionMarkers: Marker[];
   futsalMarkers: Marker[];
+  coachName?: string;
+  academyName?: string;
 }
 
 export interface Marker {
@@ -288,6 +290,8 @@ const basePlayerData: PlayerData = {
   positionMap: positionMap,
   positionMarkers: [{ id: "1", x: 50, y: 50 }],
   futsalMarkers: [{ id: "1", x: 50, y: 50 }],
+  coachName: "Pep Guardiola",
+  academyName: "Manchester City Academy",
 };
 
 export interface PlayerSliceState {
@@ -310,7 +314,9 @@ const createMockPlayer = (
   validationStatus: "pending" | "verified" | "expired" | "not_needed",
   assignedMonthsAgo?: number,
   requestedValidation?: boolean,
-  lastValidatedDate?: string
+  lastValidatedDate?: string,
+  coachName?: string,
+  academyName?: string
 ) => {
   // Clone base categories
   const categories = JSON.parse(JSON.stringify(basePlayerData.skillsCategories));
@@ -333,6 +339,8 @@ const createMockPlayer = (
     requestedValidation,
     lastValidatedDate,
     skillsCategories: categories,
+    coachName: coachName || "N/A",
+    academyName: academyName || "N/A",
     // Add variations to make stats realistic
     strengths: {
       pace: Math.min(100, rating + 5),
@@ -349,21 +357,21 @@ const createMockPlayer = (
 };
 
 const playersDataList = [
-  createMockPlayer(1, "Marcus Silva", "Defensive Midfielder", "France", 88, "verified", 1, false),
-  createMockPlayer(2, "David Chen", "Forward", "China", 74, "pending", 4, false),
-  createMockPlayer(3, "Alex Jonson", "Defender", "United Kingdom", 52, "pending", 1, true),
-  createMockPlayer(4, "James Brown", "Goalkeeper", "United States", 68, "expired", 2, false, "2026-01-10"),
-  createMockPlayer(5, "Lucas Hernandez", "Forward", "Spain", 84, "verified", 2, false),
-  createMockPlayer(6, "Yuki Tanaka", "Midfielder", "Japan", 48, "pending", 5, false),
-  createMockPlayer(7, "Gabriel Barbosa", "Forward", "Brazil", 82, "pending", 1, true),
-  createMockPlayer(8, "Mateo Kovacic", "Midfielder", "Croatia", 78, "verified", 1, false),
-  createMockPlayer(9, "Kofi Mensah", "Defender", "Ghana", 56, "verified", 2, false),
-  createMockPlayer(10, "Liam O'Connor", "Goalkeeper", "Ireland", 71, "pending", 6, false),
-  createMockPlayer(11, "Antoine Dupont", "Midfielder", "France", 86, "expired", 2, false, "2026-02-15"),
-  createMockPlayer(12, "Santi Cazorla", "Forward", "Spain", 65, "verified", 1, false),
-  createMockPlayer(13, "Ivan Petrovic", "Defender", "Serbia", 45, "verified", 2, false),
-  createMockPlayer(14, "Diego Maradona", "Forward", "Argentina", 92, "verified", 1, false),
-  createMockPlayer(15, "John Doe", "Midfielder", "United States", 79, "pending", 1, true),
+  createMockPlayer(1, "Marcus Silva", "Defensive Midfielder", "France", 88, "verified", 1, false, undefined, "Pep Guardiola", "Manchester City Academy"),
+  createMockPlayer(2, "David Chen", "Forward", "China", 74, "pending", 4, false, undefined, "Zheng Zhi", "Guangzhou Youth Academy"),
+  createMockPlayer(3, "Alex Jonson", "Defender", "United Kingdom", 52, "pending", 1, true, undefined, "Frank Lampard", "Chelsea Academy"),
+  createMockPlayer(4, "James Brown", "Goalkeeper", "United States", 68, "expired", 2, false, "2026-01-10", "Greg Vanney", "LA Galaxy Academy"),
+  createMockPlayer(5, "Lucas Hernandez", "Forward", "Spain", 84, "verified", 2, false, undefined, "Raul Gonzalez", "Real Madrid Academy"),
+  createMockPlayer(6, "Yuki Tanaka", "Midfielder", "Japan", 48, "pending", 5, false, undefined, "N/A", "N/A"),
+  createMockPlayer(7, "Gabriel Barbosa", "Forward", "Brazil", 82, "pending", 1, true, undefined, "Filipe Luis", "Flamengo Academy"),
+  createMockPlayer(8, "Mateo Kovacic", "Midfielder", "Croatia", 78, "verified", 1, false, undefined, "Zlatko Dalic", "Dinamo Zagreb Academy"),
+  createMockPlayer(9, "Kofi Mensah", "Defender", "Ghana", 56, "verified", 2, false, undefined, "N/A", "Right to Dream Academy"),
+  createMockPlayer(10, "Liam O'Connor", "Goalkeeper", "Ireland", 71, "pending", 6, false, undefined, "Roy Keane", "Irish Elite Academy"),
+  createMockPlayer(11, "Antoine Dupont", "Midfielder", "France", 86, "expired", 2, false, "2026-02-15", "Didier Deschamps", "INF Clairefontaine"),
+  createMockPlayer(12, "Santi Cazorla", "Forward", "Spain", 65, "verified", 1, false, undefined, "Unai Emery", "Villarreal Academy"),
+  createMockPlayer(13, "Ivan Petrovic", "Defender", "Serbia", 45, "verified", 2, false, undefined, "N/A", "Red Star Belgrade Academy"),
+  createMockPlayer(14, "Diego Maradona", "Forward", "Argentina", 92, "verified", 1, false, undefined, "N/A", "Argentinos Juniors Academy"),
+  createMockPlayer(15, "John Doe", "Midfielder", "United States", 79, "pending", 1, true, undefined, "Gregg Berhalter", "US Soccer DA"),
 ];
 
 const initialState: PlayerSliceState = {

@@ -47,7 +47,7 @@ export interface CoachData {
   majorTrophies: { name: string; count: number }[];
   cupHistory: string[];
   keySkills: { id: number; text: string; icon?: string }[];
-  clubs: { id: string; name: string; from: string; to: string; logo?: any }[];
+  clubs: { id: string; name: string; from: string; to: string; logo?: any; color?: string }[];
   qualifications: { id: number; text: string; icon?: string }[];
   coachImage: any;
   mainFlag: any;

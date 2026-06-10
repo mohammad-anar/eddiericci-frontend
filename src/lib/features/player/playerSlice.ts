@@ -89,6 +89,8 @@ export interface PlayerData {
   academyName?: string;
   coachLicenseNumber?: string;
   clubManaged?: string;
+  evaluation?: any;
+  evaluationDate?: string;
 }
 
 export interface Marker {
@@ -298,14 +300,16 @@ const basePlayerData: PlayerData = {
   clubManaged: "Manchester City Academy",
 };
 
+export interface PlayerStateItem extends PlayerData {
+  id: number;
+  validationStatus: "pending" | "verified" | "expired" | "not_needed";
+  assignedMonthsAgo?: number;
+  requestedValidation?: boolean;
+  lastValidatedDate?: string;
+}
+
 export interface PlayerSliceState {
-  players: (PlayerData & {
-    id: number;
-    validationStatus: "pending" | "verified" | "expired" | "not_needed";
-    assignedMonthsAgo?: number;
-    requestedValidation?: boolean;
-    lastValidatedDate?: string;
-  })[];
+  players: PlayerStateItem[];
   selectedPlayerId: number;
 }
 
@@ -423,6 +427,13 @@ export const playerSlice = createSlice({
         player.assignedMonthsAgo = 0; // reset assignment counter
       }
     },
+    savePlayerEvaluation: (state, action: PayloadAction<{ id: number; evaluation: any; date: string }>) => {
+      const player = state.players.find((p) => p.id === action.payload.id);
+      if (player) {
+        player.evaluation = action.payload.evaluation;
+        player.evaluationDate = action.payload.date;
+      }
+    },
   },
 });
 
@@ -431,6 +442,7 @@ export const {
   updatePlayerField,
   setSelectedPlayerId,
   validatePlayerCv,
+  savePlayerEvaluation,
 } = playerSlice.actions;
 
 export default playerSlice.reducer;

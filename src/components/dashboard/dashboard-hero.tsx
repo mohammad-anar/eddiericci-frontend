@@ -16,7 +16,7 @@ interface DashboardHeroProps {
     label: string;
     value: string;
   }[];
-  characterImage?: string;
+  characterImage?: any;
   logoImage?: string;
 }
 
@@ -31,6 +31,10 @@ export const DashboardHero = ({
   characterImage,
   logoImage,
 }: DashboardHeroProps) => {
+  const characterImgSrc = characterImage
+    ? (typeof characterImage === "string" ? characterImage : (characterImage.src || ""))
+    : "";
+
   const getIcon = (type: string) => {
     switch (type) {
       case "phone": return <IconPhone size={22} />;
@@ -51,9 +55,9 @@ export const DashboardHero = ({
       <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent w-2/3" />
       
       {/* Standing Character */}
-      {characterImage && (
+      {characterImgSrc && (
         <img 
-          src={characterImage} 
+          src={characterImgSrc} 
           alt="Character" 
           className="absolute right-16 bottom-6 h-[88%] object-contain object-right z-10 hidden lg:block"
         />

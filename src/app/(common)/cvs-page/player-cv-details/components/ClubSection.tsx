@@ -3,7 +3,7 @@ import React, { useState, useRef } from 'react';
 import { usePlayer } from '@/lib/hooks/usePlayer';
 import { CMSField } from '@/components/shared/CMSField';
 import { cn } from '@/lib/utils';
-import { Plus, Trash2, X, Check, Info, Upload, Image as ImageIcon } from 'lucide-react';
+import { Plus, Trash2, X, Check, Info, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
@@ -43,7 +43,7 @@ const ClubSection = () => {
     }
   };
 
-  const updateClub = (id: string, field: string, value: any) => {
+  const updateClub = (id: string, field: string, value: string | number | object | null) => {
     const newClubs = playerData.clubs.map(club =>
       club.id === id ? { ...club, [field]: value } : club
     );
@@ -130,7 +130,7 @@ const ClubSection = () => {
                   club.color || "border-primary"
                 )}>
                   <Image
-                    src={(club.logo && !club.logo.startsWith('bg-')) ? club.logo : club1}
+                    src={(club.logo && (typeof club.logo === 'string' ? !club.logo.startsWith('bg-') : true)) ? club.logo : club1}
                     alt={club.name}
                     width={80}
                     height={80}

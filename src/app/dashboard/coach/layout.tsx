@@ -8,7 +8,8 @@ import {
   IconSettings,
   IconUsers,
   IconReport,
-  IconUserCheck
+  IconUserCheck,
+  IconClipboardCheck
 } from "@tabler/icons-react";
 import { ReactNode, useState, createContext } from "react";
 
@@ -29,6 +30,7 @@ const coachSidebarItemsWithAcademy = [
   { name: "My Teams", url: "/dashboard/coach/my-teams", icon: IconUsers },
   { name: "Game Reports", url: "/dashboard/coach/game-reports", icon: IconReport },
   { name: "Player CV Validations", url: "/dashboard/coach/player-cv-validations", icon: IconUserCheck },
+  { name: "Player Evaluation", url: "/dashboard/coach/player-evaluation", icon: IconClipboardCheck },
   { name: "Analytics", url: "/dashboard/coach/analytics", icon: IconChartBar },
   { name: "Settings", url: "/dashboard/coach/settings", icon: IconSettings },
 ];

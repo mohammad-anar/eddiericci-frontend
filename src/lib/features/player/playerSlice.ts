@@ -87,6 +87,8 @@ export interface PlayerData {
   futsalMarkers: Marker[];
   coachName?: string;
   academyName?: string;
+  coachLicenseNumber?: string;
+  clubManaged?: string;
 }
 
 export interface Marker {
@@ -292,6 +294,8 @@ const basePlayerData: PlayerData = {
   futsalMarkers: [{ id: "1", x: 50, y: 50 }],
   coachName: "Pep Guardiola",
   academyName: "Manchester City Academy",
+  coachLicenseNumber: "CBF-2026-4587",
+  clubManaged: "Manchester City Academy",
 };
 
 export interface PlayerSliceState {
@@ -341,6 +345,8 @@ const createMockPlayer = (
     skillsCategories: categories,
     coachName: coachName || "N/A",
     academyName: academyName || "N/A",
+    coachLicenseNumber: "CBF-2026-4587",
+    clubManaged: academyName || "Atlético Nacional",
     // Add variations to make stats realistic
     strengths: {
       pace: Math.min(100, rating + 5),

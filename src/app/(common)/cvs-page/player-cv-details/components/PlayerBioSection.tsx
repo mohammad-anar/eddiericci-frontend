@@ -1,9 +1,45 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import badge1 from "@/assets/cvs-page/id/badge-image1.png";
-import badge2 from "@/assets/cvs-page/id/badge-image2.png";
-import badge3 from "@/assets/cvs-page/id/badge-image3.png";
 import positionMap from "@/assets/cvs-page/id/position-map.png";
+import technicalIcon from "@/assets/cvs-page/id/player-styles-icons/technical.png";
+import finesseShotIcon from "@/assets/cvs-page/id/player-styles-icons/finesse shot.png";
+import incisivePassIcon from "@/assets/cvs-page/id/player-styles-icons/incisiver pass.png";
+import longBallIcon from "@/assets/cvs-page/id/player-styles-icons/long ball specialist.png";
+import speedsterIcon from "@/assets/cvs-page/id/player-styles-icons/speedster.png";
+import powerHeaderIcon from "@/assets/cvs-page/id/player-styles-icons/power header.png";
+import interceptorIcon from "@/assets/cvs-page/id/player-styles-icons/interceptor.png";
+import blockIcon from "@/assets/cvs-page/id/player-styles-icons/block specialist.png";
+import clinicalFinisherIcon from "@/assets/cvs-page/id/player-styles-icons/clinical finisher.png";
+import dribblingIcon from "@/assets/cvs-page/id/player-styles-icons/dribbling wizard.png";
+import setPieceIcon from "@/assets/cvs-page/id/player-styles-icons/set piece specialist.png";
+import playmakerIcon from "@/assets/cvs-page/id/player-styles-icons/playmark.png";
+import acrobaticIcon from "@/assets/cvs-page/id/player-styles-icons/acrobatic.png";
+import deadballIcon from "@/assets/cvs-page/id/player-styles-icons/dead ball specialist.png";
+import relentlessIcon from "@/assets/cvs-page/id/player-styles-icons/relentless.png";
+import quickStepIcon from "@/assets/cvs-page/id/player-styles-icons/quick step.png";
+import tricksterIcon from "@/assets/cvs-page/id/player-styles-icons/trickster.png";
+import whippedCrossIcon from "@/assets/cvs-page/id/player-styles-icons/whipped cross.png";
+
+const STYLE_ICONS: Record<string, any> = {
+  "technical": technicalIcon,
+  "finesse-shot": finesseShotIcon,
+  "incisive-pass": incisivePassIcon,
+  "long-ball": longBallIcon,
+  "speedster": speedsterIcon,
+  "power-header": powerHeaderIcon,
+  "interceptor": interceptorIcon,
+  "block": blockIcon,
+  "clinical-finisher": clinicalFinisherIcon,
+  "dribbling": dribblingIcon,
+  "set-piece": setPieceIcon,
+  "playmaker": playmakerIcon,
+  "acrobatic": acrobaticIcon,
+  "deadball": deadballIcon,
+  "relentless": relentlessIcon,
+  "quick-step": quickStepIcon,
+  "trickster": tricksterIcon,
+  "whipped-cross": whippedCrossIcon,
+};
 import positionIcon from "@/assets/cvs-page/id/positionIcon.png";
 import trofeeIcon from "@/assets/cvs-page/id/trofeeIcon.png";
 import { CMSField } from "@/components/shared/CMSField";
@@ -21,13 +57,11 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { usePlayer } from "@/lib/hooks/usePlayer";
 import { cn, getShortForm, getFullWithShortForm, getVeryShortPosition } from "@/lib/utils";
-import { PencilIcon, Award, Printer, Download } from "lucide-react";
+import { PencilIcon } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { usePlayerStats } from "./FullEditablePage";
-import html2canvas from "html2canvas";
-import { jsPDF } from "jspdf";
 
 const ALL_STYLES = [
   { id: "technical", label: "Technical" },
@@ -263,513 +297,10 @@ const getMarkersForPosition = (position: string, isFutsal: boolean) => {
   }));
 };
 
-const getThemeClasses = (theme: string) => {
-  switch (theme) {
-    case 'neon':
-      return {
-        cardBorder: "border-2 border-[#00FF62]/40 shadow-[0_0_20px_rgba(0,255,98,0.2)]",
-        cardBg: "bg-[#111111]",
-        textColor: "text-[#00FF62]",
-        titleColor: "text-white",
-        subtitleColor: "text-gray-400",
-        badgeBg: "bg-[#00FF62]/10 border-[#00FF62]/30 text-[#00FF62]",
-        accentBorder: "border-[#00FF62]/30",
-        accentText: "text-[#00FF62]",
-        watermarkColor: "text-[#00FF62]/5",
-      };
-    case 'sapphire':
-      return {
-        cardBorder: "border-4 border-double border-[#1e40af]/60 shadow-[0_0_25px_rgba(30,58,138,0.25)]",
-        cardBg: "bg-[#0b132b]",
-        textColor: "text-[#60a5fa]",
-        titleColor: "text-white",
-        subtitleColor: "text-gray-400",
-        badgeBg: "bg-blue-900/25 border-blue-500/30 text-[#60a5fa]",
-        accentBorder: "border-[#1e40af]/30",
-        accentText: "text-[#d4af37]",
-        watermarkColor: "text-[#1e40af]/5",
-      };
-    case 'crimson':
-      return {
-        cardBorder: "border-2 border-[#E31B23]/40 shadow-[0_0_20px_rgba(227,27,35,0.2)]",
-        cardBg: "bg-[#020202]",
-        textColor: "text-[#E31B23]",
-        titleColor: "text-white",
-        subtitleColor: "text-gray-400",
-        badgeBg: "bg-[#E31B23]/10 border-[#E31B23]/30 text-[#E31B23]",
-        accentBorder: "border-[#E31B23]/30",
-        accentText: "text-[#E31B23]",
-        watermarkColor: "text-[#E31B23]/5",
-      };
-    case 'gold':
-    default:
-      return {
-        cardBorder: "border-4 border-double border-[#d4af37]/60 shadow-[0_0_20px_rgba(212,175,55,0.1)]",
-        cardBg: "bg-[#0a0a0a]",
-        textColor: "text-[#d4af37]",
-        titleColor: "text-white",
-        subtitleColor: "text-gray-500",
-        badgeBg: "bg-[#d4af37]/10 border-[#d4af37]/30 text-[#d4af37]",
-        accentBorder: "border-white/5",
-        accentText: "text-[#d4af37]",
-        watermarkColor: "text-[#d4af37]/5",
-      };
-  }
-};
-
 const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
   const { playerData, handleUpdate } = usePlayer();
 
   const { setBioRating, role } = usePlayerStats();
-
-  // Canva Certificate Designer States
-  const [certTheme, setCertTheme] = useState<'gold' | 'neon' | 'sapphire' | 'crimson'>('gold');
-  const [certTitle, setCertTitle] = useState('CERTIFICATE OF CV VALIDATION');
-  const [certSubtitle, setCertSubtitle] = useState('PROFESSIONAL ATHLETIC RECORD');
-  const [certAcademyName, setCertAcademyName] = useState('EDDIE SOCCER ACADEMY');
-  const [certCoachName, setCertCoachName] = useState('N/A');
-  const [certClubName, setCertClubName] = useState('N/A');
-  const [certDirectorName, setCertDirectorName] = useState('John Doe');
-  const [certDirectorTitle, setCertDirectorTitle] = useState('Academy Director');
-  const [certCoachSignName, setCertCoachSignName] = useState('Marcus Silva');
-  const [certCoachTitle, setCertCoachTitle] = useState('Authorized Coach');
-  const [certShowRating, setCertShowRating] = useState(true);
-  const [certShowStats, setCertShowStats] = useState(true);
-  const [certShowLogo, setCertShowLogo] = useState(true);
-  const [certLogoPlacement, setCertLogoPlacement] = useState<'top' | 'bottom' | 'watermark'>('top');
-
-  useEffect(() => {
-    if (playerData) {
-      setCertAcademyName(playerData.academyName || "EDDIE SOCCER ACADEMY");
-      setCertCoachName(playerData.coachName || "N/A");
-      setCertClubName(playerData.clubs?.[0]?.name || "N/A");
-      setCertCoachSignName(playerData.coachName || "Marcus Silva");
-    }
-  }, [playerData]);
-
-  const certificateRef = useRef<HTMLDivElement>(null);
-
-  const getOffscreenThemeStyles = (theme: string) => {
-    switch (theme) {
-      case 'neon':
-        return {
-          containerBorder: "4px solid #00FF62",
-          containerBg: "#111111",
-          boxShadow: "0 0 25px rgba(0, 255, 98, 0.2)",
-          textColor: "#00FF62",
-          titleColor: "#ffffff",
-          subtitleColor: "#a3a3a3",
-          accentBorder: "1px solid rgba(0, 255, 98, 0.3)",
-          accentText: "#00FF62",
-        };
-      case 'sapphire':
-        return {
-          containerBorder: "12px double #1e40af",
-          containerBg: "#0b132b",
-          boxShadow: "0 0 25px rgba(30, 58, 138, 0.3)",
-          textColor: "#60a5fa",
-          titleColor: "#ffffff",
-          subtitleColor: "#a3a3a3",
-          accentBorder: "1px solid rgba(30, 58, 138, 0.3)",
-          accentText: "#d4af37",
-        };
-      case 'crimson':
-        return {
-          containerBorder: "4px solid #E31B23",
-          containerBg: "#020202",
-          boxShadow: "0 0 25px rgba(227, 27, 35, 0.2)",
-          textColor: "#E31B23",
-          titleColor: "#ffffff",
-          subtitleColor: "#a3a3a3",
-          accentBorder: "1px solid rgba(227, 27, 35, 0.3)",
-          accentText: "#E31B23",
-        };
-      case 'gold':
-      default:
-        return {
-          containerBorder: "12px double #d4af37",
-          containerBg: "#0a0a0a",
-          boxShadow: "0 0 35px rgba(212, 175, 55, 0.2)",
-          textColor: "#d4af37",
-          titleColor: "#ffffff",
-          subtitleColor: "#6b7280",
-          accentBorder: "1px solid rgba(255, 255, 255, 0.05)",
-          accentText: "#d4af37",
-        };
-    }
-  };
-
-  const handleDownloadPdf = async () => {
-    if (!certificateRef.current) return;
-    try {
-      toast.loading("Generating high-resolution PDF... Please wait.", { id: "pdf-gen" });
-      const canvas = await html2canvas(certificateRef.current, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: null
-      });
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF({
-        orientation: "landscape",
-        unit: "px",
-        format: [1123, 794]
-      });
-      pdf.addImage(imgData, "PNG", 0, 0, 1123, 794);
-      pdf.save(`certificate-${playerData.fullName.toLowerCase().replace(/\s+/g, "-")}.pdf`);
-      toast.success("PDF Certificate downloaded successfully!", { id: "pdf-gen" });
-    } catch (error) {
-      console.error("PDF generation failed:", error);
-      toast.error("Failed to generate PDF. Please try printing/saving instead.", { id: "pdf-gen" });
-    }
-  };
-
-  const handlePrintCustom = (settings: any) => {
-    const printWindow = window.open("", "_blank");
-    if (!printWindow) return;
-
-    let themeStyles = "";
-    if (settings.theme === "neon") {
-      themeStyles = `
-        body { background-color: #0d0d0d; }
-        .certificate-container {
-          border: 4px solid #00FF62;
-          background-color: #111111;
-          box-shadow: 0 0 25px rgba(0, 255, 98, 0.2);
-        }
-        .academy-header { color: #00FF62; }
-        .player-name { color: #00FF62; border-bottom: 2px solid #00FF62; }
-        .highlight-text { color: #00FF62; }
-        .detail-val { color: #00FF62; }
-        .seal-decor { border: 2px solid #00FF62; color: #00FF62; }
-      `;
-    } else if (settings.theme === "sapphire") {
-      themeStyles = `
-        body { background-color: #050b18; }
-        .certificate-container {
-          border: 12px double #1e40af;
-          background-color: #0b132b;
-          box-shadow: 0 0 25px rgba(30, 58, 138, 0.3);
-        }
-        .academy-header { color: #60a5fa; }
-        .player-name { color: #60a5fa; border-bottom: 2px solid #1e40af; }
-        .highlight-text { color: #d4af37; }
-        .detail-val { color: #60a5fa; }
-        .seal-decor { border: 2px solid #1e40af; color: #60a5fa; }
-      `;
-    } else if (settings.theme === "crimson") {
-      themeStyles = `
-        body { background-color: #010101; }
-        .certificate-container {
-          border: 4px solid #E31B23;
-          background-color: #020202;
-          box-shadow: 0 0 25px rgba(227, 27, 35, 0.2);
-        }
-        .academy-header { color: #E31B23; }
-        .player-name { color: #E31B23; border-bottom: 2px solid #E31B23; }
-        .highlight-text { color: #E31B23; }
-        .detail-val { color: #E31B23; }
-        .seal-decor { border: 2px solid #E31B23; color: #E31B23; }
-      `;
-    } else {
-      themeStyles = `
-        body { background-color: #030303; }
-        .certificate-container {
-          border: 12px double #d4af37;
-          background-color: #0a0a0a;
-          box-shadow: 0 0 35px rgba(212, 175, 55, 0.2);
-        }
-        .academy-header { color: #d4af37; }
-        .player-name { color: #d4af37; border-bottom: 2px solid #d4af37; }
-        .highlight-text { color: #d4af37; }
-        .detail-val { color: #d4af37; }
-        .seal-decor { border: 2px solid #d4af37; color: #d4af37; }
-      `;
-    }
-
-    const showLogo = settings.showLogo;
-    const logoPlacement = settings.logoPlacement;
-
-    let logoHtmlTop = "";
-    let logoHtmlBottom = "";
-    let logoHtmlWatermark = "";
-
-    if (showLogo) {
-      const logoTag = `<img src="/logo.png" alt="Website Logo" style="height: 35px; width: auto; object-fit: contain; margin-bottom: 5px;" />`;
-      if (logoPlacement === "top") {
-        logoHtmlTop = `<div style="margin-bottom: 10px; display: flex; justify-content: center; align-items: center;">${logoTag}</div>`;
-      } else if (logoPlacement === "bottom") {
-        logoHtmlBottom = `<div style="margin-top: 15px; margin-bottom: 10px; display: flex; justify-content: center; align-items: center;">${logoTag}</div>`;
-      } else if (logoPlacement === "watermark") {
-        logoHtmlWatermark = `
-          <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.05; pointer-events: none; z-index: 0; width: 450px; height: 450px; display: flex; justify-content: center; align-items: center;">
-            <img src="/logo.png" style="width: 100%; height: auto; object-fit: contain;" />
-          </div>
-        `;
-      }
-    }
-
-    let statsGridHtml = "";
-    if (settings.showStats) {
-      statsGridHtml = `
-        <div style="display: flex; gap: 15px; justify-content: center; margin-top: 10px; margin-bottom: 10px; font-size: 10px; z-index: 10;">
-          <span>PAC: <b>${playerData.strengths.pace}</b></span>
-          <span>SHO: <b>${playerData.strengths.shooting}</b></span>
-          <span>PAS: <b>${playerData.strengths.passing}</b></span>
-          <span>DRI: <b>${playerData.strengths.dribbling}</b></span>
-          <span>DEF: <b>${playerData.strengths.defending}</b></span>
-          <span>PHY: <b>${playerData.strengths.physical}</b></span>
-        </div>
-      `;
-    }
-
-    printWindow.document.write(`
-      <html>
-        <head>
-          <title>Certificate of Verification - ${playerData.fullName}</title>
-          <style>
-            @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Playfair+Display:ital,wght@0,700;1,400&family=Inter:wght@400;600&display=swap');
-            body {
-              margin: 0;
-              padding: 20px;
-              color: #ffffff;
-              font-family: 'Inter', sans-serif;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              height: 100vh;
-              box-sizing: border-box;
-            }
-            .certificate-container {
-              width: 800px;
-              height: 560px;
-              padding: 35px 45px;
-              border-radius: 8px;
-              box-sizing: border-box;
-              position: relative;
-              display: flex;
-              flex-direction: column;
-              justify-content: space-between;
-              align-items: center;
-              text-align: center;
-              z-index: 5;
-            }
-            ${themeStyles}
-            .academy-header {
-              font-family: 'Cinzel', serif;
-              font-size: 13px;
-              font-weight: 700;
-              letter-spacing: 4px;
-              margin-top: 5px;
-              z-index: 10;
-            }
-            .cert-title {
-              font-family: 'Cinzel', serif;
-              font-size: 24px;
-              color: #ffffff;
-              margin: 10px 0 3px 0;
-              letter-spacing: 2px;
-              z-index: 10;
-            }
-            .cert-subtitle {
-              font-size: 10px;
-              color: #888;
-              margin-bottom: 12px;
-              letter-spacing: 1px;
-              z-index: 10;
-            }
-            .player-name {
-              font-family: 'Playfair Display', serif;
-              font-size: 32px;
-              font-weight: 700;
-              text-transform: uppercase;
-              padding-bottom: 5px;
-              margin-bottom: 12px;
-              min-width: 320px;
-              z-index: 10;
-            }
-            .cert-text {
-              font-size: 12px;
-              color: #cccccc;
-              line-height: 1.5;
-              max-width: 620px;
-              margin-bottom: 15px;
-              z-index: 10;
-            }
-            .details-grid {
-              display: grid;
-              grid-template-columns: repeat(3, 1fr);
-              width: 100%;
-              border-top: 1px solid rgba(255,255,255,0.05);
-              border-bottom: 1px solid rgba(255,255,255,0.05);
-              padding: 10px 0;
-              margin-bottom: 15px;
-              z-index: 10;
-            }
-            .detail-item {
-              display: flex;
-              flex-direction: column;
-              gap: 4px;
-            }
-            .detail-label {
-              font-size: 8px;
-              color: #666666;
-              text-transform: uppercase;
-              letter-spacing: 1.5px;
-            }
-            .detail-val {
-              font-size: 11px;
-              font-weight: 600;
-            }
-            .footer-signatures {
-              display: flex;
-              justify-content: space-between;
-              width: 100%;
-              padding: 0 30px;
-              margin-top: 10px;
-              z-index: 10;
-            }
-            .signature-block {
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-              width: 180px;
-            }
-            .sig-font {
-              font-family: 'Playfair Display', serif;
-              font-style: italic;
-              font-size: 16px;
-              color: #d4af37;
-              height: 25px;
-              line-height: 25px;
-            }
-            .signature-line {
-              border-top: 1px solid rgba(255, 255, 255, 0.2);
-              width: 100%;
-              margin-top: 5px;
-              padding-top: 3px;
-              font-size: 8px;
-              color: #888888;
-              text-transform: uppercase;
-              letter-spacing: 1px;
-            }
-            .seal-decor {
-              position: absolute;
-              bottom: 25px;
-              left: 50%;
-              transform: translateX(-50%);
-              width: 45px;
-              height: 45px;
-              border-radius: 50%;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              background-color: #0a0a0a;
-              font-size: 14px;
-              z-index: 10;
-            }
-
-            @media print {
-              @page {
-                size: A4 landscape;
-                margin: 0;
-              }
-              body {
-                margin: 0;
-                padding: 0;
-                background-color: #000000 !important;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-                display: flex !important;
-                justify-content: center !important;
-                align-items: center !important;
-                height: 100vh !important;
-              }
-              .certificate-container {
-                width: 297mm !important;
-                height: 210mm !important;
-                border-radius: 0 !important;
-                margin: 0 !important;
-                padding: 20mm 25mm !important;
-                box-sizing: border-box !important;
-                box-shadow: none !important;
-                page-break-inside: avoid !important;
-                position: relative !important;
-                display: flex !important;
-                flex-direction: column !important;
-                justify-content: space-between !important;
-                align-items: center !important;
-              }
-            }
-          </style>
-        </head>
-        <body>
-          <div class="certificate-container">
-            ${logoHtmlWatermark}
-            
-            <div style="width: 100%; display: flex; flex-direction: column; align-items: center; z-index: 10;">
-              ${logoHtmlTop}
-              <div class="academy-header">${settings.academyName}</div>
-            </div>
-            
-            <div style="z-index: 10; margin-top: -5px;">
-              <div class="cert-title">${settings.title}</div>
-              <div class="cert-subtitle">${settings.subtitle}</div>
-            </div>
-            
-            <div style="z-index: 10; margin-top: -5px;">
-              <p style="font-size: 8px; font-style: italic; color: ${settings.theme === 'neon' ? '#888' : settings.theme === 'crimson' ? '#888' : settings.theme === 'sapphire' ? '#888' : '#555'}; margin: 0; text-transform: none;">This certifies the profile of</p>
-              <div class="player-name" style="margin-top: 5px; margin-bottom: 5px;">${playerData.fullName}</div>
-              <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: ${settings.theme === 'neon' ? '#00FF62' : settings.theme === 'crimson' ? '#E31B23' : settings.theme === 'sapphire' ? '#60a5fa' : '#d4af37'};">${getVeryShortPosition(playerData.position)}</div>
-            </div>
-            
-            <div class="cert-text">
-              This document officially validates that the athletic profile, performance stats, and position maps listed on this CV have been assessed and verified. The athlete has demonstrated an exceptional overall rating of <span class="highlight-text">${settings.showRating ? playerData.rating + ' OVR' : 'VALIDATED OVR'}</span> at the level of <span class="highlight-text">${getVeryShortPosition(playerData.position)}</span>.
-            </div>
-            
-            ${statsGridHtml}
-            
-            <div class="details-grid">
-              <div class="detail-item">
-                <span class="detail-label">Current Club</span>
-                <span class="detail-val">${settings.clubName}</span>
-              </div>
-              <div class="detail-item">
-                <span class="detail-label">Assigned Coach</span>
-                <span class="detail-val">${settings.coachName}</span>
-              </div>
-              <div class="detail-item">
-                <span class="detail-label">Status</span>
-                <span class="detail-val" style="color: #4ade80;">VERIFIED PROFILE</span>
-              </div>
-            </div>
-            
-            <div class="footer-signatures">
-              <div class="signature-block">
-                <div class="sig-font" style="color: ${settings.theme === 'neon' ? '#00FF62' : settings.theme === 'crimson' ? '#E31B23' : settings.theme === 'sapphire' ? '#60a5fa' : '#d4af37'}">${settings.directorName}</div>
-                <div class="signature-line">${settings.directorTitle}</div>
-              </div>
-              
-              ${logoHtmlBottom}
-              
-              <div class="signature-block">
-                <div class="sig-font" style="color: ${settings.theme === 'neon' ? '#00FF62' : settings.theme === 'crimson' ? '#E31B23' : settings.theme === 'sapphire' ? '#60a5fa' : '#d4af37'}">${settings.coachSignName}</div>
-                <div class="signature-line">${settings.coachTitle}</div>
-              </div>
-            </div>
-            
-            <div class="seal-decor">★</div>
-          </div>
-          <script>
-            window.onload = function() {
-              window.print();
-            };
-          </script>
-        </body>
-      </html>
-    `);
-    printWindow.document.close();
-  };
 
   const [editingField, setEditingField] = useState<string | null>(null);
 
@@ -1049,16 +580,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
     return `https://flagcdn.com/w160/${code}.png`;
   };
 
-  const styleBadges = [
-    badge1,
-    badge2,
-    badge3,
-    "https://cdn-icons-png.flaticon.com/128/5323/5323862.png", // whistle
-    "https://cdn-icons-png.flaticon.com/128/3002/3002655.png", // tactics board
-    "https://cdn-icons-png.flaticon.com/128/861/861506.png",    // trophy
-    "https://cdn-icons-png.flaticon.com/128/33/33736.png",      // soccer ball
-    "https://cdn-icons-png.flaticon.com/128/3126/3126588.png"   // strategy
-  ];
+
   return (
     <>
       <div className="container">
@@ -1162,6 +684,26 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                   <CMSField
                     value={playerData.coachName || "N/A"}
                     onUpdate={(val) => handleUpdate("coachName", val)}
+                    canEdit={canEditBio}
+                    className="w-40 justify-end"
+                    inputClassName="text-right"
+                  />
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400">Club Managed</span>
+                  <CMSField
+                    value={playerData.clubManaged || "N/A"}
+                    onUpdate={(val) => handleUpdate("clubManaged", val)}
+                    canEdit={canEditBio}
+                    className="w-40 justify-end"
+                    inputClassName="text-right"
+                  />
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400">Coach License</span>
+                  <CMSField
+                    value={playerData.coachLicenseNumber || "N/A"}
+                    onUpdate={(val) => handleUpdate("coachLicenseNumber", val)}
                     canEdit={canEditBio}
                     className="w-40 justify-end"
                     inputClassName="text-right"
@@ -1476,7 +1018,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                     {marker.name && (
                       <div className={cn(
                         "mt-1 px-1.5 py-0.5 rounded bg-black/85 border border-white/10 text-white text-[9px] font-medium text-center whitespace-nowrap shadow-md pointer-events-none tracking-wide select-none transition-all",
-                        idx === 0 ? "text-[10px] px-2 font-semibold border-primary/40 bg-primary/10 text-primary backdrop-blur-sm" : ""
+
                       )}>
                         position{idx + 1}
                       </div>
@@ -1622,17 +1164,23 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                 </div>
 
                 <div className="space-y-4">
-                  {orderedSelectedStyles.map((style: any, index: number) => {
-                    const badge = styleBadges[index % styleBadges.length];
-                    const badgeSrc = typeof badge === "string" ? badge : badge.src;
+                  {orderedSelectedStyles.map((style: any) => {
+                    const badge = STYLE_ICONS[style.id];
+                    const badgeSrc = typeof badge === "string" ? badge : badge?.src || "";
                     return (
                       <div key={style.id} className="space-y-4">
                         <div className="flex justify-center">
-                          <img
-                            src={badgeSrc}
-                            className="w-20 h-20 object-contain"
-                            alt={style.label}
-                          />
+                          {badgeSrc ? (
+                            <img
+                              src={badgeSrc}
+                              className="w-20 h-20 object-contain"
+                              alt={style.label}
+                            />
+                          ) : (
+                            <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center text-primary font-bold text-xs">
+                              {style.label}
+                            </div>
+                          )}
                         </div>
                         <p className="text-lg font-heading">{style.label}</p>
                       </div>
@@ -1646,479 +1194,303 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
           {/* RIGHT COLUMN */}
           <div className="col-span-1 xl:col-span-4 space-y-6 bg-cardBg">
             {/* Certification Card */}
-            <div className="p-6 border border-border/50 bg-[#151515] rounded-2xl relative overflow-hidden group hover:border-primary/20 transition-all">
-              <h2 className="text-sm font-black text-gray-500 uppercase tracking-widest mb-4">
-                Certification
-              </h2>
+            <div className="p-6 bnorder-none rounded-2xl relative overflow-hidden group hover:border-primary/20 transition-all">
 
-              {/* Outer certificate container fitting the sidebar */}
-              {(() => {
-                const t = getThemeClasses(certTheme);
-                return (
-                  <div
-                    className={cn(
-                      "w-full aspect-[1.41] p-4 rounded-xl flex flex-col justify-between items-center text-center relative overflow-hidden select-none border-box shadow-md transition-all duration-300 text-[8px] md:text-[9px] min-h-[220px]",
-                      t.cardBg,
-                      t.cardBorder
-                    )}
-                  >
-                    {/* Watermark Logo */}
-                    {certShowLogo && certLogoPlacement === "watermark" && (
-                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-5 z-0">
-                        <img src="/logo.png" alt="K10 Logo Watermark" className="w-[60%] h-auto object-contain" />
-                      </div>
-                    )}
 
-                    {/* Header Section */}
-                    <div className="w-full flex flex-col items-center gap-0.5 z-10">
-                      {certShowLogo && certLogoPlacement === "top" && (
-                        <img src="/logo.png" alt="K10 Logo Top" className="h-3.5 w-auto object-contain mb-0.5" />
-                      )}
-                      <p className={cn("text-[6px] font-bold uppercase tracking-[0.25em]", t.textColor)}>
-                        {certAcademyName}
-                      </p>
+              {/* SVG certificate container */}
+              <div className="w-full aspect-square relative select-none">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="100%" height="100%">
+                  <defs>
+                    <style>{`
+                      @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700;800;900&display=swap');
+                      .gold-text {
+                        fill: url(#gold-grad-static);
+                      }
+                      .white-text {
+                        fill: #FFFFFF;
+                      }
+                      .badge-heading {
+                        font-family: 'Montserrat', 'Inter', sans-serif;
+                        text-transform: uppercase;
+                      }
+                      .badge-content {
+                        font-family: 'Inter', 'Montserrat', sans-serif;
+                      }
+                    `}</style>
+
+                    <linearGradient id="gold-grad-static" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#BF953F" />
+                      <stop offset="20%" stopColor="#FCF6BA" />
+                      <stop offset="40%" stopColor="#B38728" />
+                      <stop offset="60%" stopColor="#FBF5B7" />
+                      <stop offset="80%" stopColor="#AA771C" />
+                      <stop offset="100%" stopColor="#E2C175" />
+                    </linearGradient>
+
+                    <linearGradient id="gold-bright-static" x1="0%" y1="100%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#FCF6BA" />
+                      <stop offset="35%" stopColor="#FFEFA6" />
+                      <stop offset="70%" stopColor="#B38728" />
+                      <stop offset="100%" stopColor="#FCF6BA" />
+                    </linearGradient>
+
+                    <linearGradient id="gold-dark-static" x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" stopColor="#8a6f27" />
+                      <stop offset="50%" stopColor="#4e3a0b" />
+                      <stop offset="100%" stopColor="#8a6f27" />
+                    </linearGradient>
+
+                    <linearGradient id="gold-divider-static" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#BF953F" stopOpacity="0" />
+                      <stop offset="30%" stopColor="#FCF6BA" stopOpacity="0.6" />
+                      <stop offset="50%" stopColor="#B38728" stopOpacity="0.8" />
+                      <stop offset="70%" stopColor="#FCF6BA" stopOpacity="0.6" />
+                      <stop offset="100%" stopColor="#AA771C" stopOpacity="0" />
+                    </linearGradient>
+
+                    <radialGradient id="bg-radial-static" cx="50%" cy="50%" r="50%" fx="30%" fy="30%">
+                      <stop offset="0%" stopColor="#0a2a53" />
+                      <stop offset="55%" stopColor="#05152e" />
+                      <stop offset="90%" stopColor="#010615" />
+                      <stop offset="100%" stopColor="#000207" />
+                    </radialGradient>
+
+                    <linearGradient id="ribbon-grad-static" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#020e24" />
+                      <stop offset="12%" stopColor="#061b3b" />
+                      <stop offset="34%" stopColor="#0f3468" />
+                      <stop offset="50%" stopColor="#19488a" />
+                      <stop offset="66%" stopColor="#0f3468" />
+                      <stop offset="88%" stopColor="#061b3b" />
+                      <stop offset="100%" stopColor="#020e24" />
+                    </linearGradient>
+
+                    <filter id="drop-shadow-static" x="-10%" y="-10%" width="120%" height="125%">
+                      <feDropShadow dx="0" dy="10" stdDeviation="10" floodColor="#000000" floodOpacity="0.65" />
+                    </filter>
+
+                    <filter id="glow-static" x="-20%" y="-20%" width="140%" height="140%">
+                      <feGaussianBlur stdDeviation="2.5" result="blur" />
+                      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                    </filter>
+
+                    <g id="leaf-node-static">
+                      <path d="M 0,0 C -6,-10 -18,-18 -25,-14 C -18,1 -6,4 0,0" fill="url(#gold-grad-static)" stroke="url(#gold-dark-static)" strokeWidth="0.5" />
+                      <path d="M 0,0 C 6,-10 18,-18 25,-14 C 18,1 6,4 0,0" fill="url(#gold-bright-static)" stroke="url(#gold-dark-static)" strokeWidth="0.5" />
+                    </g>
+
+                    <g id="wreath-half-static">
+                      <path d="M -30,0 Q -95,-15 -136,-72" fill="none" stroke="url(#gold-grad-static)" strokeWidth="3" strokeLinecap="round" />
+                      <g transform="translate(-42, -1) rotate(-15) scale(0.65)"><use href="#leaf-node-static" /></g>
+                      <g transform="translate(-62, -6) rotate(-30) scale(0.75)"><use href="#leaf-node-static" /></g>
+                      <g transform="translate(-82, -14) rotate(-45) scale(0.85)"><use href="#leaf-node-static" /></g>
+                      <g transform="translate(-101, -24) rotate(-60) scale(0.95)"><use href="#leaf-node-static" /></g>
+                      <g transform="translate(-118, -37) rotate(-75) scale(0.95)"><use href="#leaf-node-static" /></g>
+                      <g transform="translate(-130, -52) rotate(-90) scale(0.85)"><use href="#leaf-node-static" /></g>
+                      <g transform="translate(-136, -69) rotate(-105) scale(0.75)"><use href="#leaf-node-static" /></g>
+                      <g transform="translate(-137, -86) rotate(-120) scale(0.60)"><use href="#leaf-node-static" /></g>
+                    </g>
+
+                    <path id="top-text-arc-shared" d="M 124,400 A 276,276 0 0,1 676,400" fill="none" />
+
+                    <radialGradient id="fifa-sky-radial-static" cx="35%" cy="35%" r="65%">
+                      <stop offset="0%" stopColor="#1c5db6" />
+                      <stop offset="55%" stopColor="#0a2a6b" />
+                      <stop offset="100%" stopColor="#011030" />
+                    </radialGradient>
+                    <clipPath id="left-globe-clip-static">
+                      <circle cx="368" cy="188" r="31" />
+                    </clipPath>
+                    <clipPath id="right-globe-clip-static">
+                      <circle cx="432" cy="188" r="31" />
+                    </clipPath>
+                  </defs>
+
+                  <polygon points="400.00,20.00 414.21,38.28 429.81,21.17 442.55,40.51 459.45,24.68 470.62,44.96 488.71,30.50 498.26,51.59 517.43,38.60 525.29,60.37 545.42,48.93 551.55,71.25 572.52,61.42 576.88,84.16 598.55,76.00 601.12,99.01 623.36,92.57 624.11,115.72 646.79,111.05 645.73,134.18 668.70,131.30 665.82,154.27 688.95,153.21 684.28,175.89 707.43,176.64 700.99,198.88 724.00,201.45 715.84,223.12 738.58,227.48 728.75,248.45 751.07,254.58 739.63,274.71 761.40,282.57 748.41,301.74 769.50,311.29 755.04,329.38 775.32,340.55 759.49,357.45 778.83,370.19 761.72,385.79 780.00,400.00 761.72,414.21 778.83,429.81 759.49,442.55 775.32,459.45 755.04,470.62 769.50,488.71 748.41,498.26 761.40,517.43 739.63,525.29 751.07,545.42 728.75,551.55 738.58,572.52 715.84,576.88 724.00,598.55 700.99,601.12 707.43,623.36 684.28,624.11 688.95,646.79 665.82,645.73 668.70,668.70 645.73,665.82 646.79,688.95 624.11,684.28 623.36,707.43 601.12,700.99 598.55,724.00 576.88,715.84 572.52,738.58 551.55,728.75 545.42,751.07 525.29,739.63 517.43,761.40 498.26,748.41 488.71,769.50 470.62,755.04 459.45,775.32 442.55,759.49 429.81,778.83 414.21,761.72 400.00,780.00 385.79,761.72 370.19,778.83 357.45,759.49 340.55,775.32 329.38,755.04 311.29,769.50 301.74,748.41 282.57,761.40 274.71,739.63 254.58,751.07 248.45,728.75 227.48,738.58 223.12,715.84 201.45,724.00 198.88,700.99 176.64,707.43 175.89,684.28 153.21,688.95 154.27,665.82 131.30,668.70 134.18,645.73 111.05,646.79 115.72,624.11 92.57,623.36 99.01,601.12 76.00,598.55 84.16,576.88 61.42,572.52 71.25,551.55 48.93,545.42 60.37,525.29 38.60,517.43 51.59,498.26 30.50,488.71 44.96,470.62 24.68,459.45 40.51,442.55 21.17,429.81 38.28,414.21 20.00,400.00 38.28,385.79 21.17,370.19 40.51,357.45 24.68,340.55 44.96,329.38 30.50,311.29 51.59,301.74 38.60,282.57 60.37,274.71 48.93,254.58 71.25,248.45 61.42,227.48 84.16,223.12 76.00,201.45 99.01,198.88 92.57,176.64 115.72,175.89 111.05,153.21 134.18,154.27 131.30,131.30 154.27,134.18 153.21,111.05 175.89,115.72 176.64,92.57 198.88,99.01 201.45,76.00 223.12,84.16 227.48,61.42 248.45,71.25 254.58,48.93 274.71,60.37 282.57,38.60 301.74,51.59 311.29,30.50 329.38,44.96 340.55,24.68 357.45,40.51 370.19,21.17 385.79,38.28" fill="url(#gold-grad-static)" filter="url(#drop-shadow-static)" />
+
+                  <circle cx="400" cy="400" r="358" stroke="url(#gold-dark-static)" strokeWidth="1.5" fill="none" />
+                  <circle cx="400" cy="400" r="352" stroke="url(#gold-grad-static)" strokeWidth="5" fill="none" />
+                  <circle cx="400" cy="400" r="344" stroke="url(#gold-dark-static)" strokeWidth="1.5" fill="none" />
+
+                  <circle cx="400" cy="400" r="342" fill="url(#bg-radial-static)" />
+
+                  <circle cx="400" cy="400" r="328" stroke="url(#gold-grad-static)" strokeWidth="2" strokeDasharray="2 7" fill="none" opacity="0.85" />
+                  <circle cx="400" cy="400" r="320" stroke="url(#gold-grad-static)" strokeWidth="1" fill="none" opacity="0.4" />
+                  <circle cx="400" cy="400" r="316" stroke="url(#gold-grad-static)" strokeWidth="3" fill="none" />
+                  <circle cx="400" cy="400" r="312" stroke="url(#gold-dark-static)" strokeWidth="1.5" fill="none" />
+                  <circle cx="400" cy="400" r="276" stroke="url(#gold-grad-static)" strokeDasharray="1.5 5" strokeWidth="1" fill="none" opacity="0.3" />
+
+                  <g opacity="0.08" stroke="url(#gold-grad-static)" strokeWidth="2.5" fill="none" transform="translate(570, 310)">
+                    <circle cx="0" cy="0" r="130" strokeWidth="2" opacity="0.6" />
+                    <polygon points="0,-32 30,-10 19,26 -19,26 -30,-10" fill="url(#gold-grad-static)" opacity="0.35" />
+                    <line x1="0" y1="-32" x2="0" y2="-65" />
+                    <line x1="30" y1="-10" x2="60" y2="-20" />
+                    <line x1="19" y1="26" x2="38" y2="52" />
+                    <line x1="-19" y1="26" x2="-38" y2="52" />
+                    <line x1="-30" y1="-10" x2="-60" y2="-20" />
+                    <polygon points="0,-65 35,-80 55,-55 60,-20 30,-10" />
+                    <polygon points="60,-20 90,-10 95,25 65,45 38,52 19,26 30,-10" />
+                    <polygon points="38,52 45,90 10,105 -25,95 -38,52 19,26" />
+                    <polygon points="-38,52 -65,45 -95,25 -90,-10 -60,-20 -30,-10 -19,26" />
+                    <polygon points="-60,-20 -55,-55 -35,-80 0,-65 -30,-10" />
+                    <line x1="35" y1="-80" x2="45" y2="-115" />
+                    <line x1="-35" y1="-80" x2="-45" y2="-115" />
+                    <line x1="90" y1="-10" x2="118" y2="-15" />
+                    <line x1="-90" y1="-10" x2="-118" y2="-15" />
+                    <line x1="95" y1="25" x2="122" y2="35" />
+                    <line x1="-95" y1="25" x2="-122" y2="35" />
+                    <line x1="45" y1="90" x2="55" y2="118" />
+                    <line x1="-45" y1="90" x2="-55" y2="118" />
+                  </g>
+
+                  <text fontSize="34" fontWeight="900" className="badge-heading" letterSpacing="11">
+                    <textPath href="#top-text-arc-shared" startOffset="50%" textAnchor="middle" fill="url(#gold-bright-static)" filter="url(#glow-static)">
+                      VERIFIED
+                    </textPath>
+                  </text>
+
+                  <path d="M 168.32,207 L 168.32,207.00 L 171.26,214.95 L 179.73,215.29 L 173.08,220.55 L 175.37,228.71 L 168.32,224.00 L 161.27,228.71 L 163.56,220.55 L 156.91,215.29 L 165.38,214.95 Z" fill="url(#gold-bright-static)" />
+                  <path d="M 631.68,207 L 631.68,207.00 L 634.62,214.95 L 643.09,215.29 L 636.44,220.55 L 638.73,228.71 L 631.68,224.00 L 624.63,228.71 L 626.92,220.55 L 620.27,215.29 L 628.74,214.95 Z" fill="url(#gold-bright-static)" />
+
+                  <g transform="translate(0, 0)">
+                    <circle cx="368" cy="188" r="31" fill="url(#fifa-sky-radial-static)" stroke="url(#gold-grad-static)" strokeWidth="1.8" />
+                    <g clipPath="url(#left-globe-clip-static)">
+                      <path d="M 350,165 Q 365,160 380,168 Q 395,172 398,185 Q 399,195 385,200 Q 375,190 358,188 L 350,178 Z" fill="url(#gold-bright-static)" opacity="0.9" />
+                      <path d="M 358,188 Q 372,192 376,204 Q 374,217 364,216 Q 355,212 355,200 Z" fill="url(#gold-bright-static)" opacity="0.9" />
+                      <path d="M 388,206 Q 396,205 398,212 Q 395,218 388,215 Z" fill="url(#gold-bright-static)" opacity="0.9" />
+
+                      <polygon points="368,180 377,185 373,195 363,195 359,185" stroke="#ffffff" strokeWidth="0.8" fill="none" opacity="0.5" />
+                      <line x1="368" y1="180" x2="368" y2="157" stroke="#ffffff" strokeWidth="0.8" opacity="0.5" />
+                      <line x1="377" y1="185" x2="395" y2="178" stroke="#ffffff" strokeWidth="0.8" opacity="0.5" />
+                      <line x1="373" y1="195" x2="385" y2="216" stroke="#ffffff" strokeWidth="0.8" opacity="0.5" />
+                      <line x1="363" y1="195" x2="351" y2="216" stroke="#ffffff" strokeWidth="0.8" opacity="0.5" />
+                      <line x1="359" y1="185" x2="341" y2="178" stroke="#ffffff" strokeWidth="0.8" opacity="0.5" />
+                      <path d="M 368,157 L 382,165 M 395,178 L 398,193 M 385,216 L 368,219 M 351,216 L 338,193 M 341,178 L 354,165" stroke="#ffffff" strokeWidth="0.8" opacity="0.5" fill="none" />
+                    </g>
+
+                    <circle cx="432" cy="188" r="31" fill="url(#fifa-sky-radial-static)" stroke="url(#gold-grad-static)" strokeWidth="1.8" />
+                    <g clipPath="url(#right-globe-clip-static)">
+                      <path d="M 405,164 Q 425,160 432,175 Q 425,185 418,181 Z" fill="url(#gold-bright-static)" opacity="0.9" />
+                      <path d="M 418,185 Q 425,188 438,206 Q 430,218 424,212 Q 416,204 418,185 Z" fill="url(#gold-bright-static)" opacity="0.9" />
+                      <path d="M 418,181 L 418,186" stroke="url(#gold-bright-static)" strokeWidth="1.5" />
+
+                      <polygon points="432,180 441,185 437,195 427,195 423,185" stroke="#ffffff" strokeWidth="0.8" fill="none" opacity="0.5" />
+                      <line x1="432" y1="180" x2="432" y2="157" stroke="#ffffff" strokeWidth="0.8" opacity="0.5" />
+                      <line x1="441" y1="185" x2="459" y2="178" stroke="#ffffff" stroke-width="0.8" opacity="0.5" />
+                      <line x1="437" y1="195" x2="449" y2="216" stroke="#ffffff" stroke-width="0.8" opacity="0.5" />
+                      <line x1="427" y1="195" x2="415" y2="216" stroke="#ffffff" stroke-width="0.8" opacity="0.5" />
+                      <line x1="423" y1="185" x2="405" y2="178" stroke="#ffffff" stroke-width="0.8" opacity="0.5" />
+                      <path d="M 432,157 L 446,165 M 459,178 L 462,193 M 449,216 L 432,219 M 415,216 L 402,193 M 405,178 L 418,165" stroke="#ffffff" strokeWidth="0.8" opacity="0.5" fill="none" />
+                    </g>
+
+                    <g transform="translate(400, 252) skewX(-12)">
+                      <path d="M -48,-16 L -24,-16 L -24,-9 L -38,-9 L -38,-3 L -27,-3 L -27,4 L -38,4 L -38,16 L -48,16 Z" fill="url(#gold-bright-static)" filter="url(#glow-static)" />
+                      <path d="M -17,-16 L -7,-16 L -7,16 L -17,16 Z" fill="url(#gold-bright-static)" filter="url(#glow-static)" />
+                      <path d="M -1,-16 L 23,-16 L 23,-9 L 9,-9 L 9,-3 L 20,-3 L 20,4 L 9,4 L 9,16 L -1,16 Z" fill="url(#gold-bright-static)" filter="url(#glow-static)" />
+                      <path d="M 31,-16 L 47,-16 L 58,16 L 48,16 L 45,7 L 33,7 L 30,16 L 20,16 Z M 35,2 L 43,2 L 39,-9 Z" fill="url(#gold-bright-static)" filter="url(#glow-static)" />
+                    </g>
+                  </g>
+
+                  {/* Row 1: Coach */}
+                  <g transform="translate(0, 0)">
+                    <circle cx="220" cy="365" r="28" fill="#010c1e" stroke="url(#gold-grad-static)" strokeWidth="2.5" />
+                    <circle cx="220" cy="365" r="24" fill="none" stroke="url(#gold-bright-static)" strokeWidth="0.5" opacity="0.4" />
+                    <circle cx="220" cy="358" r="7" fill="url(#gold-bright-static)" />
+                    <path d="M 205,376 Q 205,367 220,367 Q 235,367 235,376" fill="url(#gold-bright-static)" stroke="url(#gold-dark-static)" strokeWidth="0.5" />
+
+                    <text x="265" y="354" fontSize="16.5" fontWeight="800" className="badge-heading gold-text" letterSpacing="1.5" opacity="0.95">HEAD COACH NAME</text>
+                    <text x="265" y="384" fontSize="32" fontWeight="900" className="badge-content white-text" letterSpacing="0.5">{playerData.coachName || "N/A"}</text>
+
+                    <line x1="210" y1="408" x2="590" y2="408" stroke="url(#gold-divider-static)" strokeWidth="1.5" />
+                  </g>
+
+                  {/* Row 2: License */}
+                  <g transform="translate(0, 88)">
+                    <circle cx="220" cy="365" r="28" fill="#010c1e" stroke="url(#gold-grad-static)" strokeWidth="2.5" />
+                    <circle cx="220" cy="365" r="24" fill="none" stroke="url(#gold-bright-static)" strokeWidth="0.5" opacity="0.4" />
+                    <rect x="204" y="352" width="32" height="24" rx="3.5" fill="none" stroke="url(#gold-bright-static)" strokeWidth="2" />
+                    <rect x="209" y="358" width="8" height="11" rx="1" fill="none" stroke="url(#gold-bright-static)" strokeWidth="1.2" />
+                    <circle cx="213" cy="361" r="2" fill="url(#gold-bright-static)" />
+                    <path d="M 210,367 Q 210,365 213,365 Q 216,365 216,367" fill="none" stroke="url(#gold-bright-static)" strokeWidth="1.2" />
+                    <line x1="222" y1="358" x2="231" y2="358" stroke="url(#gold-bright-static)" strokeWidth="1.8" strokeLinecap="round" />
+                    <line x1="222" y1="364" x2="231" y2="364" stroke="url(#gold-bright-static)" strokeWidth="1.8" strokeLinecap="round" />
+                    <line x1="222" y1="370" x2="228" y2="370" stroke="url(#gold-bright-static)" strokeWidth="1.8" strokeLinecap="round" />
+
+                    <text x="265" y="354" fontSize="16.5" fontWeight="800" className="badge-heading gold-text" letterSpacing="1.5" opacity="0.95">LICENSE NUMBER</text>
+                    <text x="265" y="384" fontSize="32" fontWeight="900" className="badge-content white-text" letterSpacing="0.5">{playerData.coachLicenseNumber || "CBF-2026-4587"}</text>
+
+                    <line x1="210" y1="408" x2="590" y2="408" stroke="url(#gold-divider-static)" strokeWidth="1.5" />
+                  </g>
+
+                  {/* Row 3: Club Managed */}
+                  <g transform="translate(0, 176)">
+                    <circle cx="220" cy="365" r="28" fill="#010c1e" stroke="url(#gold-grad-static)" strokeWidth="2.5" />
+                    <circle cx="220" cy="365" r="24" fill="none" stroke="url(#gold-bright-static)" strokeWidth="0.5" opacity="0.4" />
+                    <path d="M 207,352 Q 220,348 233,352 L 233,366 Q 233,378 220,383 Q 207,378 207,366 Z" fill="none" stroke="url(#gold-bright-static)" strokeWidth="2.2" strokeLinejoin="round" />
+                    <circle cx="220" cy="366" r="6" fill="none" stroke="url(#gold-bright-static)" strokeWidth="1.5" />
+                    <line x1="220" y1="360" x2="220" y2="372" stroke="url(#gold-bright-static)" strokeWidth="1" />
+                    <line x1="214" y1="366" x2="226" y2="366" stroke="url(#gold-bright-static)" strokeWidth="1" />
+
+                    <text x="265" y="354" fontSize="16.5" fontWeight="800" className="badge-heading gold-text" letterSpacing="1.5" opacity="0.95">CLUB MANAGED</text>
+                    <text x="265" y="384" fontSize="32" fontWeight="900" className="badge-content white-text" letterSpacing="0.5">{playerData.clubManaged || "Atlético Nacional"}</text>
+                  </g>
+
+                  <g filter="url(#drop-shadow-static)">
+                    <polygon points="175,615 175,655 150,635" fill="url(#gold-dark-static)" />
+                    <polygon points="625,615 625,655 650,635" fill="url(#gold-dark-static)" />
+
+                    <path d="M 175,615 L 80,635 L 110,665 L 85,695 L 175,655 Z" fill="url(#ribbon-grad-static)" stroke="url(#gold-grad-static)" strokeWidth="2" />
+                    <path d="M 625,615 L 720,635 L 690,665 L 715,695 L 625,655 Z" fill="url(#ribbon-grad-static)" stroke="url(#gold-grad-static)" strokeWidth="2" />
+
+                    <path d="M 148,595 Q 400,565 652,595 L 642,675 Q 400,645 158,675 Z" fill="url(#ribbon-grad-static)" stroke="url(#gold-grad-static)" strokeWidth="3" />
+
+                    <path id="ribbon-text-path-static" d="M 160,635 Q 400,605 640,635" fill="none" />
+                    <path id="ribbon-subtext-path-static" d="M 175,662 Q 400,632 625,662" fill="none" />
+
+                    <text fontSize="42" fontWeight="900" className="badge-content">
+                      <textPath href="#ribbon-text-path-static" startOffset="50%" textAnchor="middle" fill="#FFFFFF">
+                        Player CV
+                      </textPath>
+                    </text>
+
+                    <text fontSize="18" fontWeight="800" className="badge-heading" letterSpacing="3.5">
+                      <textPath href="#ribbon-subtext-path-static" startOffset="50%" textAnchor="middle" fill="url(#gold-bright-static)">
+                        VERIFIED BY FOOTBALL COACH
+                      </textPath>
+                    </text>
+                  </g>
+
+                  <use href="#wreath-half-static" transform="translate(400, 712) scale(0.60)" />
+                  <use href="#wreath-half-static" transform="translate(400, 712) scale(-0.60, 0.60)" />
+
+                  <g filter="url(#drop-shadow-static)">
+                    <circle cx="400" cy="712" r="30" fill="url(#bg-radial-static)" stroke="url(#gold-grad-static)" strokeWidth="4.5" />
+                    <circle cx="400" cy="712" r="24" fill="url(#bg-radial-static)" stroke="url(#gold-bright-static)" strokeWidth="1.2" opacity="0.6" />
+
+                    <path d="M 386,713 L 396,723 L 416,700" fill="none" stroke="url(#gold-bright-static)" strokeWidth="5.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </g>
+
+                  <path d="M 400,728 L 400.00,728.00 L 402.65,734.36 L 409.51,734.91 L 404.28,739.39 L 405.88,746.09 L 400.00,742.50 L 394.12,746.09 L 395.72,739.39 L 390.49,734.91 L 397.35,734.36 Z" fill="url(#gold-bright-static)" />
+                  <path d="M 478.9,720.66 L 478.90,720.66 L 480.96,725.83 L 486.51,726.19 L 482.23,729.74 L 483.60,735.13 L 478.90,732.16 L 474.20,735.13 L 475.57,729.74 L 471.29,726.19 L 476.84,725.83 Z" fill="url(#gold-bright-static)" />
+                  <path d="M 321.1,720.66 L 321.10,720.66 L 323.16,725.83 L 328.71,726.19 L 324.43,729.74 L 325.80,735.13 L 321.10,732.16 L 316.40,735.13 L 317.77,729.74 L 313.49,726.19 L 319.04,725.83 Z" fill="url(#gold-bright-static)" />
+                  <path d="M 553.45,694.16 L 553.45,694.16 L 555.21,698.73 L 560.11,699.00 L 556.30,702.09 L 557.56,706.82 L 553.45,704.16 L 549.34,706.82 L 550.60,702.09 L 546.79,699.00 L 551.69,698.73 Z" fill="url(#gold-bright-static)" />
+                  <path d="M 246.55,694.16 L 246.55,694.16 L 248.31,698.73 L 253.21,699.00 L 249.40,702.09 L 250.66,706.82 L 246.55,704.16 L 242.44,706.82 L 243.70,702.09 L 239.89,699.00 L 244.79,698.73 Z" fill="url(#gold-bright-static)" />
+
+                  <text x="400" y="768" fontSize="19" fontWeight="800" className="badge-heading gold-text" textAnchor="middle" letterSpacing="4.5">2026</text>
+                </svg>
+
+                {/* Not Verified Overlay */}
+                {playerData.validationStatus !== "verified" && (
+                  <div className="absolute inset-0 bg-black/85 flex flex-col items-center justify-center p-3 z-20 backdrop-blur-xs rounded-xl">
+                    <div className="text-[#E31B23] font-black uppercase text-[10px] tracking-widest mb-1.5 flex items-center gap-1">
+                      <span>⚠️</span> Pending Validation
                     </div>
-
-                    {/* Title & Subtitle */}
-                    <div className="z-10 -mt-1">
-                      <h3 className={cn("text-[9px] font-heading font-black tracking-wider uppercase leading-none", t.titleColor)}>
-                        {certTitle}
-                      </h3>
-                      <p className={cn("text-[5px] uppercase tracking-widest mt-0.5 leading-none", t.subtitleColor)}>
-                        {certSubtitle}
-                      </p>
-                    </div>
-
-                    {/* Athlete Name */}
-                    <div className="z-10 -mt-1">
-                      <p className={cn("text-[5px] italic leading-none", t.subtitleColor)}>This certifies the profile of</p>
-                      <h4 className={cn("text-xs font-bold font-heading uppercase tracking-wide border-b pb-0.5 mt-0.5 px-4 inline-block leading-none", t.accentText, t.accentBorder)}>
-                        {playerData.fullName}
-                      </h4>
-                      <p className={cn("text-[6px] font-medium mt-0.5 leading-none", t.titleColor)}>
-                        {getVeryShortPosition(playerData.position)}
-                      </p>
-                    </div>
-
-                    {/* Text Description */}
-                    <p className={cn("text-[6px] max-w-[95%] leading-relaxed z-10", t.subtitleColor)}>
-                      This document officially validates that the athletic profile, performance stats, and position maps listed on this CV have been assessed and verified. The athlete has demonstrated an exceptional overall rating of <span className={cn("font-bold", t.textColor)}>{certShowRating ? playerData.rating + ' OVR' : 'VALIDATED OVR'}</span> at the level of <span className={cn("font-bold", t.textColor)}>{getVeryShortPosition(playerData.position)}</span>.
+                    <p className="text-[8px] text-gray-400 max-w-[180px] text-center">
+                      A coach must validate your CV details from the academy dashboard to unlock your certificate.
                     </p>
-
-                    {/* Technical Stats Block */}
-                    {certShowStats && (
-                      <div className={cn("flex gap-1.5 justify-center py-0.5 px-2 rounded bg-white/5 border text-[5.5px] leading-none z-10", t.accentBorder)}>
-                        <span>PAC: <strong className={t.titleColor}>{playerData.strengths.pace}</strong></span>
-                        <span>SHO: <strong className={t.titleColor}>{playerData.strengths.shooting}</strong></span>
-                        <span>PAS: <strong className={t.titleColor}>{playerData.strengths.passing}</strong></span>
-                        <span>DRI: <strong className={t.titleColor}>{playerData.strengths.dribbling}</strong></span>
-                        <span>DEF: <strong className={t.titleColor}>{playerData.strengths.defending}</strong></span>
-                        <span>PHY: <strong className={t.titleColor}>{playerData.strengths.physical}</strong></span>
-                      </div>
-                    )}
-
-                    {/* Credentials Grid */}
-                    <div className="w-full grid grid-cols-3 border-t border-b py-1 my-0.5 border-white/5 text-[6px] leading-none z-10">
-                      <div className="flex flex-col">
-                        <span className="text-[5px] text-gray-500 uppercase tracking-wider">Current Club</span>
-                        <span className={cn("font-semibold truncate max-w-[80px] mx-auto", t.titleColor)}>{certClubName}</span>
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="text-[5px] text-gray-500 uppercase tracking-wider">Assigned Coach</span>
-                        <span className={cn("font-semibold truncate max-w-[80px] mx-auto", t.titleColor)}>{certCoachName}</span>
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="text-[5px] text-gray-500 uppercase tracking-wider">Status</span>
-                        <span className="font-semibold text-green-400">VERIFIED PROFILE</span>
-                      </div>
-                    </div>
-
-                    {/* Signatures */}
-                    <div className="w-full flex justify-between px-2 z-10">
-                      <div className="flex flex-col items-center w-[60px]">
-                        <span className={cn("font-heading italic text-[7px] leading-none", t.textColor)}>{certDirectorName}</span>
-                        <span className="w-full border-t border-white/20 mt-0.5 pt-0.5 text-[5px] text-gray-500 uppercase tracking-wider leading-none">{certDirectorTitle}</span>
-                      </div>
-
-                      {certShowLogo && certLogoPlacement === "bottom" && (
-                        <img src="/logo.png" alt="K10 Logo Bottom" className="h-3 w-auto object-contain self-end mb-0.5" />
-                      )}
-
-                      <div className="flex flex-col items-center w-[60px]">
-                        <span className={cn("font-heading italic text-[7px] leading-none", t.textColor)}>{certCoachSignName}</span>
-                        <span className="w-full border-t border-white/20 mt-0.5 pt-0.5 text-[5px] text-gray-500 uppercase tracking-wider leading-none">{certCoachTitle}</span>
-                      </div>
-                    </div>
-
-                    {/* Gold Seal decoration */}
-                    <div className={cn("absolute bottom-3 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full border flex items-center justify-center text-[6px] font-bold bg-[#0a0a0a] z-10", t.cardBorder, t.textColor)}>
-                      ★
-                    </div>
-
-                    {/* Not Verified Overlay */}
-                    {playerData.validationStatus !== "verified" && (
-                      <div className="absolute inset-0 bg-black/85 flex flex-col items-center justify-center p-3 z-20 backdrop-blur-xs">
-                        <div className="text-[#E31B23] font-black uppercase text-[10px] tracking-widest mb-1.5 flex items-center gap-1">
-                          <span>⚠️</span> Pending Validation
-                        </div>
-                        <p className="text-[8px] text-gray-400 max-w-[180px]">
-                          A coach must validate your CV details from the academy dashboard to unlock your certificate.
-                        </p>
-                      </div>
-                    )}
                   </div>
-                );
-              })()}
-
-              {/* Action Buttons below the Certificate Preview */}
-              {playerData.validationStatus === "verified" && (
-                <div className="flex flex-col gap-2 mt-4">
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button
-                        className="w-full bg-primary text-black font-bold h-8 text-xs hover:bg-primary/90 flex items-center justify-center gap-2 rounded-xl"
-                        size="sm"
-                      >
-                        <Award size={14} /> Customize Certificate
-                      </Button>
-                    </DialogTrigger>
-
-                    <DialogContent className="max-w-5xl w-[95vw] h-[85vh] bg-[#0c0c0c] border border-border/40 text-white rounded-2xl flex flex-col p-0 overflow-hidden shadow-2xl">
-                      <DialogHeader className="p-4 border-b border-border/20 bg-[#111111] flex flex-row items-center justify-between">
-                        <DialogTitle className="text-md font-heading font-normal flex items-center gap-2">
-                          <Award className="text-primary w-5 h-5" />
-                          EDDIE Certificate Designer (Canva Edition)
-                        </DialogTitle>
-                      </DialogHeader>
-
-                      <div className="flex-1 flex overflow-hidden">
-                        {/* LEFT COLUMN: CONTROLS */}
-                        <div className="w-[340px] bg-[#111111] border-r border-border/20 p-5 flex flex-col overflow-y-auto space-y-6 scrollbar-thin select-none">
-
-                          {/* Themes */}
-                          <div className="space-y-2">
-                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest block">1. Select Template Theme</label>
-                            <div className="grid grid-cols-2 gap-2">
-                              {[
-                                { id: 'gold', name: 'Classic Gold', color: 'bg-[#d4af37]', border: 'border-[#d4af37]' },
-                                { id: 'neon', name: 'Futuristic Neon', color: 'bg-[#00FF62]', border: 'border-[#00FF62]' },
-                                { id: 'sapphire', name: 'Royal Sapphire', color: 'bg-blue-600', border: 'border-blue-600' },
-                                { id: 'crimson', name: 'Cyber Crimson', color: 'bg-[#E31B23]', border: 'border-[#E31B23]' }
-                              ].map((t) => (
-                                <button
-                                  key={t.id}
-                                  onClick={() => setCertTheme(t.id as any)}
-                                  className={cn(
-                                    "flex items-center gap-2 p-2 rounded-lg border text-left text-xs transition-all hover:bg-white/5",
-                                    certTheme === t.id ? cn("bg-white/5", t.border) : "border-border/30 bg-transparent"
-                                  )}
-                                >
-                                  <span className={cn("w-2.5 h-2.5 rounded-full shrink-0", t.color)} />
-                                  <span className="truncate">{t.name}</span>
-                                </button>
-                              ))}
-                            </div>
-                          </div>
-
-                          {/* Certificate Details */}
-                          <div className="space-y-3">
-                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest block">2. Text & Credentials</label>
-
-                            <div className="space-y-1.5">
-                              <span className="text-[10px] text-gray-400">Certificate Title</span>
-                              <Input
-                                value={certTitle}
-                                onChange={(e) => setCertTitle(e.target.value)}
-                                className="bg-[#181818] border-border/40 text-xs h-8 rounded-lg"
-                              />
-                            </div>
-
-                            <div className="space-y-1.5">
-                              <span className="text-[10px] text-gray-400">Subtitle</span>
-                              <Input
-                                value={certSubtitle}
-                                onChange={(e) => setCertSubtitle(e.target.value)}
-                                className="bg-[#181818] border-border/40 text-xs h-8 rounded-lg"
-                              />
-                            </div>
-
-                            <div className="space-y-1.5">
-                              <span className="text-[10px] text-gray-400">Academy Name</span>
-                              <Input
-                                value={certAcademyName}
-                                onChange={(e) => setCertAcademyName(e.target.value)}
-                                className="bg-[#181818] border-border/40 text-xs h-8 rounded-lg"
-                              />
-                            </div>
-
-                            <div className="space-y-1.5">
-                              <span className="text-[10px] text-gray-400">Assigned Coach</span>
-                              <Input
-                                value={certCoachName}
-                                onChange={(e) => setCertCoachName(e.target.value)}
-                                className="bg-[#181818] border-border/40 text-xs h-8 rounded-lg"
-                              />
-                            </div>
-
-                            <div className="space-y-1.5">
-                              <span className="text-[10px] text-gray-400">Current Club</span>
-                              <Input
-                                value={certClubName}
-                                onChange={(e) => setCertClubName(e.target.value)}
-                                className="bg-[#181818] border-border/40 text-xs h-8 rounded-lg"
-                              />
-                            </div>
-                          </div>
-
-                          {/* Signatures */}
-                          <div className="space-y-3">
-                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest block">3. Signatures Config</label>
-
-                            <div className="grid grid-cols-2 gap-2">
-                              <div className="space-y-1">
-                                <span className="text-[9px] text-gray-400">Director Name</span>
-                                <Input
-                                  value={certDirectorName}
-                                  onChange={(e) => setCertDirectorName(e.target.value)}
-                                  className="bg-[#181818] border-border/40 text-[11px] h-7 rounded-lg px-2"
-                                />
-                              </div>
-                              <div className="space-y-1">
-                                <span className="text-[9px] text-gray-400">Director Title</span>
-                                <Input
-                                  value={certDirectorTitle}
-                                  onChange={(e) => setCertDirectorTitle(e.target.value)}
-                                  className="bg-[#181818] border-border/40 text-[11px] h-7 rounded-lg px-2"
-                                />
-                              </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-2">
-                              <div className="space-y-1">
-                                <span className="text-[9px] text-gray-400">Coach Name</span>
-                                <Input
-                                  value={certCoachSignName}
-                                  onChange={(e) => setCertCoachSignName(e.target.value)}
-                                  className="bg-[#181818] border-border/40 text-[11px] h-7 rounded-lg px-2"
-                                />
-                              </div>
-                              <div className="space-y-1">
-                                <span className="text-[9px] text-gray-400">Coach Title</span>
-                                <Input
-                                  value={certCoachTitle}
-                                  onChange={(e) => setCertCoachTitle(e.target.value)}
-                                  className="bg-[#181818] border-border/40 text-[11px] h-7 rounded-lg px-2"
-                                />
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Toggle Elements */}
-                          <div className="space-y-3 bg-white/5 p-3 rounded-lg border border-border/30">
-                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest block">4. Certificate Elements</label>
-
-                            <div className="flex items-center gap-2">
-                              <Checkbox
-                                id="showRating"
-                                checked={certShowRating}
-                                onCheckedChange={(val) => setCertShowRating(!!val)}
-                                className="border-border/60"
-                              />
-                              <label htmlFor="showRating" className="text-xs text-gray-300 cursor-pointer">Show Overall Rating (OVR)</label>
-                            </div>
-
-                            <div className="flex items-center gap-2">
-                              <Checkbox
-                                id="showStats"
-                                checked={certShowStats}
-                                onCheckedChange={(val) => setCertShowStats(!!val)}
-                                className="border-border/60"
-                              />
-                              <label htmlFor="showStats" className="text-xs text-gray-300 cursor-pointer">Show Technical Stats</label>
-                            </div>
-
-                            <div className="flex items-center gap-2">
-                              <Checkbox
-                                id="showLogo"
-                                checked={certShowLogo}
-                                onCheckedChange={(val) => setCertShowLogo(!!val)}
-                                className="border-border/60"
-                              />
-                              <label htmlFor="showLogo" className="text-xs text-gray-300 cursor-pointer">Show Website Brand Logo</label>
-                            </div>
-
-                            {certShowLogo && (
-                              <div className="space-y-1 pl-6 pt-1">
-                                <span className="text-[9px] text-gray-400 block">Logo Placement</span>
-                                <select
-                                  value={certLogoPlacement}
-                                  onChange={(e) => setCertLogoPlacement(e.target.value as any)}
-                                  className="bg-[#181818] border border-border/40 text-xs h-7 rounded-lg px-2 w-full text-white outline-none focus:border-primary"
-                                >
-                                  <option value="top">Top Center</option>
-                                  <option value="bottom">Bottom Center</option>
-                                  <option value="watermark">As Watermark (Center)</option>
-                                </select>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* RIGHT COLUMN: LIVE CANVAS PREVIEW */}
-                        <div className="flex-1 bg-[#161616] p-6 flex flex-col items-center justify-between overflow-y-auto">
-
-                          {/* Live Canvas Certificate */}
-                          <div className="w-full flex items-center justify-center flex-1 my-2">
-                            {(() => {
-                              const t = getThemeClasses(certTheme);
-                              return (
-                                <div
-                                  className={cn(
-                                    "w-[640px] h-[448px] p-8 rounded-xl flex flex-col justify-between items-center text-center relative overflow-hidden select-none border-box shadow-xl transition-all duration-300 scale-90 md:scale-95 lg:scale-100",
-                                    t.cardBg,
-                                    t.cardBorder
-                                  )}
-                                >
-                                  {/* Watermark Logo */}
-                                  {certShowLogo && certLogoPlacement === "watermark" && (
-                                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-5 z-0">
-                                      <img src="/logo.png" alt="K10 Logo Watermark" className="w-[320px] h-auto object-contain" />
-                                    </div>
-                                  )}
-
-                                  {/* Header Section */}
-                                  <div className="w-full flex flex-col items-center gap-1 z-10">
-                                    {certShowLogo && certLogoPlacement === "top" && (
-                                      <img src="/logo.png" alt="K10 Logo Top" className="h-6 w-auto object-contain mb-1" />
-                                    )}
-                                    <p className={cn("text-[9px] font-bold uppercase tracking-[0.25em]", t.textColor)}>
-                                      {certAcademyName}
-                                    </p>
-                                  </div>
-
-                                  {/* Title & Subtitle */}
-                                  <div className="z-10 mt-1">
-                                    <h3 className={cn("text-lg font-heading font-black tracking-wider uppercase", t.titleColor)}>
-                                      {certTitle}
-                                    </h3>
-                                    <p className={cn("text-[8px] uppercase tracking-widest mt-1", t.subtitleColor)}>
-                                      {certSubtitle}
-                                    </p>
-                                  </div>
-
-                                  {/* Athlete Name */}
-                                  <div className="my-2 z-10">
-                                    <p className={cn("text-[8px] italic", t.subtitleColor)}>This certifies the profile of</p>
-                                    <h4 className={cn("text-2xl font-bold font-heading uppercase tracking-wide border-b pb-1 mt-1 px-8 inline-block", t.accentText, t.accentBorder)}>
-                                      {playerData.fullName}
-                                    </h4>
-                                    <p className={cn("text-[10px] font-medium mt-1", t.titleColor)}>
-                                      {getVeryShortPosition(playerData.position)}
-                                    </p>
-                                  </div>
-
-                                  {/* Text Description */}
-                                  <p className={cn("text-[10px] max-w-[500px] leading-relaxed z-10", t.subtitleColor)}>
-                                    This document officially validates that the athletic profile, performance stats, and position maps listed on this CV have been assessed and verified. The athlete has demonstrated an exceptional overall rating of <span className={cn("font-bold", t.textColor)}>{certShowRating ? playerData.rating + ' OVR' : 'VALIDATED OVR'}</span> at the level of <span className={cn("font-bold", t.textColor)}>{getVeryShortPosition(playerData.position)}</span>.
-                                  </p>
-
-                                  {/* Technical Stats Block */}
-                                  {certShowStats && (
-                                    <div className={cn("flex gap-4 justify-center py-1.5 px-4 rounded-lg bg-white/5 border text-[9px] z-10", t.accentBorder)}>
-                                      <span>PAC: <strong className={t.titleColor}>{playerData.strengths.pace}</strong></span>
-                                      <span>SHO: <strong className={t.titleColor}>{playerData.strengths.shooting}</strong></span>
-                                      <span>PAS: <strong className={t.titleColor}>{playerData.strengths.passing}</strong></span>
-                                      <span>DRI: <strong className={t.titleColor}>{playerData.strengths.dribbling}</strong></span>
-                                      <span>DEF: <strong className={t.titleColor}>{playerData.strengths.defending}</strong></span>
-                                      <span>PHY: <strong className={t.titleColor}>{playerData.strengths.physical}</strong></span>
-                                    </div>
-                                  )}
-
-                                  {/* Credentials Grid */}
-                                  <div className="w-full grid grid-cols-3 border-t border-b py-2 my-1 border-white/5 text-[9px] z-10">
-                                    <div className="flex flex-col">
-                                      <span className="text-[7px] text-gray-500 uppercase tracking-wider">Current Club</span>
-                                      <span className={cn("font-semibold truncate max-w-[120px] mx-auto", t.titleColor)}>{certClubName}</span>
-                                    </div>
-                                    <div className="flex flex-col">
-                                      <span className="text-[7px] text-gray-500 uppercase tracking-wider">Assigned Coach</span>
-                                      <span className={cn("font-semibold truncate max-w-[120px] mx-auto", t.titleColor)}>{certCoachName}</span>
-                                    </div>
-                                    <div className="flex flex-col">
-                                      <span className="text-[7px] text-gray-500 uppercase tracking-wider">Status</span>
-                                      <span className="font-semibold text-green-400">VERIFIED PROFILE</span>
-                                    </div>
-                                  </div>
-
-                                  {/* Signatures */}
-                                  <div className="w-full flex justify-between px-6 z-10">
-                                    <div className="flex flex-col items-center w-[120px]">
-                                      <span className={cn("font-heading italic text-[11px]", t.textColor)}>{certDirectorName}</span>
-                                      <span className="w-full border-t border-white/20 mt-1 pt-1 text-[7px] text-gray-500 uppercase tracking-wider">{certDirectorTitle}</span>
-                                    </div>
-
-                                    {certShowLogo && certLogoPlacement === "bottom" && (
-                                      <img src="/logo.png" alt="K10 Logo Bottom" className="h-6 w-auto object-contain self-end mb-1" />
-                                    )}
-
-                                    <div className="flex flex-col items-center w-[120px]">
-                                      <span className={cn("font-heading italic text-[11px]", t.textColor)}>{certCoachSignName}</span>
-                                      <span className="w-full border-t border-white/20 mt-1 pt-1 text-[7px] text-gray-500 uppercase tracking-wider">{certCoachTitle}</span>
-                                    </div>
-                                  </div>
-
-                                  {/* Gold Seal decoration */}
-                                  <div className={cn("absolute bottom-6 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full border flex items-center justify-center text-xs font-bold bg-[#0a0a0a] z-10", t.cardBorder, t.textColor)}>
-                                    ★
-                                  </div>
-                                </div>
-                              );
-                            })()}
-                          </div>
-
-                          {/* Control Bar Actions */}
-                          <div className="w-full border-t border-border/20 pt-4 flex justify-end gap-3 mt-auto">
-                            <DialogTrigger asChild>
-                              <Button variant="ghost" className="text-gray-400 hover:text-white text-xs hover:bg-transparent">
-                                Close Designer
-                              </Button>
-                            </DialogTrigger>
-                            <Button
-                              onClick={() => handlePrintCustom({
-                                theme: certTheme,
-                                title: certTitle,
-                                subtitle: certSubtitle,
-                                academyName: certAcademyName,
-                                coachName: certCoachName,
-                                clubName: certClubName,
-                                directorName: certDirectorName,
-                                directorTitle: certDirectorTitle,
-                                coachSignName: certCoachSignName,
-                                coachTitle: certCoachTitle,
-                                showRating: certShowRating,
-                                showStats: certShowStats,
-                                showLogo: certShowLogo,
-                                logoPlacement: certLogoPlacement
-                              })}
-                              className="bg-primary text-black font-bold text-xs px-6 hover:bg-primary/90 flex items-center gap-2 rounded-xl"
-                            >
-                              <Printer size={14} /> Print Certificate
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    </DialogContent>
-                  </Dialog>
-
-                  <Button
-                    onClick={handleDownloadPdf}
-                    className="w-full bg-transparent hover:bg-white/5 border border-border/50 text-white font-bold h-8 text-xs flex items-center justify-center gap-2 rounded-xl"
-                    size="sm"
-                  >
-                    <Download size={14} /> Download Certificate (A4 PDF)
-                  </Button>
-                </div>
-              )}
+                )}
+              </div>
             </div>
 
 
@@ -2430,218 +1802,7 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
           </div>
         </div>
       </div>
-
-      {/* Hidden high-res certificate container for direct PDF download */}
-      <div
-        ref={certificateRef}
-        style={{
-          position: 'absolute',
-          left: '-9999px',
-          top: '-9999px',
-          width: '1123px',
-          height: '794px',
-          padding: '50px 60px',
-          boxSizing: 'border-box',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          textAlign: 'center',
-          backgroundColor: getOffscreenThemeStyles(certTheme).containerBg,
-          border: getOffscreenThemeStyles(certTheme).containerBorder,
-          boxShadow: getOffscreenThemeStyles(certTheme).boxShadow,
-          color: '#ffffff',
-          fontFamily: 'Inter, sans-serif',
-          zIndex: -100,
-        }}
-      >
-        {/* Watermark Logo */}
-        {certShowLogo && certLogoPlacement === "watermark" && (
-          <div style={{
-            position: 'absolute',
-            inset: 0,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            opacity: 0.05,
-            pointerEvents: 'none',
-            zIndex: 0
-          }}>
-            <img src="/logo.png" alt="K10 Logo Watermark" style={{ width: '450px', height: 'auto', objectFit: 'contain' }} />
-          </div>
-        )}
-
-        {/* Header Section */}
-        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 10 }}>
-          {certShowLogo && certLogoPlacement === "top" && (
-            <img src="/logo.png" alt="K10 Logo Top" style={{ height: '40px', width: 'auto', objectFit: 'contain', marginBottom: '8px' }} />
-          )}
-          <p style={{
-            fontSize: '14px',
-            fontWeight: 'bold',
-            textTransform: 'uppercase',
-            letterSpacing: '0.25em',
-            margin: 0,
-            color: getOffscreenThemeStyles(certTheme).textColor
-          }}>
-            {certAcademyName}
-          </p>
-        </div>
-
-        {/* Title & Subtitle */}
-        <div style={{ zIndex: 10, marginTop: '-10px' }}>
-          <h3 style={{
-            fontFamily: 'Cinzel, serif',
-            fontSize: '28px',
-            fontWeight: 900,
-            letterSpacing: '2px',
-            textTransform: 'uppercase',
-            margin: '0 0 4px 0',
-            color: getOffscreenThemeStyles(certTheme).titleColor
-          }}>
-            {certTitle}
-          </h3>
-          <p style={{
-            fontSize: '11px',
-            textTransform: 'uppercase',
-            letterSpacing: '0.15em',
-            margin: 0,
-            color: getOffscreenThemeStyles(certTheme).subtitleColor
-          }}>
-            {certSubtitle}
-          </p>
-        </div>
-
-        {/* Athlete Name */}
-        <div style={{ zIndex: 10, marginTop: '-10px' }}>
-          <p style={{ fontSize: '11px', fontStyle: 'italic', margin: 0, color: getOffscreenThemeStyles(certTheme).subtitleColor }}>This certifies the profile of</p>
-          <h4 style={{
-            fontFamily: 'Playfair Display, serif',
-            fontSize: '36px',
-            fontWeight: 'bold',
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
-            borderBottom: `2px solid ${getOffscreenThemeStyles(certTheme).textColor}`,
-            paddingBottom: '8px',
-            marginTop: '8px',
-            paddingLeft: '32px',
-            paddingRight: '32px',
-            display: 'inline-block',
-            margin: 0,
-            color: getOffscreenThemeStyles(certTheme).accentText
-          }}>
-            {playerData.fullName}
-          </h4>
-          <p style={{
-            fontSize: '14px',
-            fontWeight: 600,
-            marginTop: '8px',
-            margin: 0,
-            color: getOffscreenThemeStyles(certTheme).titleColor
-          }}>
-            {getVeryShortPosition(playerData.position)}
-          </p>
-        </div>
-
-        {/* Text Description */}
-        <p style={{
-          fontSize: '14px',
-          maxWidth: '850px',
-          lineHeight: '1.6',
-          margin: 0,
-          zIndex: 10,
-          color: getOffscreenThemeStyles(certTheme).subtitleColor
-        }}>
-          This document officially validates that the athletic profile, performance stats, and position maps listed on this CV have been assessed and verified. The athlete has demonstrated an exceptional overall rating of <span style={{ fontWeight: 'bold', color: getOffscreenThemeStyles(certTheme).textColor }}>{certShowRating ? playerData.rating + ' OVR' : 'VALIDATED OVR'}</span> at the level of <span style={{ fontWeight: 'bold', color: getOffscreenThemeStyles(certTheme).textColor }}>{getVeryShortPosition(playerData.position)}</span>.
-        </p>
-
-        {/* Technical Stats Block */}
-        {certShowStats && (
-          <div style={{
-            display: 'flex',
-            gap: '24px',
-            justifyContent: 'center',
-            padding: '10px 24px',
-            borderRadius: '8px',
-            backgroundColor: 'rgba(255, 255, 255, 0.05)',
-            border: getOffscreenThemeStyles(certTheme).accentBorder,
-            fontSize: '13px',
-            zIndex: 10
-          }}>
-            <span>PAC: <strong style={{ color: getOffscreenThemeStyles(certTheme).titleColor }}>{playerData.strengths.pace}</strong></span>
-            <span>SHO: <strong style={{ color: getOffscreenThemeStyles(certTheme).titleColor }}>{playerData.strengths.shooting}</strong></span>
-            <span>PAS: <strong style={{ color: getOffscreenThemeStyles(certTheme).titleColor }}>{playerData.strengths.passing}</strong></span>
-            <span>DRI: <strong style={{ color: getOffscreenThemeStyles(certTheme).titleColor }}>{playerData.strengths.dribbling}</strong></span>
-            <span>DEF: <strong style={{ color: getOffscreenThemeStyles(certTheme).titleColor }}>{playerData.strengths.defending}</strong></span>
-            <span>PHY: <strong style={{ color: getOffscreenThemeStyles(certTheme).titleColor }}>{playerData.strengths.physical}</strong></span>
-          </div>
-        )}
-
-        {/* Credentials Grid */}
-        <div style={{
-          width: '100%',
-          display: 'grid',
-          gridTemplateColumns: 'repeat(3, 1fr)',
-          borderTop: '1px solid rgba(255, 255, 255, 0.05)',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
-          padding: '14px 0',
-          margin: '10px 0',
-          fontSize: '13px',
-          zIndex: 10
-        }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <span style={{ fontSize: '10px', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Current Club</span>
-            <span style={{ fontWeight: 'semibold', color: getOffscreenThemeStyles(certTheme).titleColor }}>{certClubName}</span>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <span style={{ fontSize: '10px', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Assigned Coach</span>
-            <span style={{ fontWeight: 'semibold', color: getOffscreenThemeStyles(certTheme).titleColor }}>{certCoachName}</span>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <span style={{ fontSize: '10px', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Status</span>
-            <span style={{ fontWeight: 'semibold', color: '#4ade80' }}>VERIFIED PROFILE</span>
-          </div>
-        </div>
-
-        {/* Signatures */}
-        <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', padding: '0 40px', boxSizing: 'border-box', zIndex: 10 }}>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '180px' }}>
-            <span style={{ fontFamily: 'Playfair Display, serif', fontStyle: 'italic', fontSize: '18px', color: getOffscreenThemeStyles(certTheme).textColor }}>{certDirectorName}</span>
-            <span style={{ width: '100%', borderTop: '1px solid rgba(255, 255, 255, 0.2)', marginTop: '8px', paddingTop: '4px', fontSize: '10px', color: '#888888', textTransform: 'uppercase', letterSpacing: '1px' }}>{certDirectorTitle}</span>
-          </div>
-
-          {certShowLogo && certLogoPlacement === "bottom" && (
-            <img src="/logo.png" alt="K10 Logo Bottom" style={{ height: '35px', width: 'auto', objectFit: 'contain', alignSelf: 'flex-end', marginBottom: '8px' }} />
-          )}
-
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '180px' }}>
-            <span style={{ fontFamily: 'Playfair Display, serif', fontStyle: 'italic', fontSize: '18px', color: getOffscreenThemeStyles(certTheme).textColor }}>{certCoachSignName}</span>
-            <span style={{ width: '100%', borderTop: '1px solid rgba(255, 255, 255, 0.2)', marginTop: '8px', paddingTop: '4px', fontSize: '10px', color: '#888888', textTransform: 'uppercase', letterSpacing: '1px' }}>{certCoachTitle}</span>
-          </div>
-        </div>
-
-        {/* Gold Seal decoration */}
-        <div style={{
-          position: 'absolute',
-          bottom: '36px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: '45px',
-          height: '45px',
-          borderRadius: '50%',
-          border: `2px solid ${getOffscreenThemeStyles(certTheme).textColor}`,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: '#0a0a0a',
-          fontSize: '16px',
-          fontWeight: 'bold',
-          color: getOffscreenThemeStyles(certTheme).textColor,
-          zIndex: 10
-        }}>
-          ★
-        </div>
-      </div>
+      {/* Certificate is not downloadable */}
     </>
   );
 };

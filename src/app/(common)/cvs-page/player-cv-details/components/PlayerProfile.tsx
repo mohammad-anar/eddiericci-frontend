@@ -186,6 +186,42 @@ export default function PlayerProfile({
     updatePlayerData(field, value);
   };
 
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  const handleCardImageUpload = async (file: File) => {
+    try {
+      toast.loading("Removing background... Please wait.", { id: "card-bg-removal" });
+      const { removeBackground } = await import("@imgly/background-removal");
+      const blob = await removeBackground(file);
+      const processedFile = new File([blob], file.name, { type: "image/png" });
+      
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        updatePlayerData("cardImage", reader.result as string);
+        toast.success("Card image updated with background removed!", { id: "card-bg-removal" });
+      };
+      reader.readAsDataURL(processedFile);
+    } catch (error) {
+      console.error("Background removal failed:", error);
+      toast.error("Background removal failed. Using original image.", { id: "card-bg-removal" });
+      
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        updatePlayerData("cardImage", reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    if (!editable) return;
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith("image/")) {
+      handleCardImageUpload(file);
+    }
+  };
+
   return (
     <div className=" text-white p-8">
       <div className="container mt-10">
@@ -221,11 +257,49 @@ export default function PlayerProfile({
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className=" relative w-[90%] h-[90%] ">
                       {/* Render custom card image if uploaded, otherwise keep default short image */}
-                      <img
-                        className="w-40 h-48 ml-10 object-cover rounded-t-3xl"
-                        src={playerData.cardImage || playerImage.src}
-                        alt="player Image"
-                      />
+                      <div
+                        className={`relative group w-40 h-48 ml-10 overflow-hidden rounded-t-3xl ${
+                          editable ? "cursor-pointer" : ""
+                        }`}
+                        onClick={(e) => {
+                          if (editable) {
+                            e.stopPropagation();
+                            fileInputRef.current?.click();
+                          }
+                        }}
+                        onDragOver={(e) => e.preventDefault()}
+                        onDrop={(e) => {
+                          if (editable) {
+                            e.stopPropagation();
+                            handleDrop(e);
+                          }
+                        }}
+                      >
+                        <img
+                          className="w-full h-full object-cover"
+                          src={playerData.cardImage || playerImage.src}
+                          alt="player Image"
+                        />
+                        {editable && (
+                          <>
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                              <span className="text-[10px] text-white font-black uppercase tracking-widest text-center">
+                                Drop or Click
+                              </span>
+                            </div>
+                            <input
+                              type="file"
+                              ref={fileInputRef}
+                              className="hidden"
+                              accept="image/*"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) handleCardImageUpload(file);
+                              }}
+                            />
+                          </>
+                        )}
+                      </div>
 
 
                       {/* shadow */}

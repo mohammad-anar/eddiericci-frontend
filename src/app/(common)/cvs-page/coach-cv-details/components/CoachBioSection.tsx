@@ -8,6 +8,17 @@ import playerImage from "@/assets/cvs-page/id/coach-style-image.png";
 import flagFr from "@/assets/cvs-page/id/flag-fr.png";
 import flagIt from "@/assets/cvs-page/id/flag-itally.png";
 import trophyIcon from "@/assets/cvs-page/id/trofeeIcon.png";
+import iconAttackMinded from "@/assets/cvs-page/id/coach-styles-icons/attack minded.png";
+import iconCounterAttack from "@/assets/cvs-page/id/coach-styles-icons/counter-attack.png";
+import iconDisciplinarian from "@/assets/cvs-page/id/coach-styles-icons/disciplainarian.png";
+import iconGegenpressing from "@/assets/cvs-page/id/coach-styles-icons/gegenpressing.png";
+import iconHolistic from "@/assets/cvs-page/id/coach-styles-icons/holistic.png";
+import iconMotivator from "@/assets/cvs-page/id/coach-styles-icons/motivator.png";
+import iconParkTheBus from "@/assets/cvs-page/id/coach-styles-icons/park the bus.png";
+import iconPlayerCentric from "@/assets/cvs-page/id/coach-styles-icons/player-centric.png";
+import iconSetPieceSpecialist from "@/assets/cvs-page/id/coach-styles-icons/set-piece specialist.png";
+import iconTikiTaka from "@/assets/cvs-page/id/coach-styles-icons/tiki-taka.png";
+import iconYouthDevelopment from "@/assets/cvs-page/id/coach-styles-icons/youth development.png";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { IconTrophy } from "@tabler/icons-react";
@@ -300,16 +311,21 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
   const [activeSkillIconIndex, setActiveSkillIconIndex] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const styleBadges = [
-    badge1,
-    badge2,
-    badge3,
-    "https://cdn-icons-png.flaticon.com/128/5323/5323862.png", // whistle
-    "https://cdn-icons-png.flaticon.com/128/3002/3002655.png", // tactics board
-    "https://cdn-icons-png.flaticon.com/128/861/861506.png",    // trophy
-    "https://cdn-icons-png.flaticon.com/128/33/33736.png",      // soccer ball
-    "https://cdn-icons-png.flaticon.com/128/3126/3126588.png"   // strategy
-  ];
+  // Map each coach style ID → its dedicated icon image
+  const COACH_STYLE_ICONS: Record<string, { src: string }> = {
+    "tiki-taka":           iconTikiTaka,
+    "gegenpressing":       iconGegenpressing,
+    "counter-attack":      iconCounterAttack,
+    "park-the-bus":        iconParkTheBus,
+    "motivator":           iconMotivator,
+    "disciplinarian":      iconDisciplinarian,
+    "holistic":            iconHolistic,
+    "player-centric":      iconPlayerCentric,
+    "youth-development":   iconYouthDevelopment,
+    "set-piece-specialist":iconSetPieceSpecialist,
+    "defensive-solid":     badge1,   // no dedicated icon — use first badge as fallback
+    "attack-minded":       iconAttackMinded,
+  };
   const { role, bioRating, skillsAvg, metricsAvg, attributesAvg } = usePlayerStats();
 
   const canEdit = !!(editable && (role === "coach" || role === "admin" || !role));
@@ -1010,15 +1026,16 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
                 </div>
 
                 <div className="space-y-4">
-                  {orderedSelectedStyles.map((style: any, index: number) => {
-                    const badge = styleBadges[index % styleBadges.length];
-                    const badgeSrc = typeof badge === "string" ? badge : badge.src;
+                  {orderedSelectedStyles.map((style: any) => {
+                    const icon = COACH_STYLE_ICONS[style.id];
+                    const iconSrc = icon ? icon.src : badge2.src;
 
                     return (
                       <div key={style.id} className="space-y-4">
                         <div className="flex justify-center">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
-                            src={badgeSrc}
+                            src={iconSrc}
                             className="w-20 h-20 object-contain"
                             alt={style.label}
                           />

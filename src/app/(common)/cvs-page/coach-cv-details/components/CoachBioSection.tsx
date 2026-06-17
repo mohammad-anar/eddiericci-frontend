@@ -1,13 +1,6 @@
 "use client";
-import clubImage from "@/assets/cvs-page/club1.png";
 import badge1 from "@/assets/cvs-page/id/coach-badge1.png";
 import badge2 from "@/assets/cvs-page/id/coach-badge2.png";
-import badge3 from "@/assets/cvs-page/id/coach-badge3.png";
-import flagImage from "@/assets/cvs-page/id/coach-bio-flag.png";
-import playerImage from "@/assets/cvs-page/id/coach-style-image.png";
-import flagFr from "@/assets/cvs-page/id/flag-fr.png";
-import flagIt from "@/assets/cvs-page/id/flag-itally.png";
-import trophyIcon from "@/assets/cvs-page/id/trofeeIcon.png";
 import iconAttackMinded from "@/assets/cvs-page/id/coach-styles-icons/attack minded.png";
 import iconCounterAttack from "@/assets/cvs-page/id/coach-styles-icons/counter-attack.png";
 import iconDisciplinarian from "@/assets/cvs-page/id/coach-styles-icons/disciplainarian.png";
@@ -19,38 +12,10 @@ import iconPlayerCentric from "@/assets/cvs-page/id/coach-styles-icons/player-ce
 import iconSetPieceSpecialist from "@/assets/cvs-page/id/coach-styles-icons/set-piece specialist.png";
 import iconTikiTaka from "@/assets/cvs-page/id/coach-styles-icons/tiki-taka.png";
 import iconYouthDevelopment from "@/assets/cvs-page/id/coach-styles-icons/youth development.png";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { IconTrophy } from "@tabler/icons-react";
-import {
-  ChevronDown,
-  PencilIcon,
-  Plus,
-  Trash2,
-  X,
-  Check,
-  Upload,
-  Trophy,
-  Award,
-  Star,
-  Target,
-  Users,
-  TrendingUp,
-  Activity,
-  Shield,
-  GraduationCap,
-  Calendar,
-  Medal,
-  Sparkles
-} from "lucide-react";
-import Image, { type StaticImageData } from "next/image";
-import { useState, useRef, useEffect } from "react";
-import { cn } from "@/lib/utils";
+import trophyIcon from "@/assets/cvs-page/id/trofeeIcon.png";
 import { CMSField } from "@/components/shared/CMSField";
-import { useCoach } from "@/lib/hooks/useCoach";
-import { usePlayerStats } from "../../player-cv-details/components/FullEditablePage";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -58,19 +23,31 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useCoach } from "@/lib/hooks/useCoach";
+import { cn } from "@/lib/utils";
+import { IconTrophy } from "@tabler/icons-react";
 import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  Activity,
+  Award,
+  Calendar,
+  GraduationCap,
+  Medal,
+  PencilIcon,
+  Plus,
+  Shield,
+  Sparkles,
+  Star,
+  Target,
+  Trash2,
+  TrendingUp,
+  Trophy,
+  Users
+} from "lucide-react";
+import Image, { type StaticImageData } from "next/image";
+import { useRef, useState } from "react";
 import { toast } from "sonner";
+import { usePlayerStats } from "../../player-cv-details/components/FullEditablePage";
 
 const ACCOMPLISHMENT_ICONS: Record<string, React.ComponentType<any>> = {
   trophy: Trophy,
@@ -313,18 +290,18 @@ const CoachBioSection = ({ editable }: { editable?: boolean }) => {
 
   // Map each coach style ID → its dedicated icon image
   const COACH_STYLE_ICONS: Record<string, { src: string }> = {
-    "tiki-taka":           iconTikiTaka,
-    "gegenpressing":       iconGegenpressing,
-    "counter-attack":      iconCounterAttack,
-    "park-the-bus":        iconParkTheBus,
-    "motivator":           iconMotivator,
-    "disciplinarian":      iconDisciplinarian,
-    "holistic":            iconHolistic,
-    "player-centric":      iconPlayerCentric,
-    "youth-development":   iconYouthDevelopment,
-    "set-piece-specialist":iconSetPieceSpecialist,
-    "defensive-solid":     badge1,   // no dedicated icon — use first badge as fallback
-    "attack-minded":       iconAttackMinded,
+    "tiki-taka": iconTikiTaka,
+    "gegenpressing": iconGegenpressing,
+    "counter-attack": iconCounterAttack,
+    "park-the-bus": iconParkTheBus,
+    "motivator": iconMotivator,
+    "disciplinarian": iconDisciplinarian,
+    "holistic": iconHolistic,
+    "player-centric": iconPlayerCentric,
+    "youth-development": iconYouthDevelopment,
+    "set-piece-specialist": iconSetPieceSpecialist,
+    "defensive-solid": badge1,   // no dedicated icon — use first badge as fallback
+    "attack-minded": iconAttackMinded,
   };
   const { role, bioRating, skillsAvg, metricsAvg, attributesAvg } = usePlayerStats();
 

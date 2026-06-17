@@ -25,7 +25,7 @@ import { usePlayer } from "@/lib/hooks/usePlayer";
 import { usePlayerStats } from "@/app/(common)/cvs-page/player-cv-details/components/FullEditablePage";
 import { getFullWithShortForm } from "@/lib/utils";
 import { FileText } from 'lucide-react';
-import { SHARED_REPORTS_DATA } from "@/lib/constants/reports";
+import { useAppSelector } from "@/lib/hooks/reduxHooks";
 
 const CareerItem = ({ logo, name, role, years, type }: { logo: string; name: string; role: string; years: string; type: string }) => (
   <div className="bg-black/40 border border-white/10 rounded-2xl p-4 flex flex-col gap-3 group hover:border-white/20 transition-all">
@@ -50,7 +50,8 @@ const GenerateCv = () => {
   const { role: contextRole } = usePlayerStats();
   const [role, setRole] = useState<string>("player");
 
-  const gameReports = SHARED_REPORTS_DATA
+  const reports = useAppSelector(state => state.reports.reports);
+  const gameReports = reports
     .filter(r => r.status === "Paid")
     .slice(0, 3)
     .map(r => ({

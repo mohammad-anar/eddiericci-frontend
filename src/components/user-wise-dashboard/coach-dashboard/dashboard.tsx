@@ -1,5 +1,7 @@
 "use client";
 import React, { useContext } from "react";
+import { useRouter } from "next/navigation";
+import { useAppSelector } from "@/lib/hooks/reduxHooks";
 import { CoachContext } from "@/app/dashboard/coach/layout";
 import {
   IconUser,
@@ -75,6 +77,8 @@ import { useCoach } from "@/lib/hooks/useCoach";
 export const CoachDashboard = () => {
   const { hasAcademy } = useContext(CoachContext);
   const { coachData } = useCoach();
+  const router = useRouter();
+  const requests = useAppSelector(state => state.reports.requests);
 
   const teamColumns: Column<typeof teamData[0]>[] = [
     {
@@ -127,9 +131,9 @@ export const CoachDashboard = () => {
       header: "Actions",
       key: "actions",
       align: "right",
-      render: () => (
+      render: (player) => (
         <TableActionButtons
-          onView={() => console.log("View player")}
+          onView={() => router.push(`/dashboard/coach/game-reports?playerId=${player.id}`)}
           viewColor="text-[#E31B23] hover:text-white border-[#E31B23]/20 hover:border-[#E31B23] bg-[#E31B23]/5 hover:bg-[#E31B23]"
         />
       ),
@@ -347,7 +351,12 @@ export const CoachDashboard = () => {
                 </button>
               </div>
 
-              <DashboardTable columns={teamColumns} data={teamData} className="border-white/20" />
+              <DashboardTable 
+                columns={teamColumns} 
+                data={teamData} 
+                className="border-white/20" 
+                onRowClick={(player) => router.push(`/dashboard/coach/game-reports?playerId=${player.id}`)}
+              />
             </div>
           )}
         </div>
@@ -363,16 +372,20 @@ export const CoachDashboard = () => {
               <h2 className="text-sm font-bold text-white uppercase tracking-widest">Pending Game Reports</h2>
             </div>
             <div className="space-y-4">
-              {pendingReports.map((report) => (
-                <div key={report.id} className="flex items-center justify-between p-3 rounded-xl bg-white/10 border border-white/20 group hover:border-[#E31B23]/50 transition-colors">
+              {requests.filter(req => req.status === 'Pending').map((req) => (
+                <div 
+                  key={req.id} 
+                  onClick={() => router.push(`/dashboard/coach/game-reports/create?playerId=${req.playerId}&requestId=${req.id}`)}
+                  className="flex items-center justify-between p-3 rounded-xl bg-white/10 border border-white/20 group hover:border-[#E31B23]/50 transition-colors cursor-pointer"
+                >
                   <div className="flex items-center gap-3">
-                    <img src={report.avatar} className="w-10 h-10 rounded-full object-cover" alt={report.name} />
+                    <img src={teamData.find(p => p.id === req.playerId)?.avatar || "https://i.pravatar.cc/150?u=1"} className="w-10 h-10 rounded-full object-cover" alt={req.playerName} />
                     <div>
-                      <div className="text-sm font-bold text-white">{report.name}</div>
-                      <div className="text-[10px] text-gray-500 uppercase tracking-widest">{report.position}</div>
+                      <div className="text-sm font-bold text-white">{req.playerName}</div>
+                      <div className="text-[10px] text-gray-500 uppercase tracking-widest">{req.playerPosition}</div>
                     </div>
                   </div>
-                  <div className="text-lg font-black text-white italic">{report.rating}</div>
+                  <div className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">CREATE</div>
                 </div>
               ))}
             </div>

@@ -10,7 +10,7 @@ import { CMSField } from "@/components/shared/CMSField";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
-import { SHARED_REPORTS_DATA, MatchStats } from "@/lib/constants/reports";
+import { useAppSelector } from "@/lib/hooks/reduxHooks";
 
 const getResultColor = (result: "W" | "D" | "L") => {
   switch (result) {
@@ -26,7 +26,8 @@ const getResultColor = (result: "W" | "D" | "L") => {
 const getResultText = (result: "W" | "D" | "L") => result;
 
 function SportsAnalycies({ editable = false }: { editable?: boolean }) {
-  const matches = SHARED_REPORTS_DATA.filter(m => m.status === "Paid").slice(0, 4);
+  const reports = useAppSelector(state => state.reports.reports);
+  const matches = reports.filter(m => m.status === "Paid").slice(0, 4);
 
   const wins = matches.filter((m) => m.result === "W").length;
   const draws = matches.filter((m) => m.result === "D").length;
@@ -131,7 +132,8 @@ function SportsAnalycies({ editable = false }: { editable?: boolean }) {
                     {match.league}
                   </Badge>
                 </div>
-                <div className="text-right">
+                <div className="text-right flex flex-col items-end gap-1">
+                  <Badge className="bg-blue-500/10 text-blue-400 border border-blue-500/20 text-[10px] uppercase font-black tracking-widest py-0.5 px-2">VERIFIED</Badge>
                   <div className="text-3xl font-black text-[#00FF62]">{match.rating}</div>
                   <div className="text-xs uppercase tracking-widest text-gray-500 font-black">Rating</div>
                 </div>

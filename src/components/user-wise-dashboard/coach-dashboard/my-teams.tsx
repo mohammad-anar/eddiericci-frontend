@@ -1,8 +1,9 @@
 "use client";
 import React from "react";
-import { 
-  IconUsers, 
-  IconChartBar, 
+import { useRouter } from "next/navigation";
+import {
+  IconUsers,
+  IconChartBar,
   IconUserCheck,
   IconUserExclamation,
   IconPlus,
@@ -27,6 +28,7 @@ const teamData = [
 ];
 
 export const MyTeams = () => {
+  const router = useRouter();
   const columns: Column<typeof teamData[0]>[] = [
     {
       header: "Name",
@@ -63,9 +65,9 @@ export const MyTeams = () => {
       header: "Actions",
       key: "actions",
       align: "right",
-      render: () => (
-        <TableActionButtons 
-          onView={() => console.log("View player")} 
+      render: (player) => (
+        <TableActionButtons
+          onView={() => router.push(`/dashboard/coach/game-reports?playerId=${player.id}`)}
           viewColor="text-[#E31B23] hover:text-white border-[#E31B23]/20 hover:border-[#E31B23] bg-[#E31B23]/5 hover:bg-[#E31B23]"
         />
       ),
@@ -96,8 +98,13 @@ export const MyTeams = () => {
       </div>
 
       <div className="p-8 rounded-3xl border border-white/20 bg-[#0D0D0D]">
-        <h2 className="text-xl font-bold text-white mb-8 italic uppercase tracking-tight">Professional player</h2>
-        <DashboardTable columns={columns} data={teamData} className="border-white/10" />
+        <h2 className="text-xl font-bold text-white mb-8 italic uppercase tracking-tight">Players</h2>
+        <DashboardTable
+          columns={columns}
+          data={teamData}
+          className="border-white/10"
+          onRowClick={(player) => router.push(`/dashboard/coach/game-reports?playerId=${player.id}`)}
+        />
       </div>
     </div>
   );

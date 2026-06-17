@@ -237,29 +237,27 @@ export default function PlayerEvaluationPage() {
   // Helper renderer for evaluation radio check dots
   const renderRatingCircle = (
     key: keyof EvaluationData,
-    targetVal: number,
-    unselectedColorClass: string
+    targetVal: number
   ) => {
     const isSelected = evaluation[key] === targetVal;
     let bgColor = "#ffffff";
     if (isSelected) {
-      bgColor = "#E31B23";
-    } else if (unselectedColorClass === "bg-blue-600") {
-      bgColor = "#2563EB";
-    } else if (unselectedColorClass === "bg-blue-950") {
-      bgColor = "#172554";
-    } else if (unselectedColorClass === "bg-amber-500") {
-      bgColor = "#F59E0B";
+      if (targetVal === 1) bgColor = "#2563EB";      // Blue
+      else if (targetVal === 2) bgColor = "#EAB308"; // Yellow
+      else if (targetVal === 3) bgColor = "#16A34A"; // Green
+    } else {
+      if (targetVal === 1) bgColor = "#DBEAFE";      // Faded Blue
+      else if (targetVal === 2) bgColor = "#FEF9C3"; // Faded Yellow
+      else if (targetVal === 3) bgColor = "#DCFCE7"; // Faded Green
     }
 
     return (
-      <div className="flex flex-col items-center">
+      <div className="w-14 flex justify-center">
         <button
           type="button"
           onClick={() => handleRatingChange(key, targetVal)}
           className={cn(
-            "w-5 h-5 rounded-full flex items-center justify-center transition-all duration-200 shadow-sm cursor-pointer border",
-            isSelected ? "border-[#E31B23]" : "border-transparent"
+            "w-5 h-5 rounded-full flex items-center justify-center transition-all duration-200 shadow-sm cursor-pointer border border-transparent"
           )}
           style={{ backgroundColor: bgColor }}
         >
@@ -346,11 +344,11 @@ export default function PlayerEvaluationPage() {
                     <span className="text-gray-700 text-sm font-extrabold">Area For Improvement</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <div className="w-4 h-4 rounded-full shadow-md" style={{ backgroundColor: "#172554" }} />
+                    <div className="w-4 h-4 rounded-full shadow-md" style={{ backgroundColor: "#EAB308" }} />
                     <span className="text-gray-700 text-sm font-extrabold">Good</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <div className="w-4 h-4 rounded-full shadow-md" style={{ backgroundColor: "#F59E0B" }} />
+                    <div className="w-4 h-4 rounded-full shadow-md" style={{ backgroundColor: "#16A34A" }} />
                     <span className="text-gray-700 text-sm font-extrabold">Excellent</span>
                   </div>
                 </div>
@@ -396,10 +394,10 @@ export default function PlayerEvaluationPage() {
                   <div className="space-y-1">
                     <div className="flex justify-between items-center text-[7px] font-black uppercase text-gray-400 tracking-wider pb-1">
                       <span>Skill</span>
-                      <div className="flex gap-4 w-[110px] justify-between text-center">
-                        <span className="w-8">Improvement</span>
-                        <span className="w-8">Good</span>
-                        <span className="w-8">Excellent</span>
+                      <div className="flex gap-2 w-[180px] justify-between text-center">
+                        <span className="w-14 text-[8px] font-black uppercase text-gray-400 tracking-wider">Improvement</span>
+                        <span className="w-14 text-[8px] font-black uppercase text-gray-400 tracking-wider">Good</span>
+                        <span className="w-14 text-[8px] font-black uppercase text-gray-400 tracking-wider">Excellent</span>
                       </div>
                     </div>
                     {[
@@ -410,10 +408,10 @@ export default function PlayerEvaluationPage() {
                     ].map((skill) => (
                       <div key={skill.key} className="flex justify-between items-center py-0.5 border-b border-gray-50 last:border-0">
                         <span className="text-xs font-bold text-gray-700">{skill.label}</span>
-                        <div className="flex gap-4 w-[110px] justify-between">
-                          {renderRatingCircle(skill.key as keyof typeof DEFAULT_EVALUATION, 1, "bg-blue-600")}
-                          {renderRatingCircle(skill.key as keyof typeof DEFAULT_EVALUATION, 2, "bg-blue-950")}
-                          {renderRatingCircle(skill.key as keyof typeof DEFAULT_EVALUATION, 3, "bg-amber-500")}
+                        <div className="flex gap-2 w-[180px] justify-between">
+                          {renderRatingCircle(skill.key as keyof typeof DEFAULT_EVALUATION, 1)}
+                          {renderRatingCircle(skill.key as keyof typeof DEFAULT_EVALUATION, 2)}
+                          {renderRatingCircle(skill.key as keyof typeof DEFAULT_EVALUATION, 3)}
                         </div>
                       </div>
                     ))}
@@ -422,10 +420,10 @@ export default function PlayerEvaluationPage() {
                   <div className="space-y-1">
                     <div className="flex justify-between items-center text-[7px] font-black uppercase text-gray-400 tracking-wider pb-1">
                       <span>Skill</span>
-                      <div className="flex gap-4 w-[110px] justify-between text-center">
-                        <span className="w-8">Improvement</span>
-                        <span className="w-8">Good</span>
-                        <span className="w-8">Excellent</span>
+                      <div className="flex gap-2 w-[180px] justify-between text-center">
+                        <span className="w-14 text-[8px] font-black uppercase text-gray-400 tracking-wider">Improvement</span>
+                        <span className="w-14 text-[8px] font-black uppercase text-gray-400 tracking-wider">Good</span>
+                        <span className="w-14 text-[8px] font-black uppercase text-gray-400 tracking-wider">Excellent</span>
                       </div>
                     </div>
                     {[
@@ -436,10 +434,10 @@ export default function PlayerEvaluationPage() {
                     ].map((skill) => (
                       <div key={skill.key} className="flex justify-between items-center py-0.5 border-b border-gray-50 last:border-0">
                         <span className="text-xs font-bold text-gray-700">{skill.label}</span>
-                        <div className="flex gap-4 w-[110px] justify-between">
-                          {renderRatingCircle(skill.key as keyof typeof DEFAULT_EVALUATION, 1, "bg-blue-600")}
-                          {renderRatingCircle(skill.key as keyof typeof DEFAULT_EVALUATION, 2, "bg-blue-950")}
-                          {renderRatingCircle(skill.key as keyof typeof DEFAULT_EVALUATION, 3, "bg-amber-500")}
+                        <div className="flex gap-2 w-[180px] justify-between">
+                          {renderRatingCircle(skill.key as keyof typeof DEFAULT_EVALUATION, 1)}
+                          {renderRatingCircle(skill.key as keyof typeof DEFAULT_EVALUATION, 2)}
+                          {renderRatingCircle(skill.key as keyof typeof DEFAULT_EVALUATION, 3)}
                         </div>
                       </div>
                     ))}
@@ -455,10 +453,10 @@ export default function PlayerEvaluationPage() {
                   <div className="space-y-1">
                     <div className="flex justify-between items-center text-[7px] font-black uppercase text-gray-400 tracking-wider pb-1">
                       <span>Skill</span>
-                      <div className="flex gap-4 w-[110px] justify-between text-center">
-                        <span className="w-8">Improvement</span>
-                        <span className="w-8">Good</span>
-                        <span className="w-8">Excellent</span>
+                      <div className="flex gap-2 w-[180px] justify-between text-center">
+                        <span className="w-14 text-[8px] font-black uppercase text-gray-400 tracking-wider">Improvement</span>
+                        <span className="w-14 text-[8px] font-black uppercase text-gray-400 tracking-wider">Good</span>
+                        <span className="w-14 text-[8px] font-black uppercase text-gray-400 tracking-wider">Excellent</span>
                       </div>
                     </div>
                     {[
@@ -469,10 +467,10 @@ export default function PlayerEvaluationPage() {
                     ].map((skill) => (
                       <div key={skill.key} className="flex justify-between items-center py-0.5 border-b border-gray-50 last:border-0">
                         <span className="text-xs font-bold text-gray-700">{skill.label}</span>
-                        <div className="flex gap-4 w-[110px] justify-between">
-                          {renderRatingCircle(skill.key as keyof typeof DEFAULT_EVALUATION, 1, "bg-blue-600")}
-                          {renderRatingCircle(skill.key as keyof typeof DEFAULT_EVALUATION, 2, "bg-blue-950")}
-                          {renderRatingCircle(skill.key as keyof typeof DEFAULT_EVALUATION, 3, "bg-amber-500")}
+                        <div className="flex gap-2 w-[180px] justify-between">
+                          {renderRatingCircle(skill.key as keyof typeof DEFAULT_EVALUATION, 1)}
+                          {renderRatingCircle(skill.key as keyof typeof DEFAULT_EVALUATION, 2)}
+                          {renderRatingCircle(skill.key as keyof typeof DEFAULT_EVALUATION, 3)}
                         </div>
                       </div>
                     ))}
@@ -481,10 +479,10 @@ export default function PlayerEvaluationPage() {
                   <div className="space-y-1">
                     <div className="flex justify-between items-center text-[7px] font-black uppercase text-gray-400 tracking-wider pb-1">
                       <span>Skill</span>
-                      <div className="flex gap-4 w-[110px] justify-between text-center">
-                        <span className="w-8">Improvement</span>
-                        <span className="w-8">Good</span>
-                        <span className="w-8">Excellent</span>
+                      <div className="flex gap-2 w-[180px] justify-between text-center">
+                        <span className="w-14 text-[8px] font-black uppercase text-gray-400 tracking-wider">Improvement</span>
+                        <span className="w-14 text-[8px] font-black uppercase text-gray-400 tracking-wider">Good</span>
+                        <span className="w-14 text-[8px] font-black uppercase text-gray-400 tracking-wider">Excellent</span>
                       </div>
                     </div>
                     {[
@@ -494,10 +492,10 @@ export default function PlayerEvaluationPage() {
                     ].map((skill) => (
                       <div key={skill.key} className="flex justify-between items-center py-0.5 border-b border-gray-50 last:border-0">
                         <span className="text-xs font-bold text-gray-700">{skill.label}</span>
-                        <div className="flex gap-4 w-[110px] justify-between">
-                          {renderRatingCircle(skill.key as keyof typeof DEFAULT_EVALUATION, 1, "bg-blue-600")}
-                          {renderRatingCircle(skill.key as keyof typeof DEFAULT_EVALUATION, 2, "bg-blue-950")}
-                          {renderRatingCircle(skill.key as keyof typeof DEFAULT_EVALUATION, 3, "bg-amber-500")}
+                        <div className="flex gap-2 w-[180px] justify-between">
+                          {renderRatingCircle(skill.key as keyof typeof DEFAULT_EVALUATION, 1)}
+                          {renderRatingCircle(skill.key as keyof typeof DEFAULT_EVALUATION, 2)}
+                          {renderRatingCircle(skill.key as keyof typeof DEFAULT_EVALUATION, 3)}
                         </div>
                       </div>
                     ))}
@@ -514,10 +512,10 @@ export default function PlayerEvaluationPage() {
                   <div className="space-y-1">
                     <div className="flex justify-between items-center text-[7px] font-black uppercase text-gray-400 tracking-wider pb-1">
                       <span>Skill</span>
-                      <div className="flex gap-4 w-[110px] justify-between text-center">
-                        <span className="w-8">Improvement</span>
-                        <span className="w-8">Good</span>
-                        <span className="w-8">Excellent</span>
+                      <div className="flex gap-2 w-[180px] justify-between text-center">
+                        <span className="w-14 text-[8px] font-black uppercase text-gray-400 tracking-wider">Improvement</span>
+                        <span className="w-14 text-[8px] font-black uppercase text-gray-400 tracking-wider">Good</span>
+                        <span className="w-14 text-[8px] font-black uppercase text-gray-400 tracking-wider">Excellent</span>
                       </div>
                     </div>
                     {[
@@ -528,10 +526,10 @@ export default function PlayerEvaluationPage() {
                     ].map((skill) => (
                       <div key={skill.key} className="flex justify-between items-center py-0.5 border-b border-gray-50 last:border-0">
                         <span className="text-xs font-bold text-gray-700">{skill.label}</span>
-                        <div className="flex gap-4 w-[110px] justify-between">
-                          {renderRatingCircle(skill.key as keyof typeof DEFAULT_EVALUATION, 1, "bg-blue-600")}
-                          {renderRatingCircle(skill.key as keyof typeof DEFAULT_EVALUATION, 2, "bg-blue-950")}
-                          {renderRatingCircle(skill.key as keyof typeof DEFAULT_EVALUATION, 3, "bg-amber-500")}
+                        <div className="flex gap-2 w-[180px] justify-between">
+                          {renderRatingCircle(skill.key as keyof typeof DEFAULT_EVALUATION, 1)}
+                          {renderRatingCircle(skill.key as keyof typeof DEFAULT_EVALUATION, 2)}
+                          {renderRatingCircle(skill.key as keyof typeof DEFAULT_EVALUATION, 3)}
                         </div>
                       </div>
                     ))}
@@ -540,10 +538,10 @@ export default function PlayerEvaluationPage() {
                   <div className="space-y-1">
                     <div className="flex justify-between items-center text-[7px] font-black uppercase text-gray-400 tracking-wider pb-1">
                       <span>Skill</span>
-                      <div className="flex gap-4 w-[110px] justify-between text-center">
-                        <span className="w-8">Improvement</span>
-                        <span className="w-8">Good</span>
-                        <span className="w-8">Excellent</span>
+                      <div className="flex gap-2 w-[180px] justify-between text-center">
+                        <span className="w-14 text-[8px] font-black uppercase text-gray-400 tracking-wider">Improvement</span>
+                        <span className="w-14 text-[8px] font-black uppercase text-gray-400 tracking-wider">Good</span>
+                        <span className="w-14 text-[8px] font-black uppercase text-gray-400 tracking-wider">Excellent</span>
                       </div>
                     </div>
                     {[
@@ -553,10 +551,10 @@ export default function PlayerEvaluationPage() {
                     ].map((skill) => (
                       <div key={skill.key} className="flex justify-between items-center py-0.5 border-b border-gray-50 last:border-0">
                         <span className="text-xs font-bold text-gray-700">{skill.label}</span>
-                        <div className="flex gap-4 w-[110px] justify-between">
-                          {renderRatingCircle(skill.key as keyof typeof DEFAULT_EVALUATION, 1, "bg-blue-600")}
-                          {renderRatingCircle(skill.key as keyof typeof DEFAULT_EVALUATION, 2, "bg-blue-950")}
-                          {renderRatingCircle(skill.key as keyof typeof DEFAULT_EVALUATION, 3, "bg-amber-500")}
+                        <div className="flex gap-2 w-[180px] justify-between">
+                          {renderRatingCircle(skill.key as keyof typeof DEFAULT_EVALUATION, 1)}
+                          {renderRatingCircle(skill.key as keyof typeof DEFAULT_EVALUATION, 2)}
+                          {renderRatingCircle(skill.key as keyof typeof DEFAULT_EVALUATION, 3)}
                         </div>
                       </div>
                     ))}

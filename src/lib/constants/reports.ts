@@ -26,6 +26,10 @@ export interface MatchStats {
   height: string;
   status: "Paid" | "Pending";
   amount: string;
+  playerId?: number;
+  playerName?: string;
+  pitchMarkers?: any[];
+  goalMarkers?: any[];
 }
 
 export let SHARED_REPORTS_DATA: MatchStats[] = [
@@ -208,3 +212,97 @@ export let SHARED_REPORTS_DATA: MatchStats[] = [
 export const addReport = (report: MatchStats) => {
   SHARED_REPORTS_DATA = [report, ...SHARED_REPORTS_DATA];
 };
+
+export const updateReport = (report: MatchStats) => {
+  const idx = SHARED_REPORTS_DATA.findIndex(r => r.id === report.id);
+  if (idx !== -1) {
+    SHARED_REPORTS_DATA[idx] = report;
+  } else {
+    SHARED_REPORTS_DATA = [report, ...SHARED_REPORTS_DATA];
+  }
+};
+
+export interface ReportRequest {
+  id: number;
+  playerName: string;
+  playerPosition: string;
+  date: string;
+  status: 'Pending' | 'Completed';
+  coachName: string;
+  playerId: number;
+  opponent?: string;
+  location?: string;
+  league?: string;
+  weather?: string;
+  temperature?: string;
+  message?: string;
+  statsData?: any;
+  pitchMarkers?: any[];
+  goalMarkers?: any[];
+  characteristics?: string[];
+  formData?: any;
+}
+
+export let REPORT_REQUESTS_DATA: ReportRequest[] = [
+  { 
+    id: 1, 
+    playerName: "Marcus Silva", 
+    playerPosition: "Defensive Midfielder", 
+    date: "2026-06-14", 
+    status: "Pending", 
+    coachName: "Pep Guardiola", 
+    playerId: 1,
+    opponent: "Chelsea U19",
+    location: "London",
+    league: "Friendly League",
+    weather: "SUNNY",
+    temperature: "24",
+    message: "Coach, please review my interception and defensive positioning stats."
+  },
+  { 
+    id: 2, 
+    playerName: "David Chen", 
+    playerPosition: "Forward", 
+    date: "2026-06-13", 
+    status: "Pending", 
+    coachName: "Zheng Zhi", 
+    playerId: 2,
+    opponent: "Evergrande U19",
+    location: "Guangzhou",
+    league: "Youth League A",
+    weather: "CLOUDY",
+    temperature: "28"
+  },
+  { 
+    id: 3, 
+    playerName: "Alex Jonson", 
+    playerPosition: "Defender", 
+    date: "2026-06-12", 
+    status: "Pending", 
+    coachName: "Frank Lampard", 
+    playerId: 3,
+    opponent: "Arsenal U19",
+    location: "London",
+    league: "U18 Cup",
+    weather: "RAINY",
+    temperature: "14"
+  },
+];
+
+export const addReportRequest = (req: Omit<ReportRequest, 'id'>) => {
+  const newId = REPORT_REQUESTS_DATA.length > 0 ? Math.max(...REPORT_REQUESTS_DATA.map(r => r.id)) + 1 : 1;
+  const newReq: ReportRequest = { ...req, id: newId };
+  REPORT_REQUESTS_DATA = [newReq, ...REPORT_REQUESTS_DATA];
+  return newReq;
+};
+
+export const completeReportRequest = (requestId: number) => {
+  REPORT_REQUESTS_DATA = REPORT_REQUESTS_DATA.map(req => 
+    req.id === requestId ? { ...req, status: 'Completed' as const } : req
+  );
+};
+
+export const getPendingRequestsForCoach = (coachName: string) => {
+  return REPORT_REQUESTS_DATA.filter(req => req.coachName === coachName && req.status === 'Pending');
+};
+

@@ -1,13 +1,16 @@
 'use client'
 
+import React from "react";
 import backgroundImage from "@/assets/player-dashboard/backgroundImage.png";
 import { Clock, Mail, Phone, Shield } from 'lucide-react';
+import { useRouter } from "next/navigation";
 
 import { usePlayer } from "@/lib/hooks/usePlayer";
 import { getFullWithShortForm } from "@/lib/utils";
 
 export default function PlayerBioSection() {
   const { playerData } = usePlayer();
+  const router = useRouter();
 
   return (
     <div className="pb-20 b0">
@@ -59,6 +62,16 @@ export default function PlayerBioSection() {
                 <span>{playerData.birthCountry === 'France' ? '🇫🇷' : '🇧🇷'}</span> {playerData.birthCountry}
               </span>
             </div>
+
+            {/* Request Game Report Button */}
+            {playerData.coachName && playerData.coachName !== "N/A" && (
+              <button 
+                onClick={() => router.push("/dashboard/player/game-reports/create")}
+                className="w-full mb-8 py-3 rounded-xl bg-red-600 hover:bg-red-500 font-bold text-white uppercase tracking-widest transition-all shadow-[0_0_20px_rgba(227,27,35,0.2)] text-xs cursor-pointer font-orbitron"
+              >
+                Request Game Report from Coach
+              </button>
+            )}
 
             {/* Info Cards */}
             <div className="grid grid-cols-2 gap-4">

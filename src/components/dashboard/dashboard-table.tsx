@@ -15,9 +15,10 @@ interface DashboardTableProps<T> {
   columns: Column<T>[];
   data: T[];
   className?: string;
+  onRowClick?: (row: T) => void;
 }
 
-export function DashboardTable<T>({ columns, data, className }: DashboardTableProps<T>) {
+export function DashboardTable<T>({ columns, data, className, onRowClick }: DashboardTableProps<T>) {
   return (
     <div className={cn("border border-white/20 rounded-2xl overflow-hidden", className)}>
       <table className="w-full text-left border-collapse">
@@ -41,7 +42,14 @@ export function DashboardTable<T>({ columns, data, className }: DashboardTablePr
         </thead>
         <tbody className="divide-y divide-white/20">
           {data.map((row, rowIndex) => (
-            <tr key={rowIndex} className="hover:bg-white/[0.02] transition-colors">
+            <tr 
+              key={rowIndex} 
+              onClick={() => onRowClick?.(row)}
+              className={cn(
+                "hover:bg-white/[0.02] transition-colors",
+                onRowClick && "cursor-pointer"
+              )}
+            >
               {columns.map((col, colIndex) => (
                 <td 
                   key={`${rowIndex}-${col.key}`} 

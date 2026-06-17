@@ -3,12 +3,13 @@
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from 'recharts'
 
 import { usePlayer } from "@/lib/hooks/usePlayer";
-import { SHARED_REPORTS_DATA } from "@/lib/constants/reports";
+import { useAppSelector } from "@/lib/hooks/reduxHooks";
 
 export default function PerformanceChart() {
   const { playerData } = usePlayer();
+  const reports = useAppSelector(state => state.reports.reports);
 
-  const paidReports = SHARED_REPORTS_DATA.filter(r => r.status === "Paid");
+  const paidReports = reports.filter(r => r.status === "Paid");
   
   const totalGoals = paidReports.reduce((sum, r) => sum + r.goals, 0);
   const totalAssists = paidReports.reduce((sum, r) => sum + r.assists, 0);

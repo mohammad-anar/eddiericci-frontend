@@ -1293,17 +1293,25 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
 
                     <path id="top-text-arc-shared" d="M 124,400 A 276,276 0 0,1 676,400" fill="none" />
 
-                    <radialGradient id="fifa-sky-radial-static" cx="35%" cy="35%" r="65%">
-                      <stop offset="0%" stopColor="#1c5db6" />
-                      <stop offset="55%" stopColor="#0a2a6b" />
-                      <stop offset="100%" stopColor="#011030" />
+                    <filter id="green-glow-static" x="-50%" y="-50%" width="200%" height="200%">
+                      <feGaussianBlur stdDeviation="3.5" result="blur" />
+                      <feMerge>
+                        <feMergeNode in="blur" />
+                        <feMergeNode in="SourceGraphic" />
+                      </feMerge>
+                    </filter>
+                    <radialGradient id="green-radar-glow-static" cx="50%" cy="50%" r="50%">
+                      <stop offset="0%" stopColor="#10B981" stopOpacity="0.35" />
+                      <stop offset="100%" stopColor="#10B981" stopOpacity="0" />
                     </radialGradient>
-                    <clipPath id="left-globe-clip-static">
-                      <circle cx="368" cy="188" r="31" />
-                    </clipPath>
-                    <clipPath id="right-globe-clip-static">
-                      <circle cx="432" cy="188" r="31" />
-                    </clipPath>
+                    <linearGradient id="green-chart-fill-static" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#10B981" stopOpacity="0.25" />
+                      <stop offset="100%" stopColor="#059669" stopOpacity="0.1" />
+                    </linearGradient>
+                    <linearGradient id="red-chart-fill-static" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#EF4444" stopOpacity="0.35" />
+                      <stop offset="100%" stopColor="#DC2626" stopOpacity="0.1" />
+                    </linearGradient>
                   </defs>
 
                   <polygon points="400.00,20.00 414.21,38.28 429.81,21.17 442.55,40.51 459.45,24.68 470.62,44.96 488.71,30.50 498.26,51.59 517.43,38.60 525.29,60.37 545.42,48.93 551.55,71.25 572.52,61.42 576.88,84.16 598.55,76.00 601.12,99.01 623.36,92.57 624.11,115.72 646.79,111.05 645.73,134.18 668.70,131.30 665.82,154.27 688.95,153.21 684.28,175.89 707.43,176.64 700.99,198.88 724.00,201.45 715.84,223.12 738.58,227.48 728.75,248.45 751.07,254.58 739.63,274.71 761.40,282.57 748.41,301.74 769.50,311.29 755.04,329.38 775.32,340.55 759.49,357.45 778.83,370.19 761.72,385.79 780.00,400.00 761.72,414.21 778.83,429.81 759.49,442.55 775.32,459.45 755.04,470.62 769.50,488.71 748.41,498.26 761.40,517.43 739.63,525.29 751.07,545.42 728.75,551.55 738.58,572.52 715.84,576.88 724.00,598.55 700.99,601.12 707.43,623.36 684.28,624.11 688.95,646.79 665.82,645.73 668.70,668.70 645.73,665.82 646.79,688.95 624.11,684.28 623.36,707.43 601.12,700.99 598.55,724.00 576.88,715.84 572.52,738.58 551.55,728.75 545.42,751.07 525.29,739.63 517.43,761.40 498.26,748.41 488.71,769.50 470.62,755.04 459.45,775.32 442.55,759.49 429.81,778.83 414.21,761.72 400.00,780.00 385.79,761.72 370.19,778.83 357.45,759.49 340.55,775.32 329.38,755.04 311.29,769.50 301.74,748.41 282.57,761.40 274.71,739.63 254.58,751.07 248.45,728.75 227.48,738.58 223.12,715.84 201.45,724.00 198.88,700.99 176.64,707.43 175.89,684.28 153.21,688.95 154.27,665.82 131.30,668.70 134.18,645.73 111.05,646.79 115.72,624.11 92.57,623.36 99.01,601.12 76.00,598.55 84.16,576.88 61.42,572.52 71.25,551.55 48.93,545.42 60.37,525.29 38.60,517.43 51.59,498.26 30.50,488.71 44.96,470.62 24.68,459.45 40.51,442.55 21.17,429.81 38.28,414.21 20.00,400.00 38.28,385.79 21.17,370.19 40.51,357.45 24.68,340.55 44.96,329.38 30.50,311.29 51.59,301.74 38.60,282.57 60.37,274.71 48.93,254.58 71.25,248.45 61.42,227.48 84.16,223.12 76.00,201.45 99.01,198.88 92.57,176.64 115.72,175.89 111.05,153.21 134.18,154.27 131.30,131.30 154.27,134.18 153.21,111.05 175.89,115.72 176.64,92.57 198.88,99.01 201.45,76.00 223.12,84.16 227.48,61.42 248.45,71.25 254.58,48.93 274.71,60.37 282.57,38.60 301.74,51.59 311.29,30.50 329.38,44.96 340.55,24.68 357.45,40.51 370.19,21.17 385.79,38.28" fill="url(#gold-grad-static)" filter="url(#drop-shadow-static)" />
@@ -1352,107 +1360,163 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                   <path d="M 168.32,207 L 168.32,207.00 L 171.26,214.95 L 179.73,215.29 L 173.08,220.55 L 175.37,228.71 L 168.32,224.00 L 161.27,228.71 L 163.56,220.55 L 156.91,215.29 L 165.38,214.95 Z" fill="url(#gold-bright-static)" />
                   <path d="M 631.68,207 L 631.68,207.00 L 634.62,214.95 L 643.09,215.29 L 636.44,220.55 L 638.73,228.71 L 631.68,224.00 L 624.63,228.71 L 626.92,220.55 L 620.27,215.29 L 628.74,214.95 Z" fill="url(#gold-bright-static)" />
 
-                  <g transform="translate(0, 0)">
-                    <circle cx="368" cy="188" r="31" fill="url(#fifa-sky-radial-static)" stroke="url(#gold-grad-static)" strokeWidth="1.8" />
-                    <g clipPath="url(#left-globe-clip-static)">
-                      <path d="M 350,165 Q 365,160 380,168 Q 395,172 398,185 Q 399,195 385,200 Q 375,190 358,188 L 350,178 Z" fill="url(#gold-bright-static)" opacity="0.9" />
-                      <path d="M 358,188 Q 372,192 376,204 Q 374,217 364,216 Q 355,212 355,200 Z" fill="url(#gold-bright-static)" opacity="0.9" />
-                      <path d="M 388,206 Q 396,205 398,212 Q 395,218 388,215 Z" fill="url(#gold-bright-static)" opacity="0.9" />
+                  {/* 7. Official Stats Shield Logo */}
+                  <g transform="translate(400, 215) scale(0.74) translate(-400, -180)">
+                    {/* Outer Shield Border (Dark Charcoal) */}
+                    <path d="M 400,122 C 375,110 330,112 330,112 C 316,160 324,195 400,246 C 476,195 484,160 470,112 C 470,112 425,110 400,122 Z" fill="#0A101D" filter="url(#drop-shadow-static)" stroke="url(#gold-grad-static)" strokeWidth="1.8" />
+                    
+                    {/* Inner White Shield Field */}
+                    <path d="M 400,127 C 377,116 335,118 335,118 C 322,162 329,193 400,241 C 471,193 478,162 465,118 C 465,118 423,116 400,127 Z" fill="#FCFCFC" />
+                    
+                    {/* Red/Burgundy Bottom Crescent Shape */}
+                    <path d="M 335,175 C 354,204 446,204 465,175 C 453,218 400,241 400,241 C 400,241 347,218 335,175 Z" fill="#991B1B" opacity="0.95" />
 
-                      <polygon points="368,180 377,185 373,195 363,195 359,185" stroke="#ffffff" strokeWidth="0.8" fill="none" opacity="0.5" />
-                      <line x1="368" y1="180" x2="368" y2="157" stroke="#ffffff" strokeWidth="0.8" opacity="0.5" />
-                      <line x1="377" y1="185" x2="395" y2="178" stroke="#ffffff" strokeWidth="0.8" opacity="0.5" />
-                      <line x1="373" y1="195" x2="385" y2="216" stroke="#ffffff" strokeWidth="0.8" opacity="0.5" />
-                      <line x1="363" y1="195" x2="351" y2="216" stroke="#ffffff" strokeWidth="0.8" opacity="0.5" />
-                      <line x1="359" y1="185" x2="341" y2="178" stroke="#ffffff" strokeWidth="0.8" opacity="0.5" />
-                      <path d="M 368,157 L 382,165 M 395,178 L 398,193 M 385,216 L 368,219 M 351,216 L 338,193 M 341,178 L 354,165" stroke="#ffffff" strokeWidth="0.8" opacity="0.5" fill="none" />
+                    {/* Green Radar glow in background of shield */}
+                    <circle cx="400" cy="180" r="45" fill="url(#green-radar-glow-static)" />
+
+                    {/* Radar Chart: Pentagon Guidelines */}
+                    <polygon points="400,132 445.6,165.2 428.2,218.8 371.8,218.8 354.4,165.2" fill="none" stroke="#10B981" strokeWidth="1.2" opacity="0.5" />
+                    <polygon points="400,156 422.8,172.6 414.1,199.4 385.9,199.4 377.2,172.6" fill="none" stroke="#10B981" strokeWidth="0.8" strokeDasharray="1 1" opacity="0.4" />
+                    {/* Radial spokes */}
+                    <line x1="400" y1="180" x2="400" y2="132" stroke="#10B981" strokeWidth="0.8" strokeDasharray="2 2" opacity="0.4" />
+                    <line x1="400" y1="180" x2="445.6" y2="165.2" stroke="#10B981" strokeWidth="0.8" strokeDasharray="2 2" opacity="0.4" />
+                    <line x1="400" y1="180" x2="428.2" y2="218.8" stroke="#10B981" strokeWidth="0.8" strokeDasharray="2 2" opacity="0.4" />
+                    <line x1="400" y1="180" x2="371.8" y2="218.8" stroke="#10B981" strokeWidth="0.8" strokeDasharray="2 2" opacity="0.4" />
+                    <line x1="400" y1="180" x2="354.4" y2="165.2" stroke="#10B981" strokeWidth="0.8" strokeDasharray="2 2" opacity="0.4" />
+
+                    {/* Actual Player Stats Polygon */}
+                    <polygon points="400,139.2 434.2,168.9 422.6,211.1 374.0,215.7 359.8,167.0" fill="url(#red-chart-fill-static)" stroke="#EF4444" strokeWidth="2.2" filter="url(#green-glow-static)" />
+
+                    {/* Glowing dot points on vertices */}
+                    <circle cx="400" cy="132" r="3.5" fill="#FFFFFF" stroke="#10B981" strokeWidth="1.5" filter="url(#green-glow-static)" />
+                    <circle cx="445.6" cy="165.2" r="3.5" fill="#FFFFFF" stroke="#10B981" strokeWidth="1.5" filter="url(#green-glow-static)" />
+                    <circle cx="428.2" cy="218.8" r="3.5" fill="#FFFFFF" stroke="#10B981" strokeWidth="1.5" filter="url(#green-glow-static)" />
+                    <circle cx="371.8" cy="218.8" r="3.5" fill="#FFFFFF" stroke="#10B981" strokeWidth="1.5" filter="url(#green-glow-static)" />
+                    <circle cx="354.4" cy="165.2" r="3.5" fill="#FFFFFF" stroke="#10B981" strokeWidth="1.5" filter="url(#green-glow-static)" />
+
+                    {/* Skill word labels for vertices */}
+                    <text x="390" y="124" fontFamily="'Inter', sans-serif" fontWeight="900" fontSize="9" fill="#1A2D24" letterSpacing="0.2">PAS</text>
+                    <text x="452" y="167" fontFamily="'Inter', sans-serif" fontWeight="900" fontSize="9" fill="#1A2D24" letterSpacing="0.2">SHT</text>
+                    <text x="434" y="228" fontFamily="'Inter', sans-serif" fontWeight="900" fontSize="9" fill="#1A2D24" letterSpacing="0.2">PHY</text>
+                    <text x="346" y="228" fontFamily="'Inter', sans-serif" fontWeight="900" fontSize="9" fill="#1A2D24" letterSpacing="0.2">SPD</text>
+                    <text x="328" y="167" fontFamily="'Inter', sans-serif" fontWeight="900" fontSize="9" fill="#1A2D24" letterSpacing="0.2">DRI</text>
+
+                    {/* Player silhouette running (Dark Slate/Charcoal) */}
+                    <path d="M 393,137 C 390,130 403,130 401,137 C 401,140 398,142 396,144 C 388,149 381,156 376,168 C 373,176 375,182 378,182 C 380,178 384,170 388,160 C 388,166 390,181 397,198 C 401,206 406,214 412,222 C 415,226 419,232 424,240 L 428,242 C 428,242 426,234 422,226 C 416,214 410,204 406,194 C 404,188 403,180 404,172 C 407,168 410,164 412,161 C 415,166 418,174 422,184 C 425,191 429,200 433,208 L 436,207 C 432,197 426,186 422,176 C 419,166 415,158 413,154 C 410,148 402,144 396,144" fill="#0A101D" />
+
+                    {/* Highly polished Soccer Ball at runner's feet */}
+                    <g transform="translate(-16, 11)">
+                      <circle cx="400" cy="210" r="11" fill="#FFFFFF" stroke="#0A101D" strokeWidth="1.5" />
+                      <polygon points="400,205.5 404.2,208.5 402.7,213 397.3,213 395.8,208.5" fill="#20252F" />
+                      <line x1="400" y1="205.5" x2="400" y2="199" stroke="#0A101D" strokeWidth="1.4" />
+                      <line x1="404.2" y1="208.5" x2="410.2" y2="203.5" stroke="#0A101D" strokeWidth="1.4" />
+                      <line x1="402.7" y1="213" x2="406.5" y2="219" stroke="#0A101D" strokeWidth="1.4" />
+                      <line x1="397.3" y1="213" x2="393.5" y2="219" stroke="#0A101D" strokeWidth="1.4" />
+                      <line x1="395.8" y1="208.5" x2="389.8" y2="203.5" stroke="#0A101D" strokeWidth="1.4" />
                     </g>
 
-                    <circle cx="432" cy="188" r="31" fill="url(#fifa-sky-radial-static)" stroke="url(#gold-grad-static)" strokeWidth="1.8" />
-                    <g clipPath="url(#right-globe-clip-static)">
-                      <path d="M 405,164 Q 425,160 432,175 Q 425,185 418,181 Z" fill="url(#gold-bright-static)" opacity="0.9" />
-                      <path d="M 418,185 Q 425,188 438,206 Q 430,218 424,212 Q 416,204 418,185 Z" fill="url(#gold-bright-static)" opacity="0.9" />
-                      <path d="M 418,181 L 418,186" stroke="url(#gold-bright-static)" strokeWidth="1.5" />
-
-                      <polygon points="432,180 441,185 437,195 427,195 423,185" stroke="#ffffff" strokeWidth="0.8" fill="none" opacity="0.5" />
-                      <line x1="432" y1="180" x2="432" y2="157" stroke="#ffffff" strokeWidth="0.8" opacity="0.5" />
-                      <line x1="441" y1="185" x2="459" y2="178" stroke="#ffffff" stroke-width="0.8" opacity="0.5" />
-                      <line x1="437" y1="195" x2="449" y2="216" stroke="#ffffff" stroke-width="0.8" opacity="0.5" />
-                      <line x1="427" y1="195" x2="415" y2="216" stroke="#ffffff" stroke-width="0.8" opacity="0.5" />
-                      <line x1="423" y1="185" x2="405" y2="178" stroke="#ffffff" stroke-width="0.8" opacity="0.5" />
-                      <path d="M 432,157 L 446,165 M 459,178 L 462,193 M 449,216 L 432,219 M 415,216 L 402,193 M 405,178 L 418,165" stroke="#ffffff" strokeWidth="0.8" opacity="0.5" fill="none" />
-                    </g>
-
-                    <g transform="translate(400, 252) skewX(-12)">
-                      <path d="M -48,-16 L -24,-16 L -24,-9 L -38,-9 L -38,-3 L -27,-3 L -27,4 L -38,4 L -38,16 L -48,16 Z" fill="url(#gold-bright-static)" filter="url(#glow-static)" />
-                      <path d="M -17,-16 L -7,-16 L -7,16 L -17,16 Z" fill="url(#gold-bright-static)" filter="url(#glow-static)" />
-                      <path d="M -1,-16 L 23,-16 L 23,-9 L 9,-9 L 9,-3 L 20,-3 L 20,4 L 9,4 L 9,16 L -1,16 Z" fill="url(#gold-bright-static)" filter="url(#glow-static)" />
-                      <path d="M 31,-16 L 47,-16 L 58,16 L 48,16 L 45,7 L 33,7 L 30,16 L 20,16 Z M 35,2 L 43,2 L 39,-9 Z" fill="url(#gold-bright-static)" filter="url(#glow-static)" />
+                    {/* Match Grade Soccer Ball sitting at the top peak */}
+                    <g transform="translate(0, -1)">
+                      <circle cx="400" cy="111" r="14.5" fill="#FFFFFF" stroke="#0A101D" strokeWidth="2" />
+                      <polygon points="400,105 405.5,109 403.5,115 396.5,115 394.5,109" fill="#20252F" />
+                      <line x1="400" y1="105" x2="400" y2="96.5" stroke="#0A101D" strokeWidth="1.8" />
+                      <line x1="405.5" y1="109" x2="413.5" y2="102.5" stroke="#0A101D" strokeWidth="1.8" />
+                      <line x1="403.5" y1="115" x2="408.5" y2="123" stroke="#0A101D" strokeWidth="1.8" />
+                      <line x1="396.5" y1="115" x2="391.5" y2="123" stroke="#0A101D" strokeWidth="1.8" />
+                      <line x1="394.5" y1="109" x2="386.5" y2="102.5" stroke="#0A101D" strokeWidth="1.8" />
+                      {/* Outer dark hexagon/pentagon patches */}
+                      <path d="M 413.5,102.5 A 14.5,14.5 0 0,1 414.5,111 L 408.5,112 Z" fill="#20252F" stroke="#0A101D" strokeWidth="1.2" />
+                      <path d="M 386.5,102.5 A 14.5,14.5 0 0,0 385.5,111 L 391.5,112 Z" fill="#20252F" stroke="#0A101D" strokeWidth="1.2" />
+                      <path d="M 408.5,123 A 14.5,14.5 0 0,1 400,125.5 L 400,119 Z" fill="#20252F" stroke="#0A101D" strokeWidth="1.2" />
+                      <path d="M 391.5,123 A 14.5,14.5 0 0,0 400,125.5 L 400,119 Z" fill="#20252F" stroke="#0A101D" strokeWidth="1.2" />
                     </g>
                   </g>
 
-                  {/* Row 1: Coach */}
-                  <g transform="translate(0, 0)">
-                    <circle cx="220" cy="365" r="28" fill="#010c1e" stroke="url(#gold-grad-static)" strokeWidth="2.5" />
-                    <circle cx="220" cy="365" r="24" fill="none" stroke="url(#gold-bright-static)" strokeWidth="0.5" opacity="0.4" />
-                    <circle cx="220" cy="358" r="7" fill="url(#gold-bright-static)" />
-                    <path d="M 205,376 Q 205,367 220,367 Q 235,367 235,376" fill="url(#gold-bright-static)" stroke="url(#gold-dark-static)" strokeWidth="0.5" />
+                  {/* 8. Display Field Rows (Coach, License, Club) */}
+                  <g transform="translate(15, -45)">
+                    {/* Row 1: Coach */}
+                    <g transform="translate(0, 0)">
+                      {/* Icon Envelope */}
+                      <circle cx="220" cy="365" r="28" fill="#010c1e" stroke="url(#gold-grad-static)" strokeWidth="2.5" />
+                      <circle cx="220" cy="365" r="24" fill="none" stroke="url(#gold-bright-static)" strokeWidth="0.5" opacity="0.4" />
+                      {/* User profiles icon silhouettes */}
+                      <circle cx="220" cy="358" r="7" fill="url(#gold-bright-static)" />
+                      <path d="M 205,376 Q 205,367 220,367 Q 235,367 235,376" fill="url(#gold-bright-static)" stroke="url(#gold-dark-static)" strokeWidth="0.5" />
 
-                    <text x="265" y="354" fontSize="16.5" fontWeight="800" className="badge-heading gold-text" letterSpacing="1.5" opacity="0.95">HEAD COACH NAME</text>
-                    <text x="265" y="384" fontSize="32" fontWeight="900" className="badge-content white-text" letterSpacing="0.5">{playerData.coachName || "N/A"}</text>
+                      {/* Labels and bold value */}
+                      <text x="265" y="354" fontSize="14" fontWeight="800" className="badge-heading gold-text" letterSpacing="1.5" opacity="0.95">HEAD COACH NAME</text>
+                      <text x="265" y="382" fontSize="28" fontWeight="900" className="badge-content white-text" letterSpacing="0.5">{playerData.coachName || "N/A"}</text>
 
-                    <line x1="210" y1="408" x2="590" y2="408" stroke="url(#gold-divider-static)" strokeWidth="1.5" />
+                      {/* Dividing Tapered Line */}
+                      <line x1="210" y1="408" x2="590" y2="408" stroke="url(#gold-divider-static)" strokeWidth="1.5" />
+                    </g>
+
+                    {/* Row 2: License */}
+                    <g transform="translate(0, 88)">
+                      {/* Icon Envelope */}
+                      <circle cx="220" cy="365" r="28" fill="#010c1e" stroke="url(#gold-grad-static)" strokeWidth="2.5" />
+                      <circle cx="220" cy="365" r="24" fill="none" stroke="url(#gold-bright-static)" strokeWidth="0.5" opacity="0.4" />
+                      {/* ID Card Profile Outline with Gold elements */}
+                      <rect x="204" y="352" width="32" height="24" rx="3.5" fill="none" stroke="url(#gold-bright-static)" strokeWidth="2" />
+                      <rect x="209" y="358" width="8" height="11" rx="1" fill="none" stroke="url(#gold-bright-static)" strokeWidth="1.2" />
+                      <circle cx="213" cy="361" r="2" fill="url(#gold-bright-static)" />
+                      <path d="M 210,367 Q 210,365 213,365 Q 216,365 216,367" fill="none" stroke="url(#gold-bright-static)" strokeWidth="1.2" />
+                      <line x1="222" y1="358" x2="231" y2="358" stroke="url(#gold-bright-static)" strokeWidth="1.8" strokeLinecap="round" />
+                      <line x1="222" y1="364" x2="231" y2="364" stroke="url(#gold-bright-static)" strokeWidth="1.8" strokeLinecap="round" />
+                      <line x1="222" y1="370" x2="228" y2="370" stroke="url(#gold-bright-static)" strokeWidth="1.8" strokeLinecap="round" />
+
+                      {/* Labels and bold value */}
+                      <text x="265" y="354" fontSize="14" fontWeight="800" className="badge-heading gold-text" letterSpacing="1.5" opacity="0.95">LICENSE NUMBER</text>
+                      <text x="265" y="382" fontSize="28" fontWeight="900" className="badge-content white-text" letterSpacing="0.5">{playerData.coachLicenseNumber || "CBF-2026-4587"}</text>
+
+                      {/* Dividing Tapered Line */}
+                      <line x1="210" y1="408" x2="590" y2="408" stroke="url(#gold-divider-static)" strokeWidth="1.5" />
+                    </g>
+
+                    {/* Row 3: Club Managed */}
+                    <g transform="translate(0, 176)">
+                      {/* Icon Envelope */}
+                      <circle cx="220" cy="365" r="28" fill="#010c1e" stroke="url(#gold-grad-static)" strokeWidth="2.5" />
+                      <circle cx="220" cy="365" r="24" fill="none" stroke="url(#gold-bright-static)" strokeWidth="0.5" opacity="0.4" />
+                      {/* Football Shield Logo Outline */}
+                      <path d="M 207,352 Q 220,348 233,352 L 233,366 Q 233,378 220,383 Q 207,378 207,366 Z" fill="none" stroke="url(#gold-bright-static)" strokeWidth="2.2" strokeLinejoin="round" />
+                      <circle cx="220" cy="366" r="6" fill="none" stroke="url(#gold-bright-static)" strokeWidth="1.5" />
+                      <line x1="220" y1="360" x2="220" y2="372" stroke="url(#gold-bright-static)" strokeWidth="1" />
+                      <line x1="214" y1="366" x2="226" y2="366" stroke="url(#gold-bright-static)" strokeWidth="1" />
+
+                      {/* Labels and bold value */}
+                      <text x="265" y="354" fontSize="14" fontWeight="800" className="badge-heading gold-text" letterSpacing="1.5" opacity="0.95">CLUB MANAGED</text>
+                      <text x="265" y="382" fontSize="28" fontWeight="900" className="badge-content white-text" letterSpacing="0.5">{playerData.clubManaged || "Atlético Nacional"}</text>
+                    </g>
                   </g>
 
-                  {/* Row 2: License */}
-                  <g transform="translate(0, 88)">
-                    <circle cx="220" cy="365" r="28" fill="#010c1e" stroke="url(#gold-grad-static)" strokeWidth="2.5" />
-                    <circle cx="220" cy="365" r="24" fill="none" stroke="url(#gold-bright-static)" strokeWidth="0.5" opacity="0.4" />
-                    <rect x="204" y="352" width="32" height="24" rx="3.5" fill="none" stroke="url(#gold-bright-static)" strokeWidth="2" />
-                    <rect x="209" y="358" width="8" height="11" rx="1" fill="none" stroke="url(#gold-bright-static)" strokeWidth="1.2" />
-                    <circle cx="213" cy="361" r="2" fill="url(#gold-bright-static)" />
-                    <path d="M 210,367 Q 210,365 213,365 Q 216,365 216,367" fill="none" stroke="url(#gold-bright-static)" strokeWidth="1.2" />
-                    <line x1="222" y1="358" x2="231" y2="358" stroke="url(#gold-bright-static)" strokeWidth="1.8" strokeLinecap="round" />
-                    <line x1="222" y1="364" x2="231" y2="364" stroke="url(#gold-bright-static)" strokeWidth="1.8" strokeLinecap="round" />
-                    <line x1="222" y1="370" x2="228" y2="370" stroke="url(#gold-bright-static)" strokeWidth="1.8" strokeLinecap="round" />
-
-                    <text x="265" y="354" fontSize="16.5" fontWeight="800" className="badge-heading gold-text" letterSpacing="1.5" opacity="0.95">LICENSE NUMBER</text>
-                    <text x="265" y="384" fontSize="32" fontWeight="900" className="badge-content white-text" letterSpacing="0.5">{playerData.coachLicenseNumber || "CBF-2026-4587"}</text>
-
-                    <line x1="210" y1="408" x2="590" y2="408" stroke="url(#gold-divider-static)" strokeWidth="1.5" />
-                  </g>
-
-                  {/* Row 3: Club Managed */}
-                  <g transform="translate(0, 176)">
-                    <circle cx="220" cy="365" r="28" fill="#010c1e" stroke="url(#gold-grad-static)" strokeWidth="2.5" />
-                    <circle cx="220" cy="365" r="24" fill="none" stroke="url(#gold-bright-static)" strokeWidth="0.5" opacity="0.4" />
-                    <path d="M 207,352 Q 220,348 233,352 L 233,366 Q 233,378 220,383 Q 207,378 207,366 Z" fill="none" stroke="url(#gold-bright-static)" strokeWidth="2.2" strokeLinejoin="round" />
-                    <circle cx="220" cy="366" r="6" fill="none" stroke="url(#gold-bright-static)" strokeWidth="1.5" />
-                    <line x1="220" y1="360" x2="220" y2="372" stroke="url(#gold-bright-static)" strokeWidth="1" />
-                    <line x1="214" y1="366" x2="226" y2="366" stroke="url(#gold-bright-static)" strokeWidth="1" />
-
-                    <text x="265" y="354" fontSize="16.5" fontWeight="800" className="badge-heading gold-text" letterSpacing="1.5" opacity="0.95">CLUB MANAGED</text>
-                    <text x="265" y="384" fontSize="32" fontWeight="900" className="badge-content white-text" letterSpacing="0.5">{playerData.clubManaged || "Atlético Nacional"}</text>
-                  </g>
-
+                  {/* 9. 3D Ribbon / Banner Overlay */}
                   <g filter="url(#drop-shadow-static)">
+                    {/* Left ribbon shadow folded corner under center */}
                     <polygon points="175,615 175,655 150,635" fill="url(#gold-dark-static)" />
+                    {/* Right ribbon shadow folded corner under center */}
                     <polygon points="625,615 625,655 650,635" fill="url(#gold-dark-static)" />
 
+                    {/* Left side wing of ribbon (behind center, folded) */}
                     <path d="M 175,615 L 80,635 L 110,665 L 85,695 L 175,655 Z" fill="url(#ribbon-grad-static)" stroke="url(#gold-grad-static)" strokeWidth="2" />
+                    {/* Right side wing of ribbon (behind center, folded) */}
                     <path d="M 625,615 L 720,635 L 690,665 L 715,695 L 625,655 Z" fill="url(#ribbon-grad-static)" stroke="url(#gold-grad-static)" strokeWidth="2" />
 
+                    {/* Center plate of ribbon with gold boundaries */}
                     <path d="M 148,595 Q 400,565 652,595 L 642,675 Q 400,645 158,675 Z" fill="url(#ribbon-grad-static)" stroke="url(#gold-grad-static)" strokeWidth="3" />
 
+                    {/* Text paths on ribbon curves */}
                     <path id="ribbon-text-path-static" d="M 160,635 Q 400,605 640,635" fill="none" />
                     <path id="ribbon-subtext-path-static" d="M 175,662 Q 400,632 625,662" fill="none" />
 
+                    {/* Player CV Title text */}
                     <text fontSize="42" fontWeight="900" className="badge-content">
                       <textPath href="#ribbon-text-path-static" startOffset="50%" textAnchor="middle" fill="#FFFFFF">
                         Player CV
                       </textPath>
                     </text>
 
+                    {/* Sub text: VERIFIED BY FOOTBALL COACH */}
                     <text fontSize="18" fontWeight="800" className="badge-heading" letterSpacing="3.5">
                       <textPath href="#ribbon-subtext-path-static" startOffset="50%" textAnchor="middle" fill="url(#gold-bright-static)">
                         VERIFIED BY FOOTBALL COACH
@@ -1460,22 +1524,31 @@ const PlayerBioSection = ({ editable = true }: { editable?: boolean }) => {
                     </text>
                   </g>
 
+                  {/* 10. Center-Bottom Checkmark Coin Emblem with olive branches flanking */}
+                  
+                  {/* Left Laurel Olive wreath half */}
                   <use href="#wreath-half-static" transform="translate(400, 712) scale(0.60)" />
+                  {/* Right Laurel Olive wreath half (Perfect Symmetrical Mirror) */}
                   <use href="#wreath-half-static" transform="translate(400, 712) scale(-0.60, 0.60)" />
 
+                  {/* The Medal Checkmark Coin */}
                   <g filter="url(#drop-shadow-static)">
+                    {/* Outer gold ring */}
                     <circle cx="400" cy="712" r="30" fill="url(#bg-radial-static)" stroke="url(#gold-grad-static)" strokeWidth="4.5" />
                     <circle cx="400" cy="712" r="24" fill="url(#bg-radial-static)" stroke="url(#gold-bright-static)" strokeWidth="1.2" opacity="0.6" />
-
+                    
+                    {/* Bold Metallic Checkmark */}
                     <path d="M 386,713 L 396,723 L 416,700" fill="none" stroke="url(#gold-bright-static)" strokeWidth="5.5" strokeLinecap="round" strokeLinejoin="round" />
                   </g>
 
+                  {/* 11. Redundant bottom stars */}
                   <path d="M 400,728 L 400.00,728.00 L 402.65,734.36 L 409.51,734.91 L 404.28,739.39 L 405.88,746.09 L 400.00,742.50 L 394.12,746.09 L 395.72,739.39 L 390.49,734.91 L 397.35,734.36 Z" fill="url(#gold-bright-static)" />
                   <path d="M 478.9,720.66 L 478.90,720.66 L 480.96,725.83 L 486.51,726.19 L 482.23,729.74 L 483.60,735.13 L 478.90,732.16 L 474.20,735.13 L 475.57,729.74 L 471.29,726.19 L 476.84,725.83 Z" fill="url(#gold-bright-static)" />
                   <path d="M 321.1,720.66 L 321.10,720.66 L 323.16,725.83 L 328.71,726.19 L 324.43,729.74 L 325.80,735.13 L 321.10,732.16 L 316.40,735.13 L 317.77,729.74 L 313.49,726.19 L 319.04,725.83 Z" fill="url(#gold-bright-static)" />
                   <path d="M 553.45,694.16 L 553.45,694.16 L 555.21,698.73 L 560.11,699.00 L 556.30,702.09 L 557.56,706.82 L 553.45,704.16 L 549.34,706.82 L 550.60,702.09 L 546.79,699.00 L 551.69,698.73 Z" fill="url(#gold-bright-static)" />
                   <path d="M 246.55,694.16 L 246.55,694.16 L 248.31,698.73 L 253.21,699.00 L 249.40,702.09 L 250.66,706.82 L 246.55,704.16 L 242.44,706.82 L 243.70,702.09 L 239.89,699.00 L 244.79,698.73 Z" fill="url(#gold-bright-static)" />
 
+                  {/* 12. Stamp year (2026) */}
                   <text x="400" y="768" fontSize="19" fontWeight="800" className="badge-heading gold-text" textAnchor="middle" letterSpacing="4.5">2026</text>
                 </svg>
 

@@ -22,21 +22,23 @@ import {
 } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
 
-import { SHARED_REPORTS_DATA } from "@/lib/constants/reports";
+import { MatchStats } from "@/lib/constants/reports";
 import { cn } from "@/lib/utils";
+import { useAppSelector } from "@/lib/hooks/reduxHooks";
 
 export const GameReports = () => {
-  const [selectedReport, setSelectedReport] = React.useState<typeof SHARED_REPORTS_DATA[0] | null>(null);
+  const reports = useAppSelector(state => state.reports.reports);
+  const [selectedReport, setSelectedReport] = React.useState<MatchStats | null>(null);
   const [isOpen, setIsOpen] = React.useState(false);
   const [statusFilter, setStatusFilter] = React.useState<'All' | 'Paid' | 'Pending'>('All');
 
-  const totalReports = SHARED_REPORTS_DATA.length;
-  const paidReports = SHARED_REPORTS_DATA.filter(r => r.status === "Paid");
+  const totalReports = reports.length;
+  const paidReports = reports.filter(r => r.status === "Paid");
   const avgRating = paidReports.length > 0
     ? (paidReports.reduce((sum, r) => sum + r.rating, 0) / paidReports.length).toFixed(1)
     : "0.0";
   const completed = paidReports.length;
-  const pending = SHARED_REPORTS_DATA.filter(r => r.status === "Pending").length;
+  const pending = reports.filter(r => r.status === "Pending").length;
 
   const stats = [
     { label: "Total Reports", value: totalReports.toString(), icon: IconFileText },
@@ -45,7 +47,7 @@ export const GameReports = () => {
     { label: "Pending", value: pending.toString(), icon: IconClock },
   ];
 
-  const handleView = (report: typeof SHARED_REPORTS_DATA[0]) => {
+  const handleView = (report: MatchStats) => {
     setSelectedReport(report);
     setIsOpen(true);
   };
@@ -126,7 +128,7 @@ export const GameReports = () => {
             </tr>
           </thead>
           <tbody className="text-sm font-medium">
-            {SHARED_REPORTS_DATA
+            {reports
               .filter(item => statusFilter === 'All' || item.status === statusFilter)
               .map((item) => (
               <tr key={item.id} className="group hover:bg-white/5 transition-colors border-b border-white/5">

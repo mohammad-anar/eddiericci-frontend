@@ -4,10 +4,11 @@ import { FileText, Heart } from 'lucide-react'
 import Image from 'next/image'
 import clubLogo from "@/assets/cvs-page/club1.png"
 
-import { SHARED_REPORTS_DATA } from "@/lib/constants/reports";
+import { useAppSelector } from "@/lib/hooks/reduxHooks";
 
 export default function RightSideContent() {
-  const gameReports = SHARED_REPORTS_DATA
+  const reports = useAppSelector(state => state.reports.reports);
+  const gameReports = reports
     .filter(r => r.status === "Paid")
     .slice(0, 3)
     .map(r => ({

@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { 
   IconEye,
   IconCheck,
@@ -7,6 +7,7 @@ import {
 } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import { DashboardTable, Column } from "@/components/dashboard/dashboard-table";
+import { toast } from "sonner";
 
 const StatusPill = ({ status }: { status: "Pending" | "Approved" | "Rejected" }) => {
   const styles = {
@@ -20,14 +21,6 @@ const StatusPill = ({ status }: { status: "Pending" | "Approved" | "Rejected" })
     </span>
   );
 };
-
-const ActionButtons = () => (
-  <div className="flex items-center justify-center gap-3">
-     <button className="text-white/40 hover:text-white transition-all"><IconEye size={18} /></button>
-     <button className="text-emerald-500/60 hover:text-emerald-500 transition-all"><IconCheck size={18} /></button>
-     <button className="text-red-500/60 hover:text-red-500 transition-all"><IconX size={18} /></button>
-  </div>
-);
 
 interface ApprovalRow {
   name: string;
@@ -45,6 +38,74 @@ interface StoryRow {
 }
 
 export const SuperAdminApprovals = () => {
+  const [approvals, setApprovals] = useState<ApprovalRow[]>([]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedStatus = localStorage.getItem("agent_profile_verification_status");
+      const agentName = localStorage.getItem("agent_fullName") || "John Doe";
+      const agentCerts = localStorage.getItem("agent_certifications") || "FIFA Licensed Agent";
+
+      const baseApprovals: ApprovalRow[] = [
+        { name: "Elite FC Academy", category: "Premier League Academy", role: "Academy", date: "2024-01-15", status: "Pending" },
+        { name: "Champions Academy", category: "Premier League Academy", role: "Academy", date: "2024-02-01", status: "Approved" },
+        { name: "Elite FC Academy", category: "Premier League Academy", role: "Academy", date: "2024-02-01", status: "Rejected" },
+      ];
+
+      // If the agent profile has a verification request active
+      if (storedStatus && storedStatus !== "None") {
+        setApprovals([
+          {
+            name: agentName,
+            category: agentCerts,
+            role: "Agent",
+            date: new Date().toISOString().split("T")[0],
+            status: storedStatus as "Pending" | "Approved" | "Rejected"
+          },
+          ...baseApprovals
+        ]);
+      } else {
+        setApprovals(baseApprovals);
+      }
+    }
+  }, []);
+
+  const handleApprove = (row: ApprovalRow) => {
+    setApprovals((prev) =>
+      prev.map((item) => {
+        if (item.name === row.name && item.role === row.role) {
+          return { ...item, status: "Approved" };
+        }
+        return item;
+      })
+    );
+
+    if (row.role === "Agent") {
+      localStorage.setItem("agent_profile_verification_status", "Approved");
+      toast.success(`Agent "${row.name}" profile approved & verified!`);
+    } else {
+      toast.success(`${row.role} "${row.name}" approved successfully!`);
+    }
+  };
+
+  const handleReject = (row: ApprovalRow) => {
+    setApprovals((prev) =>
+      prev.map((item) => {
+        if (item.name === row.name && item.role === row.role) {
+          return { ...item, status: "Rejected" };
+        }
+        return item;
+      })
+    );
+
+    if (row.role === "Agent") {
+      localStorage.setItem("agent_profile_verification_status", "Rejected");
+      toast.error(`Agent "${row.name}" verification rejected.`);
+    } else {
+      toast.error(`${row.role} "${row.name}" verification rejected.`);
+    }
+  };
+
   const approvalColumns: Column<ApprovalRow>[] = [
     {
       header: "Name",
@@ -73,7 +134,23 @@ export const SuperAdminApprovals = () => {
       header: "Actions",
       key: "actions",
       align: "center",
-      render: () => <ActionButtons />
+      render: (row) => (
+        <div className="flex items-center justify-center gap-3">
+          <button className="text-white/40 hover:text-white transition-all"><IconEye size={18} /></button>
+          <button 
+            onClick={() => handleApprove(row)}
+            className="text-emerald-500/60 hover:text-emerald-500 transition-all"
+          >
+            <IconCheck size={18} />
+          </button>
+          <button 
+            onClick={() => handleReject(row)}
+            className="text-red-500/60 hover:text-red-500 transition-all"
+          >
+            <IconX size={18} />
+          </button>
+        </div>
+      )
     }
   ];
 
@@ -102,14 +179,14 @@ export const SuperAdminApprovals = () => {
       header: "Action",
       key: "actions",
       align: "center",
-      render: () => <ActionButtons />
+      render: () => (
+        <div className="flex items-center justify-center gap-3">
+          <button className="text-white/40 hover:text-white transition-all"><IconEye size={18} /></button>
+          <button className="text-emerald-500/60 hover:text-emerald-500 transition-all"><IconCheck size={18} /></button>
+          <button className="text-red-500/60 hover:text-red-500 transition-all"><IconX size={18} /></button>
+        </div>
+      )
     }
-  ];
-
-  const approvalData: ApprovalRow[] = [
-    { name: "Elite FC Academy", category: "Premier League Academy", role: "Academy", date: "2024-01-15", status: "Pending" },
-    { name: "Champions Academy", category: "Premier League Academy", role: "Academy", date: "2024-02-01", status: "Approved" },
-    { name: "Elite FC Academy", category: "Premier League Academy", role: "Academy", date: "2024-02-01", status: "Rejected" },
   ];
 
   const storyData: StoryRow[] = [
@@ -138,7 +215,7 @@ export const SuperAdminApprovals = () => {
               ))}
            </div>
         </div>
-        <DashboardTable columns={approvalColumns} data={approvalData} />
+        <DashboardTable columns={approvalColumns} data={approvals} />
       </div>
 
       {/* Success Story Section */}

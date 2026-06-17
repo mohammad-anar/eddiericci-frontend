@@ -1,24 +1,24 @@
 "use client";
 import React from "react";
-import { 
+import {
   IconSchool,
-  IconAffiliate, 
-  IconUsers, 
-  IconTrophy, 
-  IconHeart, 
+  IconAffiliate,
+  IconUsers,
+  IconTrophy,
+  IconHeart,
   IconShare,
   IconEye,
   IconBell,
   IconPlayerPlay,
   IconUpload
 } from "@tabler/icons-react";
-import { 
-  LineChart, 
-  Line, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
   ResponsiveContainer,
   BarChart,
   Bar,
@@ -27,14 +27,12 @@ import {
 import { DashboardHero } from "@/components/dashboard/dashboard-hero";
 import { DashboardTable, Column } from "@/components/dashboard/dashboard-table";
 import { TableActionButtons } from "@/components/dashboard/table-action-buttons";
-import { 
-  DashboardStatCard, 
-  DashboardSection 
+import {
+  DashboardStatCard,
+  DashboardSection
 } from "@/components/dashboard/dashboard-elements";
 
 const stats = [
-  { label: "Academies", value: "4", icon: IconSchool },
-  { label: "Teams", value: "19", icon: IconAffiliate },
   { label: "Players", value: "156", icon: IconUsers },
   { label: "Coaches", value: "12", icon: IconTrophy },
   { label: "Liked CVs", value: "42", icon: IconHeart },
@@ -65,6 +63,25 @@ const staffData = [
   { id: 4, teamName: "Santos U18", ageGroup: "Under 18", scout: "James Brown", players: 20, status: "Active" },
 ];
 
+const coachData = [
+  { id: 1, name: "Eduardo Ricci", role: "Head Coach", team: "Santos U19", experience: "12 yrs", status: "Active" },
+  { id: 2, name: "Marco Fernandez", role: "Assistant Coach", team: "Santos U17", experience: "8 yrs", status: "Active" },
+  { id: 3, name: "Lucas Oliveira", role: "Fitness Coach", team: "Santos U18", experience: "5 yrs", status: "Active" },
+  { id: 4, name: "Rafael Costa", role: "Goalkeeping Coach", team: "Santos U16", experience: "10 yrs", status: "Pending" },
+];
+
+const favPlayerData = [
+  { id: 1, name: "Marcus Silva", position: "Forward", rating: 9.2, club: "Manchester Academy", country: "Brazil", age: 19, avatar: "https://i.pravatar.cc/150?u=1" },
+  { id: 2, name: "David Chen", position: "Midfielder", rating: 8.8, club: "Chelsea Youth", country: "England", age: 18, avatar: "https://i.pravatar.cc/150?u=2" },
+  { id: 3, name: "Alex Jonson", position: "Defender", rating: 8.5, club: "Barcelona B", country: "Spain", age: 20, avatar: "https://i.pravatar.cc/150?u=3" },
+];
+
+const favCoachData = [
+  { id: 1, name: "Eduardo Ricci", role: "Head Coach", speciality: "Attacking", experience: "12 yrs", club: "Santos FC", country: "Brazil", avatar: "https://i.pravatar.cc/150?u=10" },
+  { id: 2, name: "Marco Fernandez", role: "Assistant Coach", speciality: "Defending", experience: "8 yrs", club: "Real Madrid B", country: "Spain", avatar: "https://i.pravatar.cc/150?u=11" },
+  { id: 3, name: "Lucas Oliveira", role: "Fitness Coach", speciality: "Physical", experience: "5 yrs", club: "PSG Academy", country: "France", avatar: "https://i.pravatar.cc/150?u=12" },
+];
+
 const mediaData = [
   { id: 1, title: "vs Chelsea U19", date: "Mar 10, 2024", views: 189, likes: 45, image: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=400" },
   { id: 2, title: "Training Highlights", date: "Feb 28, 2024", views: 156, likes: 62, image: "https://images.unsplash.com/photo-1526232759583-26f1dd3f7af3?q=80&w=400" },
@@ -83,9 +100,8 @@ export const ClubDashboard = () => {
       key: "status",
       align: "center",
       render: (item) => (
-        <span className={`px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${
-          item.status === 'Active' ? 'bg-green-500/10 text-green-500' : 'bg-orange-500/10 text-orange-500'
-        }`}>
+        <span className={`px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${item.status === 'Active' ? 'bg-green-500/10 text-green-500' : 'bg-orange-500/10 text-orange-500'
+          }`}>
           {item.status}
         </span>
       ),
@@ -94,7 +110,83 @@ export const ClubDashboard = () => {
       header: "Actions",
       key: "actions",
       align: "right",
-      render: () => <TableActionButtons onView={() => {}} />
+      render: () => <TableActionButtons onView={() => { }} />
+    },
+  ];
+
+  const coachColumns: Column<typeof coachData[0]>[] = [
+    { header: "Name", key: "name", cellClassName: "text-sm text-white font-semibold" },
+    { header: "Role", key: "role", align: "center", cellClassName: "text-sm text-gray-400" },
+    { header: "Team", key: "team", align: "center", cellClassName: "text-sm text-gray-400" },
+    { header: "Experience", key: "experience", align: "center", cellClassName: "text-sm text-gray-400" },
+    {
+      header: "Status",
+      key: "status",
+      align: "center",
+      render: (item) => (
+        <span className={`px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${item.status === 'Active' ? 'bg-green-500/10 text-green-500' : 'bg-orange-500/10 text-orange-500'
+          }`}>
+          {item.status}
+        </span>
+      ),
+    },
+    {
+      header: "Actions",
+      key: "actions",
+      align: "right",
+      render: () => <TableActionButtons onView={() => { }} />
+    },
+  ];
+
+  const favPlayerColumns: Column<typeof favPlayerData[0]>[] = [
+    {
+      header: "Name",
+      key: "name",
+      render: (p) => (
+        <div className="flex items-center gap-3">
+          <img src={p.avatar} className="w-10 h-10 rounded-full object-cover" alt="avatar" />
+          <div>
+            <div className="text-sm font-bold text-white">{p.name}</div>
+            <div className="text-[10px] text-red-500 font-bold uppercase tracking-widest">{p.position}</div>
+          </div>
+        </div>
+      ),
+    },
+    { header: "Rating", key: "rating", align: "center", render: (p) => <span className="text-sm font-black text-red-600 italic">{p.rating}</span> },
+    { header: "Club", key: "club", align: "center", cellClassName: "text-sm text-gray-400" },
+    { header: "Country", key: "country", align: "center", cellClassName: "text-sm text-gray-400" },
+    { header: "Age", key: "age", align: "center", cellClassName: "text-sm text-gray-400" },
+    {
+      header: "Actions",
+      key: "actions",
+      align: "right",
+      render: () => <TableActionButtons onView={() => {}} onHeart={() => {}} onShare={() => {}} />,
+    },
+  ];
+
+  const favCoachColumns: Column<typeof favCoachData[0]>[] = [
+    {
+      header: "Name",
+      key: "name",
+      render: (c) => (
+        <div className="flex items-center gap-3">
+          <img src={c.avatar} className="w-10 h-10 rounded-full object-cover" alt="avatar" />
+          <div>
+            <div className="text-sm font-bold text-white">{c.name}</div>
+            <div className="text-[10px] text-red-500 font-bold uppercase tracking-widest">{c.role}</div>
+          </div>
+        </div>
+      ),
+    },
+    { header: "Speciality", key: "speciality", align: "center", cellClassName: "text-sm text-gray-400" },
+    { header: "Club", key: "club", align: "center", cellClassName: "text-sm text-gray-400" },
+    { header: "Country", key: "country", align: "center", cellClassName: "text-sm text-gray-400" },
+    { header: "Experience", key: "experience", align: "center", cellClassName: "text-sm text-gray-400" },
+    {
+      header: "Actions",
+      key: "actions",
+      align: "right",
+      render: () => <TableActionButtons onView={() => {}} onHeart={() => {}} onShare={() => {}} />,
     },
   ];
 
@@ -105,7 +197,7 @@ export const ClubDashboard = () => {
         <div className="lg:col-span-9 space-y-8">
           {/* Hero Section */}
           <div className="rounded-3xl overflow-hidden border border-white/10">
-            <DashboardHero 
+            <DashboardHero
               backgroundImage="/barcelona-la-liga-champions.avif"
               badgeText="Active Club"
               title="FC Barcelona"
@@ -123,15 +215,15 @@ export const ClubDashboard = () => {
           </div>
 
           {/* Stat Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {stats.map((stat, idx) => (
               <DashboardStatCard key={idx} {...stat} icon={<stat.icon size={20} />} />
             ))}
           </div>
 
           {/* Analytics */}
-          <DashboardSection 
-            title="Analytics" 
+          <DashboardSection
+            title="Analytics"
             action={<button className="px-5 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all">Full Analytics</button>}
           >
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mt-4">
@@ -170,15 +262,25 @@ export const ClubDashboard = () => {
             </div>
           </DashboardSection>
 
-          {/* Staff Monitoring */}
-          <DashboardSection title="Staff Monitoring">
-            <p className="text-[10px] text-gray-500 uppercase font-black tracking-widest mb-6">Professional Players</p>
+          {/* Coaches & Players */}
+          <DashboardSection title="Coaches & Players">
+            <p className="text-[10px] text-gray-500 uppercase font-black tracking-widest mb-6">Players</p>
             <DashboardTable columns={staffColumns} data={staffData} className="border-white/10" />
+            <p className="text-[10px] text-gray-500 uppercase font-black tracking-widest mt-10 mb-6">Coaches</p>
+            <DashboardTable columns={coachColumns} data={coachData} className="border-white/10" />
+          </DashboardSection>
+
+          {/* Favourites */}
+          <DashboardSection title="Favourites">
+            <p className="text-[10px] text-gray-500 uppercase font-black tracking-widest mb-6">Favourite Players</p>
+            <DashboardTable columns={favPlayerColumns} data={favPlayerData} className="border-white/10" />
+            <p className="text-[10px] text-gray-500 uppercase font-black tracking-widest mt-10 mb-6">Favourite Coaches</p>
+            <DashboardTable columns={favCoachColumns} data={favCoachData} className="border-white/10" />
           </DashboardSection>
 
           {/* Images */}
-          <DashboardSection 
-            title="Images" 
+          <DashboardSection
+            title="Images"
             action={<button className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all"><IconUpload size={16} /> Upload Image</button>}
           >
             <p className="text-[10px] text-gray-500 uppercase font-black tracking-widest mb-8">Match highlights & training</p>
@@ -190,8 +292,8 @@ export const ClubDashboard = () => {
           </DashboardSection>
 
           {/* Videos */}
-          <DashboardSection 
-            title="Videos" 
+          <DashboardSection
+            title="Videos"
             action={<button className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all"><IconUpload size={16} /> Upload Video</button>}
           >
             <p className="text-[10px] text-gray-500 uppercase font-black tracking-widest mb-8">Match highlights & training</p>
@@ -212,27 +314,27 @@ export const ClubDashboard = () => {
               </div>
               <h3 className="text-xl font-black text-white uppercase tracking-tight italic">Recent Activity</h3>
             </div>
-            
+
             <div className="space-y-6">
-              <ActivityItem 
-                icon={<IconHeart size={18} />} 
-                text="John Smith viewed CV for Marcus Johnson" 
-                time="2 hours ago" 
+              <ActivityItem
+                icon={<IconHeart size={18} />}
+                text="John Smith viewed CV for Marcus Johnson"
+                time="2 hours ago"
               />
-              <ActivityItem 
-                icon={<IconShare size={18} />} 
-                text="Profile shared: David Martinez" 
-                time="5 hours ago" 
+              <ActivityItem
+                icon={<IconShare size={18} />}
+                text="Profile shared: David Martinez"
+                time="5 hours ago"
               />
-              <ActivityItem 
-                icon={<IconEye size={18} />} 
-                text="New scout view from Manchester United" 
-                time="8 hours ago" 
+              <ActivityItem
+                icon={<IconEye size={18} />}
+                text="New scout view from Manchester United"
+                time="8 hours ago"
               />
-              <ActivityItem 
-                icon={<IconUsers size={18} />} 
-                text="Team Santos U17 updated roster" 
-                time="1 day ago" 
+              <ActivityItem
+                icon={<IconUsers size={18} />}
+                text="Team Santos U17 updated roster"
+                time="1 day ago"
               />
             </div>
           </div>

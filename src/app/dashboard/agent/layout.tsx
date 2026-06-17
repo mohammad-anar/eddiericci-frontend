@@ -9,7 +9,8 @@ import {
   IconShare, 
   IconStar, 
   IconChartBar, 
-  IconSettings 
+  IconSettings,
+  IconMessageCircle
 } from "@tabler/icons-react";
 import { ReactNode } from "react";
 
@@ -22,6 +23,7 @@ const agentSidebarItems = [
   { name: "Shared Profiles", url: "/dashboard/agent/shared-profiles", icon: IconShare },
   { name: "Success Story", url: "/dashboard/agent/success-story", icon: IconStar },
   { name: "Analytics", url: "/dashboard/agent/analytics", icon: IconChartBar },
+  { name: "Chat", url: "/dashboard/agent/chat", icon: IconMessageCircle },
   { name: "Settings", url: "/dashboard/agent/settings", icon: IconSettings },
 ];
 

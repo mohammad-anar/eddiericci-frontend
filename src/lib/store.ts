@@ -5,6 +5,7 @@ import { coachSlice } from "./features/coach/coachSlice";
 import authReducer from "@/redux/features/auth";
 import evaluationReducer from "./features/evaluation/evaluationSlice";
 import reportsReducer from "./features/reports/reportsSlice";
+import { parentSlice } from "./features/parent/parentSlice";
 import {
   persistReducer,
   persistStore,
@@ -52,6 +53,17 @@ const persistedReportsReducer = persistReducer(
   reportsReducer
 );
 
+const parentPersistConfig = {
+  key: "k10-parent-v1",
+  storage: getStorage(),
+  version: 1,
+};
+
+const persistedParentReducer = persistReducer(
+  parentPersistConfig,
+  parentSlice.reducer
+);
+
 const rootReducer = combineReducers({
   [cvApi.reducerPath]: cvApi.reducer,
   player: playerSlice.reducer,
@@ -59,6 +71,7 @@ const rootReducer = combineReducers({
   auth: authReducer,
   evaluation: persistedEvaluationReducer,
   reports: persistedReportsReducer,
+  parent: persistedParentReducer,
 });
 
 // Single store instance — shared across the entire app

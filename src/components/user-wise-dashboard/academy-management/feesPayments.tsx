@@ -22,7 +22,7 @@ const recentPayments = [
   {
     id: 2,
     player: "David Chen",
-    type: "Training Session",
+    type: "Training Session Fee",
     amount: "$50",
     date: "Jan 19, 2026",
     status: "Paid"
@@ -33,6 +33,54 @@ const recentPayments = [
     type: "Monthly Fee",
     amount: "$150",
     date: "Jan 15, 2026",
+    status: "Unpaid"
+  },
+  {
+    id: 4,
+    player: "Lucas Santos",
+    type: "Validation Fee",
+    amount: "$30",
+    date: "Jan 18, 2026",
+    status: "Paid"
+  },
+  {
+    id: 5,
+    player: "Gabriel Barbosa",
+    type: "Weekly Fee",
+    amount: "$40",
+    date: "Jan 17, 2026",
+    status: "Paid"
+  },
+  {
+    id: 6,
+    player: "Felipe Melo",
+    type: "Uniform Kit Fee",
+    amount: "$85",
+    date: "Jan 14, 2026",
+    status: "Paid"
+  },
+  {
+    id: 7,
+    player: "Rodrigo Silva",
+    type: "Registration Fee",
+    amount: "$120",
+    date: "Jan 12, 2026",
+    status: "Paid"
+  },
+  {
+    id: 8,
+    player: "Enzo Fernandez",
+    type: "Tournament Entrance Fee",
+    amount: "$65",
+    date: "Jan 10, 2026",
+    status: "Unpaid"
+  },
+  {
+    id: 9,
+    player: "Alex Jordan",
+    type: "Late Payment Fine",
+    amount: "$20",
+    date: "Jan 21, 2026",
     status: "Unpaid"
   }
 ];

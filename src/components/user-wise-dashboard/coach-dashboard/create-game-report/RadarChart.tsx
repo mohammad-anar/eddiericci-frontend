@@ -6,6 +6,8 @@ interface RadarChartProps {
   size?: number;
   color?: string;
   fillColor?: string;
+  textColor?: string;
+  gridColor?: string;
 }
 
 export const RadarChart = ({
@@ -13,6 +15,8 @@ export const RadarChart = ({
   size = 200,
   color = "#38bdf8",
   fillColor = "rgba(56, 189, 248, 0.4)",
+  textColor = "#9ca3af",
+  gridColor = "rgba(255,255,255,0.08)",
 }: RadarChartProps) => {
   const center = size / 2;
   const r = size * 0.35; // Maximum radius
@@ -47,7 +51,7 @@ export const RadarChart = ({
               key={idx}
               points={gridPoints.join(" ")}
               fill="none"
-              stroke="rgba(255,255,255,0.08)"
+              stroke={gridColor}
               strokeWidth="1"
             />
           );
@@ -65,7 +69,7 @@ export const RadarChart = ({
               y1={center}
               x2={x}
               y2={y}
-              stroke="rgba(255,255,255,0.08)"
+              stroke={gridColor}
               strokeWidth="1"
             />
           );
@@ -96,7 +100,7 @@ export const RadarChart = ({
               <text
                 x={lx}
                 y={ly}
-                fill="#9ca3af"
+                fill={textColor}
                 fontSize="9"
                 fontWeight="bold"
                 textAnchor="middle"
@@ -112,3 +116,4 @@ export const RadarChart = ({
     </div>
   );
 };
+

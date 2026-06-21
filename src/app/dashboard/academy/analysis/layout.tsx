@@ -20,11 +20,9 @@ const analysisSidebarItems = [
   { name: "Teams", url: "/dashboard/academy/analysis/teams", icon: IconUsers },
   { name: "Coach & Players", url: "/dashboard/academy/analysis/coach-players", icon: IconUsers },
   { name: "CVs Library", url: "/dashboard/academy/analysis/cvs-library", icon: IconBooks },
-  { name: "Success Story", url: "/dashboard/academy/analysis/success", icon: IconTrophy },
+  { name: "Success Story", url: "/dashboard/academy/analysis/success-story", icon: IconTrophy },
   { name: "Game Reports", url: "/dashboard/academy/analysis/game-reports", icon: IconFileText },
   { name: "Player Evaluation", url: "/dashboard/academy/analysis/player-evaluation", icon: IconUsers },
-  { name: "Financials", url: "/dashboard/academy/analysis/financials", icon: IconCoins },
-  { name: "Transfer Requests", url: "/dashboard/academy/analysis/transfer-requests", icon: IconInbox },
   { name: "Analytics", url: "/dashboard/academy/analysis/analytics", icon: IconChartBar },
   { name: "Settings", url: "/dashboard/academy/analysis/settings", icon: IconSettings },
 ];

@@ -671,7 +671,11 @@ export default function PlayerEvaluationPage() {
                     : (player.playerImage?.src || "/ronaldo.png");
 
                   return (
-                    <tr key={player.id} className="group hover:bg-white/[0.01] transition-all">
+                    <tr 
+                      key={player.id} 
+                      onClick={() => startEvaluation(player)}
+                      className="group hover:bg-white/[0.02] transition-all cursor-pointer"
+                    >
                       <td className="py-4">
                         <div className="flex items-center gap-3">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -703,7 +707,10 @@ export default function PlayerEvaluationPage() {
                       </td>
                       <td className="py-4 text-right">
                         <button
-                          onClick={() => startEvaluation(player)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            startEvaluation(player);
+                          }}
                           className={cn(
                             "px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all cursor-pointer border",
                             activeTab === "pending"

@@ -15,17 +15,21 @@ import {
   IconFileText, 
   IconChartBar, 
   IconBuildingStore, 
-  IconSettings 
+  IconSettings,
+  IconCoins,
+  IconInbox
 } from "@tabler/icons-react";
 import { ReactNode } from "react";
 
 const managementSidebarItems = [
   { name: "Dashboard", url: "/dashboard/academy/management", icon: IconDashboard },
   { name: "Chat", url: "/dashboard/academy/management/chat", icon: IconMessage },
-  { name: "Players Management", url: "/dashboard/academy/management/players-management", icon: IconUsers },
+  { name: "Coach & Players", url: "/dashboard/academy/management/coach-players", icon: IconUsers },
+  { name: "Transfer Requests", url: "/dashboard/academy/management/transfer-requests", icon: IconInbox },
   { name: "Parents Management", url: "/dashboard/academy/management/parents-management", icon: IconUserCheck },
   { name: "Training Sessions", url: "/dashboard/academy/management/training-sessions", icon: IconCalendarEvent },
   { name: "Fees & Payments", url: "/dashboard/academy/management/fees-payments", icon: IconCreditCard },
+  { name: "Financials", url: "/dashboard/academy/management/financials", icon: IconCoins },
   { name: "Matches", url: "/dashboard/academy/management/matches", icon: IconBallFootball },
   { name: "Extra Events", url: "/dashboard/academy/management/extra-events", icon: IconStar },
   { name: "Sponsors", url: "/dashboard/academy/management/sponsors", icon: IconUsersGroup },

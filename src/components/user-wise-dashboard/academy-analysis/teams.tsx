@@ -1,13 +1,13 @@
 "use client";
 import React from "react";
-import { 
-  IconUsers, 
-  IconTrophy, 
-  IconBallFootball, 
-  IconEye, 
+import {
+  IconUsers,
+  IconTrophy,
+  IconBallFootball,
+  IconEye,
   IconPencil,
   IconTrash,
-  IconPlus, 
+  IconPlus,
   IconMinus
 } from "@tabler/icons-react";
 import { DashboardStatCard } from "@/components/dashboard/dashboard-stat-card";
@@ -41,7 +41,7 @@ export const Teams = () => {
         <div className="flex justify-between items-center">
           <div>
             <h2 className="text-2xl font-black text-white font-orbitron uppercase tracking-tight">My Teams</h2>
-            <p className="text-white/60 font-medium text-xs uppercase tracking-widest mt-1">Professional Coach and Players</p>
+            <p className="text-white/60 font-medium text-xs uppercase tracking-widest mt-1">Coaches and Players</p>
           </div>
           <button className="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/20 text-[10px] font-black uppercase tracking-[0.2em] text-white px-6 py-3 rounded-xl transition-all">
             <IconPlus size={16} />
@@ -77,16 +77,15 @@ export const Teams = () => {
                     {team.playerCount}
                   </td>
                   <td className="py-6 px-6 border-r border-white/20 text-center">
-                    <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest inline-block ${
-                      team.status === "Active" 
-                        ? "bg-[#00FF85]/10 text-[#00FF85] border border-[#00FF85]/20 shadow-[0_0_15px_rgba(0,255,133,0.1)]" 
-                        : "bg-[#FF3B30]/10 text-[#FF3B30] border border-[#FF3B30]/20"
-                    }`}>
+                    <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest inline-block ${team.status === "Active"
+                      ? "bg-[#00FF85]/10 text-[#00FF85] border border-[#00FF85]/20 shadow-[0_0_15px_rgba(0,255,133,0.1)]"
+                      : "bg-[#FF3B30]/10 text-[#FF3B30] border border-[#FF3B30]/20"
+                      }`}>
                       {team.status}
                     </span>
                   </td>
                   <td className="py-6 px-6 text-center">
-                    <TableActionButtons 
+                    <TableActionButtons
                       onView={() => console.log("View", team.id)}
                       onEdit={() => console.log("Edit", team.id)}
                       onDelete={() => console.log("Delete", team.id)}

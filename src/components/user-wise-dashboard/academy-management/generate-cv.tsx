@@ -1,507 +1,543 @@
 "use client";
-import React, { useState, useEffect } from "react";
+
+import React, { useState, useMemo } from "react";
 import {
+  IconSearch,
+  IconFilter,
+  IconChevronDown,
+  IconEye,
+  IconBell,
+  IconX,
   IconDownload,
-  IconCircleCheck,
-  IconPencil,
-  IconUpload,
-  IconCalendar,
-  IconChevronLeft,
-  IconChevronRight,
-  IconPlus,
+  IconShield,
+  IconUser,
+  IconStar,
+  IconTrophy,
   IconMapPin,
-  IconClock,
   IconPhone,
   IconMail,
-  IconShield,
-  IconShare,
-  IconTrophy
+  IconBallFootball,
+  IconLoader2,
+  IconCheck,
 } from "@tabler/icons-react";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import FullEditablePage from "@/app/(common)/cvs-page/player-cv-details/components/FullEditablePage";
-import { usePlayer } from "@/lib/hooks/usePlayer";
-import { usePlayerStats } from "@/app/(common)/cvs-page/player-cv-details/components/FullEditablePage";
-import { getFullWithShortForm } from "@/lib/utils";
-import { FileText } from 'lucide-react';
 import { useAppSelector } from "@/lib/hooks/reduxHooks";
+import { PlayerStateItem } from "@/lib/features/player/playerSlice";
+import { toast } from "sonner";
 
-const CareerItem = ({ logo, name, role, years, type }: { logo: string; name: string; role: string; years: string; type: string }) => (
-  <div className="bg-black/40 border border-white/10 rounded-2xl p-4 flex flex-col gap-3 group hover:border-white/20 transition-all">
-    <div className="flex items-center gap-4">
-      <div className="w-10 h-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden">
-        <img src={logo} alt={name} className="w-6 h-6 object-contain" />
-      </div>
-      <div className="min-w-0">
-        <h4 className="text-sm font-bold text-white truncate">{name}</h4>
-        <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest">{role}</p>
-      </div>
-    </div>
-    <div className="flex justify-between items-center">
-      <span className="text-[10px] font-bold text-white/40">{years}</span>
-      <span className="text-[10px] font-black text-[#E31B23] uppercase tracking-widest">{type}</span>
-    </div>
-  </div>
-);
+// ─── CV Tier calculation ───────────────────────────────────────────────────
+type CvTier = "Gold" | "Silver" | "Bronze";
 
-const GenerateCv = () => {
-  const { playerData } = usePlayer();
-  const { role: contextRole } = usePlayerStats();
-  const [role, setRole] = useState<string>("player");
+function getCvTier(rating: number): CvTier {
+  if (rating >= 80) return "Gold";
+  if (rating >= 60) return "Silver";
+  return "Bronze";
+}
 
-  const reports = useAppSelector(state => state.reports.reports);
-  const gameReports = reports
-    .filter(r => r.status === "Paid")
-    .slice(0, 3)
-    .map(r => ({
-      id: r.id,
-      opponent: `vs ${r.team2}`,
-      rating: r.rating
-    }));
+const TIER_STYLES: Record<CvTier, { label: string; color: string; border: string; bg: string; glow: string }> = {
+  Gold:   { label: "GOLD",   color: "text-[#FBBF24]", border: "border-[#FBBF24]/40", bg: "bg-[#FBBF24]/10", glow: "shadow-[0_0_16px_rgba(251,191,36,0.25)]" },
+  Silver: { label: "SILVER", color: "text-[#CBD5E1]", border: "border-[#CBD5E1]/40", bg: "bg-[#CBD5E1]/10", glow: "shadow-[0_0_16px_rgba(203,213,225,0.15)]" },
+  Bronze: { label: "BRONZE", color: "text-[#F97316]", border: "border-[#F97316]/40", bg: "bg-[#F97316]/10", glow: "shadow-[0_0_16px_rgba(249,115,22,0.15)]" },
+};
 
-  useEffect(() => {
-    const userRole = localStorage.getItem("userRole") || "player";
-    setRole(userRole);
-  }, []);
+// ─── Player type based on position ────────────────────────────────────────
+function getPlayerType(position: string): string {
+  const p = position.toLowerCase();
+  if (p.includes("goalkeeper") || p === "gk") return "Goalkeeper";
+  if (p.includes("defender") || p.includes("back") || p.includes("cb") || p.includes("lb") || p.includes("rb")) return "Defender";
+  if (p.includes("midfielder") || p.includes("mid") || p.includes("cm") || p.includes("dm") || p.includes("am")) return "Midfielder";
+  if (p.includes("forward") || p.includes("striker") || p.includes("winger") || p.includes("cf") || p.includes("lw") || p.includes("rw")) return "Forward";
+  return "Field Player";
+}
 
-  const generateProfessionalPDF = () => {
-    const printWindow = window.open('', '_blank');
-    if (!printWindow) return;
+function getPositionCode(position: string): string {
+  const p = position.toLowerCase();
+  if (p.includes("goalkeeper")) return "GK";
+  if (p.includes("defensive mid")) return "CDM";
+  if (p.includes("center back") || p.includes("cb")) return "CB";
+  if (p.includes("left back")) return "LB";
+  if (p.includes("right back")) return "RB";
+  if (p.includes("midfielder")) return "CM";
+  if (p.includes("forward") || p.includes("striker")) return "ST";
+  if (p.includes("winger")) return "LW";
+  if (p.includes("defender")) return "CB";
+  return "MF";
+}
 
-    const htmlContent = `
-      <html>
-        <head>
-          <title>Technical Scouting Report - ${playerData.fullName}</title>
-          <style>
-            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap');
-            body {
-              font-family: 'Inter', sans-serif;
-              color: #111;
-              margin: 0;
-              padding: 50px;
-              line-height: 1.4;
-              background: #fff;
-            }
-            .header {
-              display: flex;
-              justify-content: space-between;
-              align-items: flex-start;
-              border-bottom: 4px solid #E31B23;
-              padding-bottom: 40px;
-              margin-bottom: 50px;
-            }
-            .brand { font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 3px; color: #E31B23; margin-bottom: 10px; }
-            .player-name { font-size: 48px; font-weight: 900; text-transform: uppercase; letter-spacing: -2px; margin: 0; line-height: 1; }
-            .player-title { font-size: 16px; font-weight: 600; color: #666; margin-top: 5px; text-transform: uppercase; }
-            
-            .rating-circle {
-              width: 100px;
-              height: 100px;
-              background: #111;
-              color: #fff;
-              border-radius: 50%;
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-              justify-content: center;
-              border: 4px solid #E31B23;
-            }
-            .rating-value { font-size: 36px; font-weight: 900; line-height: 1; }
-            .rating-label { font-size: 10px; font-weight: 800; text-transform: uppercase; opacity: 0.6; }
+const VALIDATION_BADGE: Record<string, { label: string; color: string; border: string; bg: string }> = {
+  verified: { label: "Verified",   color: "text-[#4ADE80]", border: "border-[#4ADE80]/30", bg: "bg-[#4ADE80]/10" },
+  pending:  { label: "Pending",    color: "text-[#FBBF24]", border: "border-[#FBBF24]/30", bg: "bg-[#FBBF24]/10" },
+  expired:  { label: "Expired",    color: "text-[#EF4444]", border: "border-[#EF4444]/30", bg: "bg-[#EF4444]/10" },
+  not_needed: { label: "N/A",      color: "text-white/40",  border: "border-white/10",     bg: "bg-white/5" },
+};
 
-            .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; }
-            .section { margin-bottom: 40px; }
-            .section-header { 
-              font-size: 14px; 
-              font-weight: 900; 
-              text-transform: uppercase; 
-              letter-spacing: 2px; 
-              color: #111;
-              border-bottom: 2px solid #eee;
-              padding-bottom: 8px;
-              margin-bottom: 20px;
-              display: flex;
-              justify-content: space-between;
-            }
-            
-            .attribute-table { width: 100%; border-collapse: collapse; }
-            .attribute-row { border-bottom: 1px solid #f0f0f0; }
-            .attribute-cell { padding: 10px 0; font-size: 13px; }
-            .attr-label { color: #666; font-weight: 600; }
-            .attr-value { font-weight: 900; text-align: right; color: #111; }
-            .attr-bar-bg { width: 60px; height: 6px; background: #eee; border-radius: 3px; display: inline-block; margin-left: 15px; position: relative; top: -2px; }
-            .attr-bar-fill { height: 100%; background: #E31B23; border-radius: 3px; }
+// ─── CV Detail Dialog ──────────────────────────────────────────────────────
+function CvDetailDialog({
+  player,
+  onClose,
+}: {
+  player: PlayerStateItem;
+  onClose: () => void;
+}) {
+  const [notifying, setNotifying] = useState(false);
+  const [notified, setNotified] = useState(false);
+  const tier = getCvTier(player.rating);
+  const tierStyle = TIER_STYLES[tier];
 
-            .full-width { grid-column: span 2; }
-            .highlight-box { background: #f9f9f9; padding: 25px; border-radius: 15px; border: 1px solid #eee; }
-            
-            .footer {
-              margin-top: 80px;
-              padding-top: 30px;
-              border-top: 1px solid #eee;
-              display: flex;
-              justify-content: space-between;
-              font-size: 10px;
-              color: #999;
-              font-weight: 600;
-              text-transform: uppercase;
-              letter-spacing: 1px;
-            }
-
-            @media print {
-              body { padding: 0; }
-              .no-print { display: none; }
-              -webkit-print-color-adjust: exact;
-            }
-          </style>
-        </head>
-        <body oncontextmenu="return false;">
-          <div class="header">
-            <div>
-              <div class="brand">Eddie Ricci Football Management</div>
-              <h1 class="player-name">${playerData.fullName}</h1>
-              <div class="player-title">${getFullWithShortForm(playerData.position)} • ${playerData.clubs[0]?.name || 'Unattached'} • ${playerData.birthCountry}</div>
-            </div>
-            <div class="rating-circle">
-              <span class="rating-label">Overall</span>
-              <span class="rating-value">${playerData.rating}</span>
-            </div>
-          </div>
-
-          <div class="main-grid">
-            <!-- Bio Section -->
-            <div class="section">
-              <div class="section-header">Biological Profile</div>
-              <table class="attribute-table">
-                <tr class="attribute-row"><td class="attribute-cell attr-label">Age / DOB</td><td class="attribute-cell attr-value">${playerData.age} / ${playerData.dob}</td></tr>
-                <tr class="attribute-row"><td class="attribute-cell attr-label">Height / Weight</td><td class="attribute-cell attr-value">${playerData.height}m / ${playerData.weight}kg</td></tr>
-                <tr class="attribute-row"><td class="attribute-cell attr-label">Primary Foot</td><td class="attribute-cell attr-value">Right (${playerData.rightLegUsage}%)</td></tr>
-                <tr class="attribute-row"><td class="attribute-cell attr-label">Secondary Foot</td><td class="attribute-cell attr-value">Left (${playerData.leftLegUsage}%)</td></tr>
-                <tr class="attribute-row"><td class="attribute-cell attr-label">Nationality</td><td class="attribute-cell attr-value">${playerData.birthCountry} / ${playerData.dualNationality || 'N/A'}</td></tr>
-              </table>
-            </div>
-
-            <!-- Performance Metrics -->
-            <div class="section">
-              <div class="section-header">Scouting Summary</div>
-              <table class="attribute-table">
-                <tr class="attribute-row"><td class="attribute-cell attr-label">Market Value</td><td class="attribute-cell attr-value">€${playerData.marketValue}</td></tr>
-                <tr class="attribute-row"><td class="attribute-cell attr-label">Contract Until</td><td class="attribute-cell attr-value">${playerData.contractUntil}</td></tr>
-                <tr class="attribute-row"><td class="attribute-cell attr-label">Agency</td><td class="attribute-cell attr-value">${playerData.agency}</td></tr>
-                <tr class="attribute-row"><td class="attribute-cell attr-label">Agent</td><td class="attribute-cell attr-value">${playerData.agent}</td></tr>
-              </table>
-            </div>
-
-            <!-- Technical Evaluation -->
-            <div class="section">
-              <div class="section-header">Technical Attributes</div>
-              <table class="attribute-table">
-                ${playerData.skillsCategories.find(c => c.category === "Technical")?.skills.slice(0, 5).map(skill => `
-                  <tr class="attribute-row"><td class="attribute-cell attr-label">${skill.name}</td><td class="attribute-cell attr-value">${skill.value} <div class="attr-bar-bg"><div class="attr-bar-fill" style="width: ${skill.value}%"></div></div></td></tr>
-                `).join('') || ''}
-              </table>
-            </div>
-
-            <!-- Physical Evaluation -->
-            <div class="section">
-              <div class="section-header">Physical Profile</div>
-              <table class="attribute-table">
-                ${playerData.skillsCategories.find(c => c.category === "Physical")?.skills.slice(0, 5).map(skill => `
-                  <tr class="attribute-row"><td class="attribute-cell attr-label">${skill.name}</td><td class="attribute-cell attr-value">${skill.value} <div class="attr-bar-bg"><div class="attr-bar-fill" style="width: ${skill.value}%"></div></div></td></tr>
-                `).join('') || ''}
-              </table>
-            </div>
-
-            <!-- Mental/Tactical Evaluation -->
-            <div class="section">
-              <div class="section-header">Mental & Tactical</div>
-              <table class="attribute-table">
-                ${playerData.skillsCategories.find(c => c.category === "Tactical")?.skills.slice(0, 5).map(skill => `
-                  <tr class="attribute-row"><td class="attribute-cell attr-label">${skill.name}</td><td class="attribute-cell attr-value">${skill.value} <div class="attr-bar-bg"><div class="attr-bar-fill" style="width: ${skill.value}%"></div></div></td></tr>
-                `).join('') || ''}
-              </table>
-            </div>
-
-            <!-- Advanced Metrics -->
-            <div class="section">
-              <div class="section-header">Intelligence Metrics</div>
-              <table class="attribute-table">
-                <tr class="attribute-row"><td class="attribute-cell attr-label">Pass Accuracy</td><td class="attribute-cell attr-value">${playerData.performanceMetrics.passAccuracy}%</td></tr>
-                <tr class="attribute-row"><td class="attribute-cell attr-label">Shoot Accuracy</td><td class="attribute-cell attr-value">${playerData.performanceMetrics.shootAccuracy}%</td></tr>
-                <tr class="attribute-row"><td class="attribute-cell attr-label">Dribble Success</td><td class="attribute-cell attr-value">${playerData.performanceMetrics.dribbleSuccess}%</td></tr>
-                <tr class="attribute-row"><td class="attribute-cell attr-label">Tackle Success</td><td class="attribute-cell attr-value">${playerData.performanceMetrics.tackleSuccess}%</td></tr>
-              </table>
-            </div>
-
-            <!-- Career Timeline -->
-            <div class="section full-width">
-              <div class="section-header">Professional Career History</div>
-              <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
-                <tr style="background: #f9f9f9; text-align: left; font-size: 11px; font-weight: 900; text-transform: uppercase;">
-                  <th style="padding: 12px; border-bottom: 2px solid #eee">Season</th>
-                  <th style="padding: 12px; border-bottom: 2px solid #eee">Organization</th>
-                  <th style="padding: 12px; border-bottom: 2px solid #eee">Level / Role</th>
-                  <th style="padding: 12px; border-bottom: 2px solid #eee">Status</th>
-                </tr>
-                ${playerData.clubs.map(club => `
-                  <tr style="font-size: 13px;">
-                    <td style="padding: 12px; border-bottom: 1px solid #eee">${club.from} - ${club.to}</td>
-                    <td style="padding: 12px; border-bottom: 1px solid #eee">${club.name}</td>
-                    <td style="padding: 12px; border-bottom: 1px solid #eee">${club.category || 'N/A'}</td>
-                    <td style="padding: 12px; border-bottom: 1px solid #eee">Active</td>
-                  </tr>
-                `).join('')}
-              </table>
-            </div>
-
-            <div class="section full-width highlight-box">
-              <div class="section-header">Coach Evaluation Notes</div>
-              <p style="font-size: 13px; color: #444; margin: 0;">
-                ${playerData.fullName} demonstrates elite-level vision and technical control under pressure. Current overall rating is verified at ${playerData.rating}.
-              </p>
-            </div>
-          </div>
-
-          <div class="footer">
-            <span>Tech ID: 9F8E7D6C • Confirmed By: ER Scouting Dept</span>
-            <span>Page 1 of 1 • Internal Document</span>
-            <span>Date: ${new Date().toLocaleDateString()}</span>
-          </div>
-
-          <script>
-            window.onload = function() { 
-              window.print();
-              setTimeout(function() { window.close(); }, 500);
-            };
-          </script>
-        </body>
-      </html>
-    `;
-
-    printWindow.document.write(htmlContent);
-    printWindow.document.close();
+  const handleNotifyCoach = async () => {
+    if (notified) return;
+    setNotifying(true);
+    const coachName = player.coachName || "the assigned coach";
+    const tid = toast.loading(`Sending validation request to ${coachName}...`);
+    await new Promise((r) => setTimeout(r, 1600));
+    toast.success(`Validation request sent to ${coachName}! They will review ${player.fullName}'s CV shortly.`, { id: tid, duration: 5000 });
+    setNotifying(false);
+    setNotified(true);
   };
 
+  const strengths = player.strengths ?? { pace: 0, shooting: 0, passing: 0, dribbling: 0, defending: 0, physical: 0 };
+  const attrs = [
+    { label: "Pace",      value: strengths.pace      },
+    { label: "Shooting",  value: strengths.shooting   },
+    { label: "Passing",   value: strengths.passing    },
+    { label: "Dribbling", value: strengths.dribbling  },
+    { label: "Defending", value: strengths.defending  },
+    { label: "Physical",  value: strengths.physical   },
+  ];
+
+  const posCode   = getPositionCode(player.position);
+  const pType     = getPlayerType(player.position);
+  const imgSrc    = typeof player.playerImage === "string" ? player.playerImage : player.playerImage?.src || "/ronaldo.png";
+  const completion = Math.min(100, Math.round((player.rating / 100) * 100));
+
   return (
-    <div className="flex flex-col gap-8 pb-10">
-      {/* Header */}
-      <div className="flex justify-between items-end print:hidden">
-        <div>
-          <h1 className="text-5xl font-black text-white font-orbitron uppercase tracking-tight">Generate CV</h1>
-          <p className="text-white/60 font-medium mt-2 text-lg">My Professional Football Profile</p>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+      <div className="relative bg-[#0a0a0a] border border-white/15 rounded-[32px] w-full max-w-5xl max-h-[95vh] overflow-y-auto shadow-2xl flex flex-col">
+        {/* Dialog Header */}
+        <div className="sticky top-0 z-10 bg-[#0a0a0a]/95 backdrop-blur-lg border-b border-white/10 px-8 py-5 flex items-center justify-between rounded-t-[32px]">
+          <div className="flex items-center gap-4">
+            <div className={`px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-widest border ${tierStyle.bg} ${tierStyle.border} ${tierStyle.color}`}>
+              {tier} CV
+            </div>
+            <h2 className="text-xl font-black uppercase text-white font-orbitron tracking-tight">{player.fullName}</h2>
+          </div>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleNotifyCoach}
+              disabled={notifying || notified}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all cursor-pointer disabled:cursor-default border ${
+                notified
+                  ? "bg-[#4ADE80]/10 border-[#4ADE80]/30 text-[#4ADE80]"
+                  : "bg-[#E31B23] hover:bg-[#C2181F] border-[#E31B23]/40 text-white shadow-lg shadow-[#E31B23]/20"
+              }`}
+            >
+              {notifying ? (
+                <><IconLoader2 size={16} className="animate-spin" /> Sending...</>
+              ) : notified ? (
+                <><IconCheck size={16} /> Coach Notified</>
+              ) : (
+                <><IconBell size={16} /> Notify Coach</>
+              )}
+            </button>
+            <button
+              onClick={onClose}
+              className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white/60 hover:text-white transition-all cursor-pointer"
+            >
+              <IconX size={18} />
+            </button>
+          </div>
         </div>
-        <Button
-          onClick={generateProfessionalPDF}
-          className="bg-[#222222] hover:bg-[#333333] text-white border border-white/5 gap-2 px-6 py-4 rounded-xl font-bold uppercase tracking-widest text-[10px] h-auto"
-        >
-          <IconDownload size={18} /> Download CV PDF
-        </Button>
-      </div>
 
+        {/* CV Body */}
+        <div className="p-8 flex flex-col gap-8">
+          {/* Hero Banner */}
+          <div className="relative bg-gradient-to-br from-[#1a1a1a] to-[#0d0d0d] rounded-3xl border border-white/10 overflow-hidden min-h-[220px] flex items-end">
+            <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent" />
+            <div className="absolute right-0 bottom-0 h-full w-1/3 flex items-end justify-end opacity-80 pointer-events-none">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={imgSrc} alt={player.fullName} className="h-full object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.9)]" />
+            </div>
+            {/* Tier glow */}
+            <div className={`absolute top-6 right-6 w-24 h-24 rounded-full blur-3xl opacity-40 ${tier === "Gold" ? "bg-[#FBBF24]" : tier === "Silver" ? "bg-[#CBD5E1]" : "bg-[#F97316]"}`} />
+            <div className="relative p-8 flex flex-col gap-4">
+              {/* Rating badge */}
+              <div className={`w-20 h-20 rounded-full flex flex-col items-center justify-center border-4 ${tier === "Gold" ? "border-[#FBBF24] bg-[#FBBF24]/10" : tier === "Silver" ? "border-[#CBD5E1] bg-[#CBD5E1]/10" : "border-[#F97316] bg-[#F97316]/10"}`}>
+                <span className={`text-3xl font-black font-orbitron leading-none ${tierStyle.color}`}>{player.rating}</span>
+                <span className="text-[9px] font-black uppercase text-white/40 tracking-widest">OVR</span>
+              </div>
+              <div>
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="bg-[#E31B23] text-white text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full">{posCode}</span>
+                  <span className={`text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full border ${tierStyle.bg} ${tierStyle.border} ${tierStyle.color}`}>{tier}</span>
+                </div>
+                <h3 className="text-4xl font-black uppercase text-white font-orbitron tracking-tighter leading-none">{player.fullName}</h3>
+                <p className="text-[11px] font-bold text-white/50 uppercase tracking-widest mt-1">
+                  {player.position} · {player.birthCountry} · {pType}
+                </p>
+              </div>
+            </div>
+          </div>
 
-
-      {/* Main Content */}
-      <div className="flex flex-col gap-6">
-        {/* Personal Information Hero - Restoring Original Design */}
-        <section className="bg-[#111111] rounded-3xl border border-white/10 p-4 md:p-8 flex flex-col gap-8">
-          <div className="relative rounded-3xl overflow-hidden min-h-[400px] md:min-h-[560px] border border-white/10 group flex flex-col justify-end">
-            <div
-              className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
-              style={{ backgroundImage: `url('/stadium-night.jpg')` }}
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/40 via-[45%] to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-
-            <div className="absolute right-0 bottom-0 h-full w-[70%] md:w-[55%] flex items-end justify-end pointer-events-none opacity-60 md:opacity-100">
-              <img
-                src={typeof playerData.playerImage === 'string' ? playerData.playerImage : (playerData.playerImage?.src || "/ronaldo.png")}
-                alt="Player"
-                className="h-[90%] md:h-[105%] object-contain drop-shadow-[0_40px_80px_rgba(0,0,0,0.9)]"
-              />
+          {/* Stats + Info Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Attributes */}
+            <div className="bg-[#111111] rounded-2xl border border-white/10 p-6 flex flex-col gap-5">
+              <h4 className="text-[11px] font-black uppercase tracking-widest text-white/60">Performance Attributes</h4>
+              <div className="flex flex-col gap-4">
+                {attrs.map(({ label, value }) => (
+                  <div key={label} className="flex flex-col gap-1.5">
+                    <div className="flex justify-between items-center">
+                      <span className="text-[11px] font-bold text-white/60 uppercase tracking-widest">{label}</span>
+                      <span className="text-sm font-black text-white font-orbitron">{value}</span>
+                    </div>
+                    <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+                      <div
+                        className={`h-full rounded-full transition-all ${tier === "Gold" ? "bg-[#FBBF24]" : tier === "Silver" ? "bg-[#CBD5E1]" : "bg-[#F97316]"}`}
+                        style={{ width: `${value}%` }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            <div className="relative p-6 md:p-10 w-full space-y-8">
-              <div className="flex flex-col gap-6">
-                <div className="w-20 h-20 md:w-24 md:h-24 rounded-full border-4 border-gold bg-gold/80 flex items-center justify-center backdrop-blur-2xl shadow-2xl">
-                  <span className="text-3xl md:text-4xl font-black text-white font-orbitron">{playerData.rating}</span>
+            {/* Player Profile Info */}
+            <div className="flex flex-col gap-4">
+              {/* CV Tier & Completion */}
+              <div className={`bg-[#111111] rounded-2xl border p-5 flex flex-col gap-3 ${tierStyle.border} ${tierStyle.glow}`}>
+                <div className="flex justify-between items-center">
+                  <span className="text-[11px] font-black uppercase tracking-widest text-white/60">CV Tier Status</span>
+                  <span className={`text-2xl font-black font-orbitron uppercase ${tierStyle.color}`}>{tier}</span>
                 </div>
-                <div className="space-y-4">
-                  <div className="bg-[#E31B23] border border-[#E31B23]/20 px-4 py-1.5 rounded-full text-[10px] font-black text-white uppercase w-fit tracking-[0.2em] shadow-[0_0_20px_rgba(227,27,35,0.3)]">{playerData.transferStatus || "Active Player"}</div>
-                  <div className="space-y-2">
-                    <h1 className="text-3xl md:text-6xl font-black text-white font-orbitron uppercase tracking-tighter leading-none">{playerData.fullName}</h1>
-                    <div className="flex flex-wrap items-center gap-3 md:gap-6 text-[9px] md:text-[11px] font-black uppercase tracking-[0.2em] pt-1">
-                      <span className="text-[#E31B23]">{getFullWithShortForm(playerData.position)}</span>
-                      <span className="text-white/20 hidden md:inline">/</span>
-                      <span className="text-white">{playerData.age} Years Old</span>
-                      <span className="text-white/20 hidden md:inline">/</span>
-                      <span className="flex items-center gap-3 text-white">
-                        <img src={`https://flagcdn.com/br.svg`} alt={playerData.birthCountry} className="w-4 h-3 md:w-5 md:h-3.5 object-cover rounded-sm shadow-sm" /> {playerData.birthCountry}
-                      </span>
+                <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden">
+                  <div
+                    className={`h-full rounded-full ${tier === "Gold" ? "bg-[#FBBF24]" : tier === "Silver" ? "bg-[#CBD5E1]" : "bg-[#F97316]"}`}
+                    style={{ width: `${completion}%` }}
+                  />
+                </div>
+                <p className="text-[10px] text-white/40 uppercase font-bold tracking-widest">
+                  {completion}% profile completeness · {tier === "Gold" ? "Elite recruit status" : tier === "Silver" ? "Good potential – improving" : "Developing – needs attention"}
+                </p>
+              </div>
+
+              {/* Player Details */}
+              <div className="bg-[#111111] rounded-2xl border border-white/10 p-5 flex flex-col gap-3">
+                <h4 className="text-[11px] font-black uppercase tracking-widest text-white/60">Player Profile</h4>
+                <div className="grid grid-cols-2 gap-3">
+                  {[
+                    { icon: <IconUser size={14} />,        label: "Type",       value: pType },
+                    { icon: <IconBallFootball size={14} />, label: "Position",   value: player.position },
+                    { icon: <IconMapPin size={14} />,       label: "Nation",     value: player.birthCountry },
+                    { icon: <IconStar size={14} />,         label: "Validation", value: VALIDATION_BADGE[player.validationStatus]?.label ?? "N/A" },
+                    { icon: <IconPhone size={14} />,        label: "Phone",      value: player.phone || "N/A" },
+                    { icon: <IconMail size={14} />,         label: "Email",      value: player.email || "N/A" },
+                  ].map(({ icon, label, value }) => (
+                    <div key={label} className="flex items-start gap-2">
+                      <div className="text-white/30 mt-0.5">{icon}</div>
+                      <div>
+                        <p className="text-[9px] font-black uppercase tracking-widest text-white/30">{label}</p>
+                        <p className="text-[11px] font-bold text-white truncate max-w-[120px]">{value}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Academy + Coach */}
+              <div className="bg-[#111111] rounded-2xl border border-white/10 p-5 flex flex-col gap-3">
+                <h4 className="text-[11px] font-black uppercase tracking-widest text-white/60">Academy & Coach</h4>
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-xl bg-[#E31B23]/10 border border-[#E31B23]/20 flex items-center justify-center">
+                      <IconShield size={14} className="text-[#E31B23]" />
+                    </div>
+                    <div>
+                      <p className="text-[9px] font-black uppercase tracking-widest text-white/30">Academy</p>
+                      <p className="text-[11px] font-bold text-white">{player.academyName || "N/A"}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
+                      <IconTrophy size={14} className="text-[#FBBF24]" />
+                    </div>
+                    <div>
+                      <p className="text-[9px] font-black uppercase tracking-widest text-white/30">Coach</p>
+                      <p className="text-[11px] font-bold text-white">{player.coachName || "Unassigned"}</p>
                     </div>
                   </div>
                 </div>
               </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 md:gap-y-6 pt-4 md:pt-8 max-w-2xl p-4 md:p-6 rounded-2xl">
-                <div className="flex items-center gap-4">
-                  <div className="p-3 bg-white/5 rounded-xl border border-white/10 text-white/40"><IconShield size={20} /></div>
-                  <div>
-                    <p className="text-[10px] text-white/40 uppercase font-black tracking-widest">Current Club</p>
-                    <p className="text-sm font-bold text-white">{playerData.clubs[0]?.name || "Unattached"}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="p-3 bg-white/5 rounded-xl border border-white/10 text-white/40"><IconPhone size={20} /></div>
-                  <div>
-                    <p className="text-[10px] text-white/40 uppercase font-black tracking-widest">Contact</p>
-                    <p className="text-sm font-bold text-white">{playerData.phone}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="p-3 bg-white/5 rounded-xl border border-white/10 text-white/40"><IconClock size={20} /></div>
-                  <div>
-                    <p className="text-[10px] text-white/40 uppercase font-black tracking-widest">Contract Until</p>
-                    <p className="text-sm font-bold text-[#FBBF24]">{playerData.contractUntil}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="p-3 bg-white/5 rounded-xl border border-white/10 text-white/40"><IconMail size={20} /></div>
-                  <div>
-                    <p className="text-[10px] text-white/40 uppercase font-black tracking-widest">Email</p>
-                    <p className="text-sm font-bold text-white truncate max-w-[180px]">{playerData.email}</p>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
-        </section>
 
-        {/* Top Squares - As requested by client doc */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-full">
-          {/* Completion Status */}
-          <div className="bg-[#111111] rounded-3xl border border-white/10 p-8 flex flex-col gap-6">
-            <h3 className="text-sm font-black text-white font-orbitron uppercase tracking-widest">Completion Status</h3>
-            <div className="space-y-4">
-              <div className="flex justify-between items-end">
-                <span className="text-5xl font-black text-[#E31B23] font-orbitron">85%</span>
-              </div>
-              <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden">
-                <div className="h-full bg-[#E31B23] rounded-full" style={{ width: "85%" }} />
-              </div>
-              <p className="text-[10px] text-white/40 font-bold leading-relaxed uppercase tracking-wider">
-                Complete all sections to unlock Gold tier status
+          {/* Notify Coach CTA Section */}
+          <div className="bg-gradient-to-r from-[#E31B23]/5 to-transparent border border-[#E31B23]/20 rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div>
+              <h4 className="text-base font-black uppercase text-white font-orbitron tracking-tight">Request Coach Validation</h4>
+              <p className="text-[11px] text-white/50 font-bold mt-1 uppercase tracking-widest">
+                Send a validation request to {player.coachName || "the assigned coach"} to review and approve this CV
               </p>
             </div>
-          </div>
-
-          {/* Tier Status */}
-          <div className="bg-[#111111] rounded-3xl border border-white/10 p-8 flex flex-col gap-6 relative overflow-hidden">
-            <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#FBBF24]/10 blur-3xl rounded-full" />
-            <div className="flex flex-col">
-              <h3 className="text-3xl font-black text-[#FBBF24] font-orbitron italic tracking-tighter leading-none">GOLD</h3>
-              <div className="w-full h-1 bg-[#FBBF24] mt-2 opacity-50" />
-            </div>
-            <p className="text-[10px] text-white/60 font-bold leading-relaxed uppercase tracking-wider mt-2">
-              Your CV meets Gold standards and is ready to share with top clubs and agents.
-            </p>
-            <Button className="bg-white/5 hover:bg-white/10 text-white border border-white/10 gap-2 w-full py-4 rounded-xl font-black uppercase tracking-widest text-[10px] h-auto mt-4">
-              <IconShare size={18} className="text-white/40" /> Request Re-validation
-            </Button>
-          </div>
-
-          {/* Career Journey / Last Evaluated */}
-          {/* New Game Reports */}
-          <div className="bg-[#111111] h-fit rounded-3xl border border-white/10 p-8 flex flex-col gap-6">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 bg-[#E31B23] rounded-lg flex items-center justify-center">
-                <FileText className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="text-sm font-black text-white font-orbitron uppercase tracking-widest">
-                New Game Reports
-              </h3>
-            </div>
-
-            <div className="space-y-3">
-              {gameReports.map((report) => (
-                <div key={report.id} className="border border-white/10 rounded-xl p-4 flex items-center justify-between hover:bg-white/5 transition group">
-                  <div className="flex items-center gap-3">
-                    <FileText className="w-5 h-5 text-white/40 group-hover:text-[#E31B23] transition-colors" />
-                    <span className="text-white/60 text-sm font-bold">{report.opponent}</span>
-                  </div>
-                  <span className="text-white font-black text-xl font-orbitron">{report.rating}</span>
-                </div>
-              ))}
-              {gameReports.length === 0 && (
-                <p className="text-white/40 text-[10px] uppercase font-bold text-center py-4">No reports available</p>
+            <button
+              onClick={handleNotifyCoach}
+              disabled={notifying || notified}
+              className={`shrink-0 flex items-center gap-2 px-8 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all cursor-pointer disabled:cursor-default border ${
+                notified
+                  ? "bg-[#4ADE80]/10 border-[#4ADE80]/30 text-[#4ADE80]"
+                  : "bg-[#E31B23] hover:bg-[#C2181F] border-[#E31B23]/40 text-white shadow-lg shadow-[#E31B23]/20"
+              }`}
+            >
+              {notifying ? (
+                <><IconLoader2 size={16} className="animate-spin" /> Sending...</>
+              ) : notified ? (
+                <><IconCheck size={16} /> Notification Sent</>
+              ) : (
+                <><IconBell size={16} /> Notify Coach</>
               )}
-            </div>
+            </button>
+          </div>
+
+          {/* Season Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[
+              { label: "Matches",     value: player.seasonStats?.matches   ?? 0 },
+              { label: "Goals",       value: player.seasonStats?.goals     ?? 0 },
+              { label: "Assists",     value: player.seasonStats?.assists   ?? 0 },
+              { label: "Avg Rating",  value: player.seasonStats?.avgRating ?? 0 },
+            ].map(({ label, value }) => (
+              <div key={label} className="bg-[#111111] rounded-2xl border border-white/10 p-5 text-center">
+                <p className="text-2xl font-black text-white font-orbitron">{value}</p>
+                <p className="text-[9px] font-black uppercase tracking-widest text-white/40 mt-1">{label}</p>
+              </div>
+            ))}
           </div>
         </div>
-        <FullEditablePage editable={true} />
       </div>
-      <style dangerouslySetInnerHTML={{ __html: `
-        @media print {
-          @page {
-            size: A4;
-            margin: 0;
-          }
-          body {
-            background: #000000 !important;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-          }
-          .print\\:hidden {
-            display: none !important;
-          }
-          .container {
-            width: 100% !important;
-            max-width: none !important;
-            padding: 20px !important;
-          }
-          /* Ensure backgrounds print */
-          * {
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-          }
-          /* Fix for grid layouts in print */
-          .grid {
-            display: grid !important;
-          }
-          /* Force dark theme colors in print */
-          section, div, h1, h2, h3, h4, p, span {
-            color: white !important;
-          }
-          .bg-black { background-color: #000 !important; }
-          .bg-\\[\\#111111\\] { background-color: #111111 !important; }
-          .border { border-color: rgba(255, 255, 255, 0.1) !important; }
-          
-          /* Hide edit buttons and adjust layout for A4 */
-          button { display: none !important; }
-          input, textarea { 
-            border: none !important; 
-            background: transparent !important;
-            padding: 0 !important;
-            color: white !important;
-          }
-          
-          /* Custom PDF Header */
-          .pdf-footer {
-            position: fixed;
-            bottom: 20px;
-            left: 0;
-            right: 0;
-            text-align: center;
-            font-size: 10px;
-            color: rgba(255, 255, 255, 0.4);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-          }
-        }
-      ` }} />
-      <div className="pdf-footer hidden print:block">
-        Generated by Eddie Ricci Football Management Platform • Professional CV Profile
+    </div>
+  );
+}
+
+// ─── Main Component ────────────────────────────────────────────────────────
+const GenerateCv = () => {
+  const players = useAppSelector((state) => state.player.players);
+
+  const [searchTerm, setSearchTerm]       = useState("");
+  const [tierFilter, setTierFilter]       = useState<"All" | CvTier>("All");
+  const [typeFilter, setTypeFilter]       = useState("All");
+  const [selectedPlayer, setSelectedPlayer] = useState<PlayerStateItem | null>(null);
+
+  const playerTypes = useMemo(() => {
+    const types = new Set(players.map((p) => getPlayerType(p.position)));
+    return ["All", ...Array.from(types)];
+  }, [players]);
+
+  const filtered = useMemo(() => {
+    return players.filter((p) => {
+      const tier = getCvTier(p.rating);
+      const type = getPlayerType(p.position);
+      const term = searchTerm.toLowerCase();
+      const matchesSearch = !term || p.fullName.toLowerCase().includes(term) || p.position.toLowerCase().includes(term) || p.birthCountry.toLowerCase().includes(term);
+      const matchesTier   = tierFilter === "All" || tier === tierFilter;
+      const matchesType   = typeFilter === "All" || type === typeFilter;
+      return matchesSearch && matchesTier && matchesType;
+    });
+  }, [players, searchTerm, tierFilter, typeFilter]);
+
+  const stats = useMemo(() => {
+    const gold   = players.filter((p) => getCvTier(p.rating) === "Gold").length;
+    const silver = players.filter((p) => getCvTier(p.rating) === "Silver").length;
+    const bronze = players.filter((p) => getCvTier(p.rating) === "Bronze").length;
+    return { gold, silver, bronze, total: players.length };
+  }, [players]);
+
+  return (
+    <div className="flex flex-col gap-8 pb-10">
+      {/* Header */}
+      <div className="flex justify-between items-end">
+        <div>
+          <h1 className="text-4xl font-black uppercase text-white font-orbitron tracking-tight leading-none">Generate CV</h1>
+          <p className="text-white/60 font-bold uppercase tracking-widest text-[11px] mt-2">Player CV library — view, manage, and notify coaches</p>
+        </div>
+        <button className="bg-white/5 hover:bg-white/10 border border-white/15 text-white/60 hover:text-white px-6 py-3 rounded-2xl flex items-center gap-2 transition-all font-bold cursor-pointer">
+          <IconDownload size={18} />
+          <span className="text-[11px] font-black uppercase tracking-widest">Export All</span>
+        </button>
       </div>
+
+      {/* Tier Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+        {[
+          { label: "Total Players", value: stats.total, color: "text-white",         border: "border-white/15", bg: "bg-white/5" },
+          { label: "Gold CVs",      value: stats.gold,  color: "text-[#FBBF24]",    border: "border-[#FBBF24]/30", bg: "bg-[#FBBF24]/5" },
+          { label: "Silver CVs",    value: stats.silver,color: "text-[#CBD5E1]",    border: "border-[#CBD5E1]/30", bg: "bg-[#CBD5E1]/5" },
+          { label: "Bronze CVs",    value: stats.bronze,color: "text-[#F97316]",    border: "border-[#F97316]/30", bg: "bg-[#F97316]/5" },
+        ].map(({ label, value, color, border, bg }) => (
+          <div key={label} className={`bg-[#111111] rounded-[28px] border ${border} p-6 flex flex-col gap-2 shadow-xl`}>
+            <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest">{label}</p>
+            <p className={`text-4xl font-black font-orbitron ${color}`}>{value}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Filters */}
+      <div className="bg-[#111111] rounded-3xl border border-white/15 p-4 flex flex-col md:flex-row gap-4 shadow-xl">
+        <div className="relative flex-1">
+          <IconSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" size={20} />
+          <input
+            type="text"
+            placeholder="Search by name, position, or country..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full bg-white/[0.02] border border-white/15 rounded-2xl py-3 pl-12 pr-4 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-white/25 transition-all"
+          />
+        </div>
+        <div className="flex gap-3">
+          {/* Tier Filter */}
+          <div className="relative">
+            <IconFilter size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30" />
+            <select
+              value={tierFilter}
+              onChange={(e) => setTierFilter(e.target.value as "All" | CvTier)}
+              className="bg-white/5 border border-white/15 rounded-2xl py-3 pl-9 pr-8 text-[11px] font-bold text-white/60 focus:outline-none focus:border-white/25 transition-all cursor-pointer appearance-none"
+            >
+              <option value="All">All Tiers</option>
+              <option value="Gold">Gold</option>
+              <option value="Silver">Silver</option>
+              <option value="Bronze">Bronze</option>
+            </select>
+            <IconChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/20 pointer-events-none" />
+          </div>
+          {/* Type Filter */}
+          <div className="relative">
+            <select
+              value={typeFilter}
+              onChange={(e) => setTypeFilter(e.target.value)}
+              className="bg-white/5 border border-white/15 rounded-2xl py-3 px-4 pr-8 text-[11px] font-bold text-white/60 focus:outline-none focus:border-white/25 transition-all cursor-pointer appearance-none"
+            >
+              {playerTypes.map((t) => (
+                <option key={t} value={t}>{t === "All" ? "All Positions" : t}</option>
+              ))}
+            </select>
+            <IconChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/20 pointer-events-none" />
+          </div>
+        </div>
+      </div>
+
+      {/* Players Table */}
+      <div className="bg-[#111111] rounded-[32px] border border-white/15 p-8 flex flex-col gap-6 shadow-2xl">
+        <div className="flex justify-between items-center">
+          <h2 className="text-xl font-black uppercase text-white font-orbitron">Player CVs ({filtered.length})</h2>
+          <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">Click &ldquo;View CV&rdquo; to open full profile</span>
+        </div>
+
+        <div className="rounded-2xl border border-white/15 overflow-hidden">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="border-b border-white/15 bg-white/[0.01]">
+                <th className="py-4 px-6 text-[11px] font-black uppercase tracking-widest text-white/80 border-r border-white/15">Player</th>
+                <th className="py-4 px-6 text-[11px] font-black uppercase tracking-widest text-white/80 border-r border-white/15 text-center">Rating</th>
+                <th className="py-4 px-6 text-[11px] font-black uppercase tracking-widest text-white/80 border-r border-white/15 text-center">CV Tier</th>
+                <th className="py-4 px-6 text-[11px] font-black uppercase tracking-widest text-white/80 border-r border-white/15 text-center">Type</th>
+                <th className="py-4 px-6 text-[11px] font-black uppercase tracking-widest text-white/80 border-r border-white/15 text-center">Position</th>
+                <th className="py-4 px-6 text-[11px] font-black uppercase tracking-widest text-white/80 border-r border-white/15 text-center">Validation</th>
+                <th className="py-4 px-6 text-[11px] font-black uppercase tracking-widest text-white/80 border-r border-white/15 text-center">Coach</th>
+                <th className="py-4 px-6 text-[11px] font-black uppercase tracking-widest text-white/80 text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map((p, index) => {
+                const tier      = getCvTier(p.rating);
+                const tierStyle = TIER_STYLES[tier];
+                const pType     = getPlayerType(p.position);
+                const vBadge    = VALIDATION_BADGE[p.validationStatus] ?? VALIDATION_BADGE.not_needed;
+                const imgSrc    = typeof p.playerImage === "string" ? p.playerImage : p.playerImage?.src || "/ronaldo.png";
+
+                return (
+                  <tr
+                    key={p.id}
+                    className={`hover:bg-white/[0.02] transition-colors group ${index !== filtered.length - 1 ? "border-b border-white/15" : ""}`}
+                  >
+                    {/* Player */}
+                    <td className="py-4 px-6 border-r border-white/15">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full overflow-hidden border border-white/15 shrink-0 bg-white/5">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={imgSrc} alt={p.fullName} className="w-full h-full object-cover" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-black text-white whitespace-nowrap">{p.fullName}</p>
+                          <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest">{p.birthCountry}</p>
+                        </div>
+                      </div>
+                    </td>
+
+                    {/* Rating */}
+                    <td className="py-4 px-6 border-r border-white/15 text-center">
+                      <span className={`text-xl font-black font-orbitron ${tierStyle.color}`}>{p.rating}</span>
+                    </td>
+
+                    {/* CV Tier */}
+                    <td className="py-4 px-6 border-r border-white/15 text-center">
+                      <span className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest inline-block border ${tierStyle.bg} ${tierStyle.border} ${tierStyle.color}`}>
+                        {tier}
+                      </span>
+                    </td>
+
+                    {/* Type */}
+                    <td className="py-4 px-6 border-r border-white/15 text-center">
+                      <span className="text-[11px] font-bold text-white/60">{pType}</span>
+                    </td>
+
+                    {/* Position */}
+                    <td className="py-4 px-6 border-r border-white/15 text-center">
+                      <span className="text-[11px] font-bold text-white/60 whitespace-nowrap">{p.position}</span>
+                    </td>
+
+                    {/* Validation */}
+                    <td className="py-4 px-6 border-r border-white/15 text-center">
+                      <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest inline-block border ${vBadge.bg} ${vBadge.border} ${vBadge.color}`}>
+                        {vBadge.label}
+                      </span>
+                    </td>
+
+                    {/* Coach */}
+                    <td className="py-4 px-6 border-r border-white/15 text-center">
+                      <span className="text-[11px] font-bold text-white/60 whitespace-nowrap">{p.coachName || "Unassigned"}</span>
+                    </td>
+
+                    {/* Actions */}
+                    <td className="py-4 px-6 text-center">
+                      <div className="flex items-center justify-center gap-2">
+                        <button
+                          onClick={() => setSelectedPlayer(p)}
+                          className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-white/50 hover:text-white transition-all cursor-pointer text-[10px] font-black uppercase tracking-widest"
+                        >
+                          <IconEye size={14} />
+                          View CV
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+              {filtered.length === 0 && (
+                <tr>
+                  <td colSpan={8} className="py-12 text-center text-white/40 text-sm font-medium">
+                    No player CVs match the current filters.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* CV Detail Dialog */}
+      {selectedPlayer && (
+        <CvDetailDialog
+          player={selectedPlayer}
+          onClose={() => setSelectedPlayer(null)}
+        />
+      )}
     </div>
   );
 };

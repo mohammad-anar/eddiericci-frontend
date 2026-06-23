@@ -29,6 +29,8 @@ import {
   Area,
   Legend
 } from "recharts";
+import MyImagesSection from "@/app/(common)/cvs-page/player-cv-details/components/MyImageSection";
+import MyVideosSection from "@/app/(common)/cvs-page/player-cv-details/components/MyVideoSection";
 
 const areaData = [
   { week: "Week 1", views: 14 },
@@ -392,6 +394,9 @@ export const AgentDashboard = () => {
 
                     <DashboardTable columns={columns} data={monitoredPlayers} />
                 </div>
+
+                <MyImagesSection editable={true} />
+                <MyVideosSection editable={true} />
             </div>
             
             {/* Sidebar */}

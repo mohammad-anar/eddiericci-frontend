@@ -8,8 +8,6 @@ import {
   IconTrophy 
 } from "@tabler/icons-react";
 import { 
-  LineChart, 
-  Line, 
   XAxis, 
   YAxis, 
   CartesianGrid, 
@@ -19,8 +17,11 @@ import {
   Pie, 
   Cell,
   BarChart,
-  Bar
+  Bar,
+  AreaChart,
+  Area
 } from "recharts";
+import { useAppSelector } from "@/lib/hooks/reduxHooks";
 
 const AnalyticsStatCard = ({ icon: Icon, value, label }: { icon: any, value: string | number, label: string }) => (
   <div className="bg-[#0A0A0A] border border-white/20 rounded-2xl p-6 flex flex-col gap-4 flex-1">
@@ -33,15 +34,6 @@ const AnalyticsStatCard = ({ icon: Icon, value, label }: { icon: any, value: str
     </div>
   </div>
 );
-
-const earningsData = [
-  { name: "Jan-Feb", value: 500 },
-  { name: "Mar-Apr", value: 720 },
-  { name: "May-Jun", value: 730 },
-  { name: "Jul-Aug", value: 620 },
-  { name: "Sept-Oct", value: 610 },
-  { name: "Nov-Dec", value: 950 },
-];
 
 const pieData = [
   { name: "Gold CV", value: 60 },
@@ -58,6 +50,43 @@ const engagementData = [
 ];
 
 export const Analytics = () => {
+  const players = useAppSelector((state) => state.player.players);
+
+  // Deterministic age mapper for mock players to provide a rich distribution
+  const getPlayerAge = (player: any) => {
+    const parsedAge = parseInt(player.age);
+    if (!isNaN(parsedAge) && parsedAge !== 24) return parsedAge;
+    
+    const mockAges: Record<number, number> = {
+      1: 17, 2: 14, 3: 21, 4: 19, 5: 22,
+      6: 12, 7: 15, 8: 24, 9: 13, 10: 16,
+      11: 18, 12: 23, 13: 20, 14: 25, 15: 11
+    };
+    return mockAges[player.id] || 16;
+  };
+
+  const ageGroups = [
+    { category: "10-12", count: 0 },
+    { category: "12-14", count: 0 },
+    { category: "14-16", count: 0 },
+    { category: "16-18", count: 0 },
+    { category: "18-20", count: 0 },
+    { category: "20-22", count: 0 },
+    { category: "22-24", count: 0 },
+    { category: "24-26", count: 0 },
+  ];
+
+  players.forEach((player) => {
+    const age = getPlayerAge(player);
+    if (age >= 10 && age < 12) ageGroups[0].count++;
+    else if (age >= 12 && age < 14) ageGroups[1].count++;
+    else if (age >= 14 && age < 16) ageGroups[2].count++;
+    else if (age >= 16 && age < 18) ageGroups[3].count++;
+    else if (age >= 18 && age < 20) ageGroups[4].count++;
+    else if (age >= 20 && age < 22) ageGroups[5].count++;
+    else if (age >= 22 && age < 24) ageGroups[6].count++;
+    else if (age >= 24 && age <= 26) ageGroups[7].count++;
+  });
   return (
     <div className="flex flex-col gap-8 pb-10">
       {/* Header */}
@@ -79,41 +108,42 @@ export const Analytics = () => {
 
       {/* Main Charts Section */}
       <div className="flex flex-col gap-8">
-        {/* Earnings Trend */}
+        {/* Age Category */}
         <div className="bg-[#111111] border border-white/20 rounded-[40px] p-10 flex flex-col gap-8">
-           <h2 className="text-2xl font-black text-white font-orbitron uppercase tracking-tight">Earnings Trend</h2>
+           <h2 className="text-2xl font-black text-white font-orbitron uppercase tracking-tight">Age Category</h2>
            <div className="h-[300px] w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={earningsData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
+                <AreaChart data={ageGroups} margin={{ top: 10, right: 15, left: 15, bottom: 5 }}>
+                  <defs>
+                    <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#E31B23" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#E31B23" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
                   <XAxis 
-                    dataKey="name" 
-                    stroke="#ffffff40" 
-                    fontSize={12} 
+                    dataKey="category" 
+                    axisLine={false} 
                     tickLine={false} 
-                    axisLine={false}
-                    dy={10}
+                    tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 10 }} 
+                    interval={0}
+                    padding={{ left: 10, right: 10 }}
+                    tickMargin={8}
                   />
-                  <YAxis 
-                    stroke="#ffffff40" 
-                    fontSize={12} 
-                    tickLine={false} 
-                    axisLine={false}
-                    dx={-10}
-                  />
+                  <YAxis hide />
                   <Tooltip 
-                    contentStyle={{ backgroundColor: '#1A1A1A', border: '1px solid #ffffff20', borderRadius: '12px' }}
-                    itemStyle={{ color: '#E31B23', fontWeight: 'bold' }}
+                    contentStyle={{ backgroundColor: '#111', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff' }}
                   />
-                  <Line 
+                  <Area 
                     type="monotone" 
-                    dataKey="value" 
+                    dataKey="count" 
+                    name="Player Count"
                     stroke="#E31B23" 
-                    strokeWidth={3} 
-                    dot={{ r: 6, fill: "#E31B23", strokeWidth: 2, stroke: "#111111" }}
-                    activeDot={{ r: 8, strokeWidth: 0 }}
+                    fillOpacity={1} 
+                    fill="url(#colorValue)" 
+                    strokeWidth={3}
                   />
-                </LineChart>
+                </AreaChart>
               </ResponsiveContainer>
            </div>
         </div>

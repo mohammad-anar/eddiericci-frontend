@@ -39,6 +39,42 @@ export const DashboardCharts = () => {
   const players = useAppSelector((state) => state.player.players);
   const evaluationRecords = useAppSelector((state) => state.evaluation.records);
 
+  // Deterministic age mapper for mock players to provide a rich distribution
+  const getPlayerAge = (player: any) => {
+    const parsedAge = parseInt(player.age);
+    if (!isNaN(parsedAge) && parsedAge !== 24) return parsedAge;
+    
+    const mockAges: Record<number, number> = {
+      1: 17, 2: 14, 3: 21, 4: 19, 5: 22,
+      6: 12, 7: 15, 8: 24, 9: 13, 10: 16,
+      11: 18, 12: 23, 13: 20, 14: 25, 15: 11
+    };
+    return mockAges[player.id] || 16;
+  };
+
+  const ageGroups = [
+    { category: "10-12", count: 0 },
+    { category: "12-14", count: 0 },
+    { category: "14-16", count: 0 },
+    { category: "16-18", count: 0 },
+    { category: "18-20", count: 0 },
+    { category: "20-22", count: 0 },
+    { category: "22-24", count: 0 },
+    { category: "24-26", count: 0 },
+  ];
+
+  players.forEach((player) => {
+    const age = getPlayerAge(player);
+    if (age >= 10 && age < 12) ageGroups[0].count++;
+    else if (age >= 12 && age < 14) ageGroups[1].count++;
+    else if (age >= 14 && age < 16) ageGroups[2].count++;
+    else if (age >= 16 && age < 18) ageGroups[3].count++;
+    else if (age >= 18 && age < 20) ageGroups[4].count++;
+    else if (age >= 20 && age < 22) ageGroups[5].count++;
+    else if (age >= 22 && age < 24) ageGroups[6].count++;
+    else if (age >= 24 && age <= 26) ageGroups[7].count++;
+  });
+
   let evaluatedCount = 0;
   let expiredCount = 0;
   let needEvaluationCount = 0;
@@ -106,11 +142,11 @@ export const DashboardCharts = () => {
       {/* Area Chart */}
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <h3 className="text-xl font-black uppercase text-white font-orbitron">Earnings Trend</h3>
+          <h3 className="text-xl font-black uppercase text-white font-orbitron">Age Category</h3>
         </div>
         <div className="h-[250px] w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={areaData}>
+            <AreaChart data={ageGroups} margin={{ top: 10, right: 15, left: 15, bottom: 5 }}>
               <defs>
                 <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#E31B23" stopOpacity={0.3}/>
@@ -119,18 +155,22 @@ export const DashboardCharts = () => {
               </defs>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
               <XAxis 
-                dataKey="month" 
+                dataKey="category" 
                 axisLine={false} 
                 tickLine={false} 
                 tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 10 }} 
+                interval={0}
+                padding={{ left: 10, right: 10 }}
+                tickMargin={8}
               />
               <YAxis hide />
               <Tooltip 
-                contentStyle={{ backgroundColor: '#111', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px' }}
+                contentStyle={{ backgroundColor: '#111', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff' }}
               />
               <Area 
                 type="monotone" 
-                dataKey="value" 
+                dataKey="count" 
+                name="Player Count"
                 stroke="#E31B23" 
                 fillOpacity={1} 
                 fill="url(#colorValue)" 

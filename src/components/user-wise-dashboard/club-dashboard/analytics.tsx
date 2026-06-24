@@ -30,12 +30,12 @@ const stats = [
 ];
 
 const timelineData = [
-  { name: 'Jan-Feb', views: 800, likes: 200 },
-  { name: 'Mar-Apr', views: 1200, likes: 400 },
-  { name: 'May-Jun', views: 1250, likes: 380 },
-  { name: 'Jul-Aug', views: 1100, likes: 300 },
-  { name: 'Sept-Oct', views: 1000, likes: 500 },
-  { name: 'Nov-Dec', views: 1600, likes: 250 },
+  { name: 'Jan-Feb', players: 45, coaches: 12 },
+  { name: 'Mar-Apr', players: 62, coaches: 15 },
+  { name: 'May-Jun', players: 75, coaches: 18 },
+  { name: 'Jul-Aug', players: 70, coaches: 16 },
+  { name: 'Sept-Oct', players: 85, coaches: 22 },
+  { name: 'Nov-Dec', players: 98, coaches: 25 },
 ];
 
 const distributionData = [
@@ -121,7 +121,7 @@ export const Analytics = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div className="p-8 rounded-2xl border border-white/20 bg-[#0D0D0D]">
-          <h3 className="text-sm font-bold text-white mb-8 uppercase tracking-widest italic">Interaction Timeline</h3>
+          <h3 className="text-sm font-bold text-white mb-8 uppercase tracking-widest italic">Players & Coaches Monitored</h3>
           <div className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={timelineData}>
@@ -132,8 +132,8 @@ export const Analytics = () => {
                   contentStyle={{ backgroundColor: '#000', border: '1px solid #333', borderRadius: '12px' }}
                   itemStyle={{ fontSize: '12px', fontWeight: 'bold' }}
                 />
-                <Line type="monotone" dataKey="views" stroke="#E31B23" strokeWidth={3} dot={{ r: 4, fill: '#E31B23', strokeWidth: 0 }} activeDot={{ r: 6 }} />
-                <Line type="monotone" dataKey="likes" stroke="#444" strokeWidth={2} dot={{ r: 3, fill: '#444', strokeWidth: 0 }} />
+                <Line type="monotone" name="Players Monitored" dataKey="players" stroke="#E31B23" strokeWidth={3} dot={{ r: 4, fill: '#E31B23', strokeWidth: 0 }} activeDot={{ r: 6 }} />
+                <Line type="monotone" name="Coaches Monitored" dataKey="coaches" stroke="#444" strokeWidth={2} dot={{ r: 3, fill: '#444', strokeWidth: 0 }} />
               </LineChart>
             </ResponsiveContainer>
           </div>

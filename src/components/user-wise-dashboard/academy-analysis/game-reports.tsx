@@ -25,7 +25,7 @@ import {
 import { toast } from "sonner";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
-import logo from "@/assets/logo.png";
+import logo from "@/assets/sort_logo.png";
 
 import { useAppSelector } from "@/lib/hooks/reduxHooks";
 import { MatchStats } from "@/lib/constants/reports";
@@ -548,7 +548,7 @@ export const GameReports = () => {
           <DialogHeader className="flex flex-row justify-between items-center shrink-0 pb-4 border-b border-white/10 mb-6">
             <div>
               <DialogTitle className="text-2xl font-black uppercase text-white font-orbitron tracking-tight">
-                Player Match Performance Report
+                Player Game Report
               </DialogTitle>
               <p className="text-xs text-white/40 font-bold uppercase tracking-widest mt-1">
                 Scouted Match Performance Profile for {selectedCard?.playerName}
@@ -594,7 +594,7 @@ export const GameReports = () => {
                 </div>
 
                 {/* Header */}
-                <div className="relative z-10 flex items-center justify-between border-b-4 border-slate-900 pb-4 mb-6">
+                <div className="relative z-10 flex items-center justify-between border-b-4 border-slate-900 pb-3 mb-4">
                   <div className="flex items-center gap-3">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={logo.src} alt="K10 Logo" className="w-12 h-12 object-contain" />
@@ -605,7 +605,7 @@ export const GameReports = () => {
                   </div>
                   <div className="text-center">
                     <h2 className="text-2xl font-black text-sky-500 font-orbitron uppercase tracking-tighter italic">
-                      PLAYER ANALYSIS PROFILE
+                      PLAYER GAME REPORT
                     </h2>
                     <div className="text-[10px] text-slate-900 font-black uppercase tracking-widest mt-1">
                       POSITION : {selectedCard.playerPosition} ⚽
@@ -622,9 +622,9 @@ export const GameReports = () => {
                 </div>
 
                 {/* Body Content */}
-                <div className="relative z-10 grid grid-cols-12 gap-6 mb-6">
+                <div className="relative z-10 grid grid-cols-12 gap-4 mb-4">
                   {/* Player details */}
-                  <div className="col-span-8 grid grid-cols-2 gap-x-6 gap-y-3.5 text-[11px] font-medium text-slate-600">
+                  <div className="col-span-8 grid grid-cols-2 gap-x-6 gap-y-2 text-[11px] font-medium text-slate-600">
                     <div>
                       <span className="font-bold text-slate-900 uppercase font-orbitron">PLAYER NAME:</span>
                       <p className="text-slate-700 text-xs font-bold mt-0.5 uppercase">{selectedCard.playerName}</p>
@@ -701,8 +701,8 @@ export const GameReports = () => {
                 </div>
 
                 {/* Player Characteristic Section */}
-                <div className="relative z-10 mb-6">
-                  <div className="bg-sky-500 text-white font-orbitron px-4 py-1.5 rounded text-[10px] font-black uppercase tracking-wider mb-3 shadow">
+                <div className="relative z-10 mb-4">
+                  <div className="bg-sky-500 text-white font-orbitron px-4 py-1 rounded text-[10px] font-black uppercase tracking-wider mb-2 shadow">
                     PLAYER CHARACTERISTIC:
                   </div>
                   <div className="flex flex-wrap gap-4 pl-2">
@@ -719,11 +719,11 @@ export const GameReports = () => {
                 </div>
 
                 {/* Match Information Section */}
-                <div className="relative z-10 mb-6">
-                  <div className="bg-sky-500 text-white font-orbitron px-4 py-1.5 rounded text-[10px] font-black uppercase tracking-wider mb-4 shadow">
+                <div className="relative z-10 mb-4">
+                  <div className="bg-sky-500 text-white font-orbitron px-4 py-1 rounded text-[10px] font-black uppercase tracking-wider mb-2 shadow">
                     MATCH INFORMATION
                   </div>
-                  <div className="grid grid-cols-2 gap-x-12 gap-y-3.5 text-[11px] font-medium text-slate-600 pl-2">
+                  <div className="grid grid-cols-2 gap-x-12 gap-y-1.5 text-[11px] font-medium text-slate-600 pl-2">
                     <div>
                       <span className="font-bold text-slate-950 font-orbitron">SCOUT NAME:</span>
                       <span className="ml-2 text-slate-700 font-bold uppercase">{selectedCard.scoutName}</span>
@@ -752,11 +752,11 @@ export const GameReports = () => {
                 </div>
 
                 {/* Match Statistics Section */}
-                <div className="relative z-10 mb-6">
-                  <div className="bg-sky-500 text-white font-orbitron px-4 py-1.5 rounded text-[10px] font-black uppercase tracking-wider mb-4 shadow">
+                <div className="relative z-10 mb-4">
+                  <div className="bg-sky-500 text-white font-orbitron px-4 py-1 rounded text-[10px] font-black uppercase tracking-wider mb-2 shadow">
                     MATCH STATISTICS
                   </div>
-                  <div className="grid grid-cols-3 gap-x-8 gap-y-3 text-[10px] pl-2">
+                  <div className="grid grid-cols-3 gap-x-8 gap-y-1 text-[10px] pl-2">
                     {[
                       { label: "Shots on Goal:", val: activeStats.shotsOnGoal },
                       { label: "Stand Tackle:", val: activeStats.standTackle },
@@ -783,7 +783,7 @@ export const GameReports = () => {
                       { label: "Yellow Card:", val: activeStats.yellowCard },
                       { label: "Reactions:", val: activeStats.reactions }
                     ].map((item, idx) => (
-                      <div key={idx} className="flex justify-between border-b border-slate-100 py-1 pr-2">
+                      <div key={idx} className="flex justify-between border-b border-slate-100 py-0.5 pr-2">
                         <span className="text-slate-500 font-bold uppercase font-orbitron">{item.label}</span>
                         <span className="text-slate-800 font-black font-orbitron">{item.val}</span>
                       </div>
@@ -792,7 +792,7 @@ export const GameReports = () => {
                 </div>
 
                 {/* Bottom section (Radar, Overall, Logos) */}
-                <div className="relative z-10 flex items-center justify-between border-t-2 border-slate-200 pt-6 mt-6">
+                <div className="absolute bottom-10 left-10 right-10 z-10 flex items-center justify-between border-t-2 border-slate-200 pt-4">
                   {/* Radar Chart */}
                   <div className="w-[180px]">
                     <RadarChart 

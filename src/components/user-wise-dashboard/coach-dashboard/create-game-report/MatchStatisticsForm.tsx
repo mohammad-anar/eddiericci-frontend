@@ -18,6 +18,24 @@ const StatInput = ({ label, value, onChange, colorClass, align = "left" }: StatI
     <div className={cn("flex flex-col gap-1.5 w-full", align === "right" ? "items-end text-right" : "items-start text-left")}>
       <Label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.1em] font-orbitron">{label}</Label>
       <div className={cn("h-11 w-full rounded-lg relative overflow-hidden shadow-lg", colorClass)}>
+        {/* Plus / Minus Buttons */}
+        <div className={cn("absolute top-0 bottom-0 flex items-center justify-center w-[50%]", align === "right" ? "right-0" : "left-0")}>
+          <button
+            type="button"
+            onClick={() => onChange(Math.max(0, value - 1))}
+            className="flex-1 h-full flex items-center justify-center text-white/85 hover:text-white hover:bg-white/10 active:scale-90 transition-all text-xl font-black font-orbitron cursor-pointer select-none"
+          >
+            -
+          </button>
+          <div className="w-[1px] h-4 bg-white/20" />
+          <button
+            type="button"
+            onClick={() => onChange(value + 1)}
+            className="flex-1 h-full flex items-center justify-center text-white/85 hover:text-white hover:bg-white/10 active:scale-90 transition-all text-xl font-black font-orbitron cursor-pointer select-none"
+          >
+            +
+          </button>
+        </div>
         <div 
           className={cn(
             "absolute top-0 bottom-0 bg-white w-[50%] flex items-center justify-center", 
@@ -152,22 +170,17 @@ export const MatchStatisticsForm = ({
 
     const dist = Math.sqrt(Math.pow(x - dragStart.x, 2) + Math.pow(y - dragStart.y, 2));
     if (dist > 2) {
-      const isValidTarget = isGK 
-        ? (x <= 22 && y >= 20 && y <= 80)
-        : (x >= 78 && y >= 20 && y <= 80);
-
-      if (!isValidTarget) {
-        toast.error(
-          isGK 
-            ? "For Goalkeeper saves, the arrow must end inside the left goal box!" 
-            : "For Accurate Assists, the arrow must end inside the right goal box!"
-        );
-      } else if (pitchMarkers.length < 5) {
+      if (pitchMarkers.length < 15) {
         setPitchMarkers([...pitchMarkers, { x1: dragStart.x, y1: dragStart.y, x2: x, y2: y }]);
       } else {
-        toast.error("You can add a maximum of 5 assist/save arrows.");
+        toast.error("You can add a maximum of 15 assist/save arrows.");
       }
     }
+    setDragStart(null);
+    setDragCurrent(null);
+  };
+
+  const handlePitchMouseLeave = () => {
     setDragStart(null);
     setDragCurrent(null);
   };
@@ -273,7 +286,8 @@ export const MatchStatisticsForm = ({
               <img 
                 src="/goal-bar.png" 
                 alt="Goal" 
-                className="w-full h-full object-cover opacity-80 group-hover:opacity-90 transition-opacity" 
+                draggable={false}
+                className="w-full h-full object-cover opacity-80 group-hover:opacity-90 transition-opacity pointer-events-none select-none" 
               />
               <div className="absolute inset-0 bg-black/10 pointer-events-none" />
               {/* Grid hint */}
@@ -312,12 +326,14 @@ export const MatchStatisticsForm = ({
               onMouseDown={handlePitchMouseDown}
               onMouseMove={handlePitchMouseMove}
               onMouseUp={handlePitchMouseUp}
+              onMouseLeave={handlePitchMouseLeave}
               className="aspect-video relative cursor-crosshair overflow-hidden group select-none bg-[#092b15]"
             >
               <img 
                 src="/FootballPitch.png" 
                 alt="Football Pitch" 
-                className="w-full h-full object-cover opacity-80 group-hover:opacity-90 transition-opacity" 
+                draggable={false}
+                className="w-full h-full object-cover opacity-80 group-hover:opacity-90 transition-opacity pointer-events-none select-none" 
               />
               <div className="absolute inset-0 bg-black/10 pointer-events-none" />
               {/* Grid hint */}
@@ -348,10 +364,8 @@ export const MatchStatisticsForm = ({
                     x2={`${line.x2}%`}
                     y2={`${line.y2}%`}
                     stroke="#00FF62"
-                    strokeWidth="2.5"
-                    strokeDasharray="4 4"
+                    strokeWidth="3"
                     markerEnd="url(#pitch-arrow)"
-                    className="animate-pulse"
                   />
                 ))}
                 
@@ -363,8 +377,7 @@ export const MatchStatisticsForm = ({
                     x2={`${dragCurrent.x}%`}
                     y2={`${dragCurrent.y}%`}
                     stroke="#00FF62"
-                    strokeWidth="2.5"
-                    strokeDasharray="2 2"
+                    strokeWidth="3"
                     markerEnd="url(#pitch-arrow)"
                   />
                 )}

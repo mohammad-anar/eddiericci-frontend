@@ -1,7 +1,93 @@
+"use client";
+
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+
+const PLAYER_PLANS = [
+  {
+    name: "Player – Free Basic Plan",
+    price: "Free",
+    features: [
+      "Creation of CV analysis",
+      "Upload of up to 5 matches",
+      "Upload of up to 5 pictures"
+    ]
+  },
+  {
+    name: "Player – Platinum Plan",
+    price: "$9.99",
+    features: [
+      "Creation of CV analysis",
+      "Upload of up to 10 matches",
+      "Upload of up to 10 pictures",
+      "CV validation and official stamp",
+      "Up to 3 game reports",
+      "Transfer profile to other club"
+    ]
+  },
+  {
+    name: "Player – Elite Plan",
+    price: "$19.99",
+    features: [
+      "Creation of CV analysis",
+      "Unlimited matches uploads",
+      "Unlimited picture uploads",
+      "CV validation and official stamp",
+      "Unlimited game reports",
+      "Increased visibility",
+      "Transfer profile to other club"
+    ]
+  }
+];
+
+const COACH_PLANS = [
+  {
+    name: "Coaches – Free Basic Plan",
+    price: "Free",
+    features: [
+      "Creation of CV analysis",
+      "Upload of up to 5 Videos",
+      "Upload of up to 5 pictures"
+    ]
+  },
+  {
+    name: "Coaches – Platinum Plan",
+    price: "$9.99",
+    features: [
+      "Creation of CV analysis",
+      "Upload of up to 10 Videos",
+      "Upload of up to 10 pictures",
+      "CV validation and official stamp",
+      "Transfer profile to other club",
+      "Increased visibility",
+      "Private Coach Profile",
+      "Club Coach Profile"
+    ]
+  }
+];
 
 const MembershipPlanSection = () => {
+  const [modalType, setModalType] = useState<"player" | "coach" | null>(null);
+
+  const handleChoosePlan = (planName: string) => {
+    if (planName === "Player") {
+      setModalType("player");
+    } else if (planName === "Coaches") {
+      setModalType("coach");
+    } else {
+      toast.success(`Selected ${planName} Plan!`);
+    }
+  };
+
   return (
     <section className="bg-black py-12 sm:py-20 lg:py-28 px-4 sm:px-6 lg:px-8 ">
       <div className="container space-y-12">
@@ -91,13 +177,69 @@ const MembershipPlanSection = () => {
                   </li>
                 ))}
               </ul>
-              <Button variant={"outline"} className="w-full bg-primary text-black rounded-full bg-transparent text-white cursor-pointer hover:bg-[#00dd00]">
+              <Button 
+                onClick={() => handleChoosePlan(plan.name)}
+                variant={"outline"} 
+                className="w-full bg-primary text-black rounded-full bg-transparent text-white cursor-pointer hover:bg-[#00dd00]"
+              >
                 Choose Plan
               </Button>
             </Card>
           ))}
         </div>
       </div>
+
+      <Dialog open={modalType !== null} onOpenChange={(open) => !open && setModalType(null)}>
+        <DialogContent className="bg-[#0c0c0e] border border-white/10 text-white w-full max-w-[800px] sm:max-w-[800px] p-8 md:p-10 rounded-[32px] overflow-y-auto max-h-[90vh] [&>button]:text-white">
+          <DialogHeader className="text-center space-y-2 mb-8">
+            <DialogTitle className="text-3xl font-black font-heading text-white text-center uppercase tracking-tight font-orbitron">
+              {modalType === "player" ? "Player Plans" : "Coach Plans"}
+            </DialogTitle>
+            <p className="text-white/60 text-sm max-w-lg mx-auto font-medium">
+              Select the best tier to boost your career and stand out.
+            </p>
+          </DialogHeader>
+
+          <div className={cn(
+            "grid gap-6 mt-4",
+            modalType === "player" ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" : "grid-cols-1 md:grid-cols-2"
+          )}>
+            {(modalType === "player" ? PLAYER_PLANS : COACH_PLANS).map((plan, index) => (
+              <Card
+                key={index}
+                className="bg-black/40 border border-white/10 p-6 flex flex-col gap-6 hover:border-primary transition-all h-full rounded-2xl relative overflow-hidden group shadow-lg"
+              >
+                <div>
+                  <h4 className="text-xl font-bold text-white tracking-tight leading-tight">{plan.name}</h4>
+                  <div className="text-3xl font-bold text-white mt-2">
+                    {plan.price}
+                    {plan.price !== "Free" && <span className="text-white/40 text-sm ml-1 font-medium font-sans">/month</span>}
+                  </div>
+                </div>
+                
+                <ul className="space-y-3 flex-grow mt-2">
+                  {plan.features.map((feature, j) => (
+                    <li key={j} className="text-xs text-white/70 flex items-start gap-2 leading-relaxed">
+                      <span className="text-primary font-bold select-none">✓</span>
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+
+                <Button 
+                  onClick={() => {
+                    toast.success(`Subscribed to ${plan.name}!`);
+                    setModalType(null);
+                  }}
+                  className="w-full h-12 bg-primary text-black font-black uppercase tracking-widest text-[10px] rounded-xl transition-all font-orbitron cursor-pointer mt-4 hover:bg-[#00dd00]"
+                >
+                  Choose Plan
+                </Button>
+              </Card>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };

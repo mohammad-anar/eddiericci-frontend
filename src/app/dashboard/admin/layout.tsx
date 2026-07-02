@@ -11,10 +11,11 @@ import {
   IconChartBar, 
   IconSettings,
   IconUserSearch,
-  IconBuildingCommunity
+  IconBuildingCommunity,
+  IconAward
 } from "@tabler/icons-react";
 import { ReactNode } from "react";
-
+ 
 const adminSidebarItems = [
   { name: "Dashboard", url: "/dashboard/admin", icon: IconDashboard },
   { name: "Players", url: "/dashboard/admin/players", icon: IconUsers },
@@ -23,6 +24,7 @@ const adminSidebarItems = [
   { name: "Agents", url: "/dashboard/admin/agents", icon: IconUserSearch },
   { name: "Clubs", url: "/dashboard/admin/clubs", icon: IconBuildingCommunity },
   { name: "Membership Plans", url: "/dashboard/admin/membership-plans", icon: IconFileText },
+  { name: "Grant Membership", url: "/dashboard/admin/grant-membership", icon: IconAward },
   { name: "Approvals", url: "/dashboard/admin/approvals", icon: IconCheckupList },
   { name: "Payments", url: "/dashboard/admin/payments", icon: IconCreditCard },
   { name: "Analytics", url: "/dashboard/admin/analytics", icon: IconChartBar },

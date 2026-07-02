@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import { DashboardModal } from "@/components/dashboard/dashboard-modal";
 import { 
   IconSearch, 
@@ -14,17 +15,22 @@ import {
   IconMapPin,
   IconUpload,
   IconArrowLeft,
-  IconInfoCircle
+  IconInfoCircle,
+  IconCopy
 } from "@tabler/icons-react";
+import { toast } from "sonner";
 
-const events = [
+export const events = [
   {
     id: 1,
     title: "Summer Training Camp",
     date: "Feb 15-20, 2026",
     fee: "$250",
     enrolled: "32/40",
-    status: "Open"
+    status: "Open",
+    group: "Group A",
+    ageGroup: "U-14",
+    targetGroup: "Academy Players Only"
   },
   {
     id: 2,
@@ -32,7 +38,10 @@ const events = [
     date: "Mar 5, 2026",
     fee: "$180",
     enrolled: "24/30",
-    status: "Open"
+    status: "Open",
+    group: "Group B",
+    ageGroup: "U-16",
+    targetGroup: "All Members & Families"
   },
   {
     id: 3,
@@ -40,7 +49,10 @@ const events = [
     date: "Jan 30, 2026",
     fee: "$75",
     enrolled: "18/20",
-    status: "Closing Soon"
+    status: "Closing Soon",
+    group: "Group C",
+    ageGroup: "U-12",
+    targetGroup: "Academy Players Only"
   },
   {
     id: 4,
@@ -48,12 +60,25 @@ const events = [
     date: "Jan 30, 2026",
     fee: "$75",
     enrolled: "18/20",
-    status: "Closing Soon"
+    status: "Closing Soon",
+    group: "Group D",
+    ageGroup: "U-10",
+    targetGroup: "Academy Players Only"
   }
 ];
 
 export const ExtraEventsManagement = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
+
+  const handleCopyEventLink = (eventId: number) => {
+    if (typeof window !== "undefined") {
+      const origin = window.location.origin;
+      const path = `/dashboard/academy/management/extra-events/${eventId}`;
+      const url = origin + path;
+      navigator.clipboard.writeText(url);
+      toast.success("Event link copied to clipboard!");
+    }
+  };
 
   return (
     <div className="flex flex-col gap-8">
@@ -116,9 +141,22 @@ export const ExtraEventsManagement = () => {
               </div>
             </div>
 
-            <button className="w-full bg-white/5 hover:bg-white/10 border border-white/10 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest text-white/60 hover:text-white transition-all mt-auto">
-              View Details
-            </button>
+            <div className="flex gap-2 mt-auto w-full">
+              <Link 
+                href={`/dashboard/academy/management/extra-events/${event.id}`}
+                className="flex-1 bg-white/5 hover:bg-white/10 border border-white/10 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest text-white/60 hover:text-white transition-all text-center block"
+              >
+                View Details
+              </Link>
+              <button 
+                type="button"
+                onClick={() => handleCopyEventLink(event.id)}
+                className="bg-white/5 hover:bg-white/10 border border-white/10 p-3 rounded-2xl text-white/60 hover:text-white transition-all flex items-center justify-center cursor-pointer shrink-0"
+                title="Copy Event Link"
+              >
+                <IconCopy size={16} />
+              </button>
+            </div>
           </div>
         ))}
       </div>
@@ -161,7 +199,52 @@ export const ExtraEventsManagement = () => {
                 </label>
                 <div className="relative">
                   <select className="w-full bg-[#111111] border border-white/15 rounded-xl py-3.5 px-4 text-sm text-white/60 appearance-none focus:outline-none focus:border-white/25 transition-all cursor-pointer">
-                    <option>Select an option</option>
+                    <option value="">Select event type</option>
+                    <option value="tournament">Tournament</option>
+                    <option value="training-camp">Training Camp</option>
+                    <option value="friendly-match">Friendly Match</option>
+                    <option value="workshop">Workshop / Clinic</option>
+                    <option value="trial">Club Trial / Tryout</option>
+                    <option value="social">Social Event</option>
+                    <option value="other">Other Event</option>
+                  </select>
+                  <IconChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-white/20" size={16} />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-[11px] font-black uppercase tracking-widest text-white/60 flex items-center gap-1">
+                  Group <span className="text-[#E31B23]">*</span>
+                </label>
+                <div className="relative">
+                  <select className="w-full bg-[#111111] border border-white/15 rounded-xl py-3.5 px-4 text-sm text-white/60 appearance-none focus:outline-none focus:border-white/25 transition-all cursor-pointer">
+                    <option value="">Select group</option>
+                    {Array.from({ length: 26 }, (_, i) => {
+                      const letter = String.fromCharCode(65 + i);
+                      return (
+                        <option key={letter} value={letter}>
+                          Group {letter}
+                        </option>
+                      );
+                    })}
+                  </select>
+                  <IconChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-white/20" size={16} />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-[11px] font-black uppercase tracking-widest text-white/60 flex items-center gap-1">
+                  Age Group <span className="text-[#E31B23]">*</span>
+                </label>
+                <div className="relative">
+                  <select className="w-full bg-[#111111] border border-white/15 rounded-xl py-3.5 px-4 text-sm text-white/60 appearance-none focus:outline-none focus:border-white/25 transition-all cursor-pointer">
+                    <option value="">Select age group</option>
+                    {Array.from({ length: 51 }, (_, i) => {
+                      const age = 10 + i;
+                      return (
+                        <option key={age} value={age}>
+                          U-{age}
+                        </option>
+                      );
+                    })}
                   </select>
                   <IconChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-white/20" size={16} />
                 </div>
@@ -172,7 +255,12 @@ export const ExtraEventsManagement = () => {
                 </label>
                 <div className="relative">
                   <select className="w-full bg-[#111111] border border-white/15 rounded-xl py-3.5 px-4 text-sm text-white/60 appearance-none focus:outline-none focus:border-white/25 transition-all cursor-pointer">
-                    <option>Select an option</option>
+                    <option value="">Select an option</option>
+                    <option value="all">All Members & Families</option>
+                    <option value="players">Academy Players Only</option>
+                    <option value="coaches">Coaches & Staff Only</option>
+                    <option value="parents">Parents & Guardians Only</option>
+                    <option value="public">Public Event (Open to all)</option>
                   </select>
                   <IconChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-white/20" size={16} />
                 </div>

@@ -156,17 +156,17 @@ export default function ComplementaryCoursesSection({ editable }: { editable?: b
 
         {/* Course Cards - Styled like Accomplishments Section */}
         <div className="mx-auto">
-          <div className="flex items-center gap-5 flex-wrap">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 w-full">
             {(coachData.complementaryCourses || []).map((course, index) => {
               const IconComponent = COURSE_ICONS[course.icon || ""] || Award;
               return (
                 <div
                   key={course.id || index}
-                  className="flex gap-4 border border-white/10 rounded-xl p-4 bg-gray-900/40 relative group hover:border-primary/30 transition-all animate-in fade-in duration-200"
+                  className="flex items-center justify-center gap-4 border border-white/10 rounded-xl p-4 bg-gray-900/40 relative group hover:border-primary/30 transition-all animate-in fade-in duration-200"
                 >
                   <div
                     className={cn(
-                      "shrink-0 pt-1 text-white",
+                      "shrink-0 text-white",
                       editable ? "cursor-pointer hover:text-primary transition-colors" : ""
                     )}
                     onClick={() => {
@@ -177,7 +177,7 @@ export default function ComplementaryCoursesSection({ editable }: { editable?: b
                   >
                     <IconComponent className="w-5 h-5 text-white hover:scale-110 transition-transform" />
                   </div>
-                  <div className="flex-1 pr-6">
+                  <div className={cn("flex-1 text-left", editable ? "pr-6" : "")}>
                     <CMSField
                       value={course.title}
                       onUpdate={(val) => {
@@ -187,7 +187,7 @@ export default function ComplementaryCoursesSection({ editable }: { editable?: b
                       }}
                       canEdit={!!editable}
                       type="textarea"
-                      className="text-white text-sm leading-relaxed"
+                      className="text-white text-sm leading-relaxed text-left"
                     />
                   </div>
                   {editable && (
